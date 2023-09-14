@@ -1,22 +1,26 @@
 <script lang="ts">
   import * as Table from '$lib/components/ui/table';
+  import * as Dialog from '$lib/components/ui/dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
+  import AddExpenseForm from '$lib/components/AddExpenseForm.svelte';
   import DataTableActions from "./data-table-actions.svelte";
   import DataTableCheckbox from "./data-table-checkbox.svelte";
+	import type { addExpenseSchema } from '$lib/schemas/addExpense';
 	import { CategoryBadge } from "$lib";
-	import { formatCurrency, formatDateNeat, type Expense } from "$lib/utils";
+	import { formatCurrency, formatDateNeat, type Expense, type ExpenseCategory } from "$lib/utils";
   import { createTable, createRender, Render, Subscribe } from "svelte-headless-table";
   import { addPagination, addSortBy, addTableFilter, addHiddenColumns, addSelectedRows } from "svelte-headless-table/plugins";
   import { CaretSort, ChevronDown } from "radix-icons-svelte";
-	import { readable } from "svelte/store";
+	import type { Writable } from "svelte/store";
+	import type { SuperValidated } from 'sveltekit-superforms';
   
-  export let expenses: {
-    items: Expense[]
-  } | undefined;
+  export let expenses: Writable<Expense[]>;
+  export let form: SuperValidated<typeof addExpenseSchema>;
+  export let categories: ExpenseCategory[];
   
-  const table = createTable(readable(expenses?.items), {
+  const table = createTable(expenses, {
     page: addPagination(),
     sort: addSortBy(),
     filter: addTableFilter({
@@ -135,6 +139,19 @@
         {/each}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
+    <Dialog.Root>
+      <Dialog.Trigger>
+        <Button variant="default" class="ml-2">Add Expense</Button>
+      </Dialog.Trigger>
+      <Dialog.Content class="max-w-sm">
+        <Dialog.Header>
+          <Dialog.Title>Add an Expense</Dialog.Title>
+          <Dialog.Description>
+            <AddExpenseForm {form} {categories} />
+          </Dialog.Description>
+        </Dialog.Header>
+      </Dialog.Content>
+    </Dialog.Root>
   </div>
   <div class="rounded-md border">
     <Table.Root {...$tableAttrs}>

@@ -7,12 +7,18 @@
   
   // props
   export let data: PageData;
+  
+  const form = data.form;
+
+  const expensesStore: Writable<Expense[]> = writable(data.expenses?.items);
+
+  $expensesStore = data.expenses?.items || [];
 </script>
 
 <div class="fullPageContainer p-6">
   <h2 class="text-6xl mb-8">{`Hello, ${data?.user?.firstName} ${data?.user?.lastName}.`}</h2>
   <p class="text-2xl text-muted-foreground">This is the expenses page.</p>
   <Separator class="my-4" />
-  <DataTable expenses={data.expenses} />
+  <DataTable expenses={expensesStore} {form} categories={data.expenseTypes} />
 </div>
 

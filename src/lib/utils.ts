@@ -18,6 +18,12 @@ export type Expense = {
 	notes: any;
 };
 
+export type ExpenseCategory = {
+	id: string;
+	name: any;
+	color: any;
+};
+
 // functions
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -124,6 +130,18 @@ export const formatDateNeat = (date: Date, condensed: boolean = false) => {
 		month: condensed ? '2-digit' : 'short',
 		day: condensed ? '2-digit' : 'numeric'
 	});
+};
+
+export const formatDatepickerString = (date = new Date(), timeZone: 'local' | 'UTC' = 'local') => {
+	if (timeZone === 'local') {
+		return `${date.getFullYear()}-${
+			date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+		}-${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
+	} else {
+		return `${date.getUTCFullYear()}-${
+			date.getUTCMonth() < 10 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1
+		}-${date.getUTCDate() < 10 ? '0' + date.getUTCDate() : date.getUTCDate()}`;
+	}
 };
 
 export const formatCurrency = (amount: number): string => {

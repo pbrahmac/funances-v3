@@ -33,7 +33,7 @@
   
   // menu items
   const loggedInItems = [
-  {title: 'Analytics', link: '/'},
+  {title: 'Dashboard', link: '/'},
   {title: 'Expenses', link: '/expenses'},
   {title: 'Income', link: '/income'},
   {title: 'Allocations', link: '/allocations'},
@@ -125,14 +125,7 @@
 </nav>
 
 <style>
-  :global()::view-transition-old(active-page),
-  :global()::view-transition-new(active-page) {
-    width: 100%;
-    height: 100%;
-  }
-
   a[aria-current='page'] {
     @apply bg-secondary text-foreground;
-    view-transition-name: active-page;
   }
 </style>
