@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Table from '$lib/components/ui/table';
-  import * as Dialog from '$lib/components/ui/dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import * as Sheet from '$lib/components/ui/sheet';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import AddExpenseForm from '$lib/components/AddExpenseForm.svelte';
@@ -96,7 +96,7 @@
     table.column({
       accessor: (expense) => expense,
       header: "",
-      cell: (item) => { return createRender(DataTableActions, { expense: item.value }) }
+      cell: (item) => { return createRender(DataTableActions, { expense: item.value, store: expenses }) }
     })
 	]);
   
@@ -139,19 +139,12 @@
         {/each}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <Button variant="default" class="ml-2">Add Expense</Button>
-      </Dialog.Trigger>
-      <Dialog.Content class="max-w-sm">
-        <Dialog.Header>
-          <Dialog.Title>Add an Expense</Dialog.Title>
-          <Dialog.Description>
-            <AddExpenseForm {form} {categories} />
-          </Dialog.Description>
-        </Dialog.Header>
-      </Dialog.Content>
-    </Dialog.Root>
+    <Sheet.Root>
+      <Sheet.Trigger asChild let:builder>
+        <Button builders={[builder]} variant="default" class="ml-2">Add Expense</Button>
+      </Sheet.Trigger>
+      <AddExpenseForm {form} {categories} />
+    </Sheet.Root>
   </div>
   <div class="rounded-md border">
     <Table.Root {...$tableAttrs}>
@@ -162,7 +155,7 @@
             {#each headerRow.cells as cell (cell.id)}
             <Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
               <Table.Head {...attrs} class="[&:has([role=checkbox])]:pl-3">
-                {#if cell.id === "Date" || cell.id === "Category" || cell.id === "Amount"}
+                {#if ['Date', 'Category', 'Amount'].includes(cell.id)}
                   {#if cell.id === "Amount"}
                     <div class="text-right">
                       <Button variant="ghost" on:click={props.sort.toggle}>
@@ -170,6 +163,13 @@
                         <CaretSort class="ml-2 h-4 w-4" />
                       </Button>
                     </div>
+                  {:else if cell.id === "Category"}
+                  <div class="text-center">
+                    <Button variant="ghost" on:click={props.sort.toggle}>
+                      <Render of={cell.render()} />
+                      <CaretSort class="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
                   {:else}
                     <Button variant="ghost" on:click={props.sort.toggle}>
                       <Render of={cell.render()} />
@@ -203,6 +203,10 @@
                       </div>
                     {:else if cell.id === "Expense"}
                       <div class="capitalize">
+                        <Render of={cell.render()} />
+                      </div>
+                    {:else if cell.id === "Category"}
+                      <div class="text-center">
                         <Render of={cell.render()} />
                       </div>
                     {:else if cell.id === "Notes"}

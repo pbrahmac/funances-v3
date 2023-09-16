@@ -4,15 +4,14 @@
   import { Separator } from "$lib/components/ui/separator";
 	import { writable, type Writable } from "svelte/store";
 	import type { Expense } from "$lib/utils";
+	import { onDestroy } from "svelte";
   
   // props
   export let data: PageData;
   
   const form = data.form;
 
-  const expensesStore: Writable<Expense[]> = writable(data.expenses?.items);
-
-  $expensesStore = data.expenses?.items || [];
+  let expensesStore = writable(data.expenses?.items);
 </script>
 
 <div class="fullPageContainer p-6">
