@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Table from '$lib/components/ui/table';
+  import * as Dialog from '$lib/components/ui/dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import * as Sheet from '$lib/components/ui/sheet';
   import { Button } from '$lib/components/ui/button';
@@ -139,12 +140,12 @@
         {/each}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
-    <Sheet.Root>
-      <Sheet.Trigger asChild let:builder>
+    <Dialog.Root>
+      <Dialog.Trigger asChild let:builder>
         <Button builders={[builder]} variant="default" class="ml-2">Add Expense</Button>
-      </Sheet.Trigger>
-      <AddExpenseForm {form} {categories} />
-    </Sheet.Root>
+      </Dialog.Trigger>
+      <AddExpenseForm {form} {categories} store={expenses} />
+    </Dialog.Root>
   </div>
   <div class="rounded-md border">
     <Table.Root {...$tableAttrs}>
