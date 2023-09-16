@@ -4,17 +4,32 @@
 	import { page } from '$app/stores';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as Form from '$lib/components/ui/form';
-	import { addExpenseSchema } from '$lib/schemas/addExpense';
-	import type { Expense, ExpenseCategory } from '$lib/utils';
+	import { editExpenseSchema } from '$lib/schemas/editExpense';
+	import { formatDatepickerString, type Expense, type ExpenseCategory } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
   
-  export let form: SuperValidated<typeof addExpenseSchema>;
+  export let expense: Expense;
+  export let form: SuperValidated<typeof editExpenseSchema>;
   export let categories: ExpenseCategory[];
   export let store: Writable<Expense[]>;
 
-  const submitAddExpense: SubmitFunction = () => {
+  let newEditExpenseSchema: any;
+
+  // change defaults of schema
+  onMount(() => {
+    newEditExpenseSchema = editExpenseSchema.extend({
+		expense: editExpenseSchema.shape.expense.default(expense.expense),
+		notes: editExpenseSchema.shape.notes.default(expense.notes),
+		date: editExpenseSchema.shape.date.default(formatDatepickerString(new Date(expense.date))),
+		type: editExpenseSchema.shape.type.default(categories.find((category) => category.name = expense.category.name)?.name),
+		amount: editExpenseSchema.shape.amount.default(expense.amount)
+	});
+  })
+
+  const submitEditExpense: SubmitFunction = () => {
     return async ({ result }) => {
       if (result.type == 'success') {
         await invalidateAll();
@@ -27,10 +42,12 @@
 
 <Dialog.Content class="max-w-sm">
   <Dialog.Header>
-    <Dialog.Title>Add an Expense</Dialog.Title>
+    <Dialog.Title>Edit Expense</Dialog.Title>
+    <Dialog.Description>{JSON.stringify(expense, null, 2)}</Dialog.Description>
   </Dialog.Header>
-  <Form.Root {form} schema={addExpenseSchema} class="m-4" let:config asChild>
-    <form action="?/addExpense" method="post" use:enhance={submitAddExpense}>
+  <Form.Root {form} schema={newEditExpenseSchema} class="m-4" let:config asChild>
+    <form action="?/editExpense" method="post" use:enhance={submitEditExpense}>
+      <input type="hidden" name="expenseId" value={expense.id}>
       <Form.Field {config} name="date">
         <Form.Item>
           <Form.Label>Date</Form.Label>
@@ -74,7 +91,7 @@
         </Form.Item>
       </Form.Field>
       <Dialog.Close>
-        <Form.Button class="mt-2" type="submit">Add</Form.Button>
+        <Form.Button class="mt-2" type="submit">Update</Form.Button>
       </Dialog.Close>
     </form>
   </Form.Root>

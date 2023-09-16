@@ -15,9 +15,11 @@
   import { CaretSort, ChevronDown } from "radix-icons-svelte";
 	import type { Writable } from "svelte/store";
 	import type { SuperValidated } from 'sveltekit-superforms';
+	import type { editExpenseSchema } from '$lib/schemas/editExpense';
   
   export let expenses: Writable<Expense[]>;
-  export let form: SuperValidated<typeof addExpenseSchema>;
+  export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
+  export let editExpenseForm: SuperValidated<typeof editExpenseSchema>;
   export let categories: ExpenseCategory[];
   
   const table = createTable(expenses, {
@@ -86,7 +88,7 @@
 		}),
 		table.column({
 			header: 'Notes',
-			accessor: (item) => (item.notes.length > 0 ? item.notes : '--'),
+			accessor: (item) => (item.notes.length > 0 ? item.notes : '—'),
 			plugins: {
 				sort: {
 					disable: true
@@ -96,7 +98,12 @@
     table.column({
       accessor: (expense) => expense,
       header: "",
-      cell: (item) => { return createRender(DataTableActions, { expense: item.value, store: expenses }) }
+      cell: (item) => { return createRender(DataTableActions, { 
+        expense: item.value, 
+        store: expenses,
+        form: editExpenseForm,
+        categories: categories
+      }) }
     })
 	]);
   
@@ -143,7 +150,7 @@
       <Dialog.Trigger asChild let:builder>
         <Button builders={[builder]} variant="default" class="ml-2">Add Expense</Button>
       </Dialog.Trigger>
-      <AddExpenseForm {form} {categories} store={expenses} />
+      <AddExpenseForm form={addExpenseForm} {categories} store={expenses} />
     </Dialog.Root>
   </div>
   <div class="rounded-md border">
@@ -177,7 +184,7 @@
                     </Button>
                   {/if}
                 {:else if cell.id === "Notes"}
-                  <div class="text-center">
+                  <div class="text-right">
                     <Render of={cell.render()} />
                   </div>
                 {:else}

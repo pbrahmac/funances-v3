@@ -1,4 +1,5 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
+import { editExpenseSchema } from '$lib/schemas/editExpense';
 import { formatDate, serializeNonPOJOs } from '$lib/utils';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
@@ -22,7 +23,8 @@ const dateWindow = (monthOffset = 1) => {
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
   // initialize forms
-  const form = await superValidate(addExpenseSchema);
+  const addExpenseForm = await superValidate(addExpenseSchema);
+  const editExpenseForm = await superValidate(editExpenseSchema);
 
   // get limit and pageNum params for pagination
   const limit = Number(event.url.searchParams.get('limit')) || 10;
@@ -94,7 +96,7 @@ export async function load(event) {
     }));
   }
 
-  return { form: form, expenses: getExpenses(limit, pageNum), expenseTypes: getExpenseTypes() };
+  return { addExpenseForm: addExpenseForm, editExpenseForm: editExpenseForm, expenses: getExpenses(limit, pageNum), expenseTypes: getExpenseTypes() };
 }
 
 /** @type {import('./$types').Actions} */
@@ -170,6 +172,16 @@ export const actions = {
     }
 
     return { success: true };
+  },
+  editExpense: async (event) => {
+    const form = await superValidate(event, editExpenseSchema);
+
+    console.log(form.data);
+
+    // validate errors
+    if (!form.valid) {
+      return fail(400, { form });
+    }
   },
   delete: async (event) => {
     const form = await superValidate(event, z.object({
