@@ -4,7 +4,6 @@
 	import { page } from '$app/stores';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as Form from '$lib/components/ui/form';
-  import * as Sheet from '$lib/components/ui/sheet';
 	import { addExpenseSchema } from '$lib/schemas/addExpense';
 	import type { Expense, ExpenseCategory } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
