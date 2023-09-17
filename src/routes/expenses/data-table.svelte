@@ -153,8 +153,28 @@
       <AlertDialog.Content>
         <AlertDialog.Header>
           <AlertDialog.Title>Are you sure?</AlertDialog.Title>
-          <AlertDialog.Description>These expenses will be deleted.</AlertDialog.Description>
         </AlertDialog.Header>
+        <Table.Root>
+          <Table.Caption>These expenses will be deleted.</Table.Caption>
+          <Table.Header>
+            <Table.Row>
+              <Table.Head>Date</Table.Head>
+              <Table.Head class="text-center">Expense</Table.Head>
+              <Table.Head class="text-right">Amount</Table.Head>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {#each $expenses as expense, idx}
+              {#if Object.keys($selectedDataIds).includes(idx.toString())}
+                <Table.Row>
+                  <Table.Cell>{formatDateNeat(expense.date, true)}</Table.Cell>
+                  <Table.Cell class="text-center">{expense.expense}</Table.Cell>
+                  <Table.Cell class="text-right">{formatCurrency(expense.amount)}</Table.Cell>
+                </Table.Row>
+              {/if}
+            {/each}
+          </Table.Body>
+        </Table.Root>
         <AlertDialog.Footer>
           <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
           <AlertDialog.Action>Delete</AlertDialog.Action>
