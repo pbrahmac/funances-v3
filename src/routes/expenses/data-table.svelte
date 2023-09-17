@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as AlertDialog from '$lib/components/ui/alert-dialog';
   import * as Table from '$lib/components/ui/table';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -143,6 +144,24 @@
         {/each}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
+    <!-- batch delete -->
+    <AlertDialog.Root>
+      <AlertDialog.Trigger asChild let:builder>
+        {@const selectedLength = Object.keys($selectedDataIds).length}
+        <Button builders={[builder]} variant="secondary" class="ml-2" disabled={selectedLength == 0}>{`Batch Delete (${selectedLength})`}</Button>
+      </AlertDialog.Trigger>
+      <AlertDialog.Content>
+        <AlertDialog.Header>
+          <AlertDialog.Title>Are you sure?</AlertDialog.Title>
+          <AlertDialog.Description>These expenses will be deleted.</AlertDialog.Description>
+        </AlertDialog.Header>
+        <AlertDialog.Footer>
+          <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+          <AlertDialog.Action>Delete</AlertDialog.Action>
+        </AlertDialog.Footer>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
+    <!-- add expense -->
     <Dialog.Root>
       <Dialog.Trigger asChild let:builder>
         <Button builders={[builder]} variant="default" class="ml-2">Add Expense</Button>
