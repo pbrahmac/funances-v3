@@ -19,7 +19,6 @@
   
   export let expenses: Writable<Expense[]>;
   export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
-  export let editExpenseForm: SuperValidated<typeof editExpenseSchema>;
   export let categories: ExpenseCategory[];
   
   const table = createTable(expenses, {
@@ -100,9 +99,7 @@
       header: "",
       cell: (item) => { return createRender(DataTableActions, { 
         expense: item.value, 
-        store: expenses,
-        form: editExpenseForm,
-        categories: categories
+        store: expenses
       }) }
     })
 	]);

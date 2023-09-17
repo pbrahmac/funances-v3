@@ -11,6 +11,6 @@
 </script>
 
 <div class="fullPageContainer p-6">
-  <DataTable expenses={expensesStore} addExpenseForm={data.addExpenseForm} editExpenseForm={data.editExpenseForm} categories={data.expenseTypes} />
+  <DataTable expenses={expensesStore} addExpenseForm={data.addExpenseForm} categories={data.expenseTypes} />
 </div>
 

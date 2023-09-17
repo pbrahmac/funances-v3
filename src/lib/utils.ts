@@ -11,6 +11,7 @@ export type Expense = {
 	date: any;
 	expense: any;
 	category: {
+		id: any;
 		name: any;
 		color: any;
 	};

@@ -10,24 +10,21 @@
 	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
+	import { superValidate } from 'sveltekit-superforms/client';
   
   export let expense: Expense;
   export let form: SuperValidated<typeof editExpenseSchema>;
   export let categories: ExpenseCategory[];
   export let store: Writable<Expense[]>;
 
-  let newEditExpenseSchema: any;
-
   // change defaults of schema
-  onMount(() => {
-    newEditExpenseSchema = editExpenseSchema.extend({
+  let newEditExpenseSchema = editExpenseSchema.extend({
 		expense: editExpenseSchema.shape.expense.default(expense.expense),
 		notes: editExpenseSchema.shape.notes.default(expense.notes),
 		date: editExpenseSchema.shape.date.default(formatDatepickerString(new Date(expense.date))),
-		type: editExpenseSchema.shape.type.default(categories.find((category) => category.name = expense.category.name)?.name),
+		type: editExpenseSchema.shape.type.default(categories.find((category) => category.name = expense.category.name)?.id ?? ''),
 		amount: editExpenseSchema.shape.amount.default(expense.amount)
 	});
-  })
 
   const submitEditExpense: SubmitFunction = () => {
     return async ({ result }) => {
