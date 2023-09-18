@@ -12,7 +12,7 @@
         <Card.Header>
             <Card.Title>Edit Expense</Card.Title>
         </Card.Header>
-        <Form.Root method="POST" form={data.form} schema={editExpenseSchema} class="m-2 w-96" let:config debug>
+        <Form.Root method="POST" form={data.form} schema={editExpenseSchema} class="m-2 w-96" let:config>
             <Card.Content>
                 <input type="hidden" name="expenseId" value={data.expense?.id}>
                 <Form.Field {config} name="date">
@@ -40,7 +40,7 @@
                     <Form.Item>
                         <Form.Label>Category</Form.Label>
                         <Form.Select>
-                            <Form.SelectTrigger placeholder="—" />
+                            <Form.SelectTrigger placeholder="—"/>
                             <Form.SelectContent>
                                 {#each data.expenseTypes as category}
                                     <Form.SelectItem value={category.id}>{category.name}</Form.SelectItem>

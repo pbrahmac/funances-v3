@@ -17,6 +17,10 @@
 	import type { Writable } from "svelte/store";
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import type { editExpenseSchema } from '$lib/schemas/editExpense';
+	import { applyAction, enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
   
   export let expenses: Writable<Expense[]>;
   export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
@@ -116,6 +120,19 @@
 
   $: $hiddenColumnIds = Object.entries(hideForId).filter(([, hide]) => !hide).map(([id]) => id);
   const hideableCols = ["Category", "Notes"];
+
+  // form enhance
+  const submitBatchDelete: SubmitFunction = () => {
+    return async ({ result }) => {
+      if (result.type == 'success') {
+        await invalidateAll();
+        selectedDataIds.clear();
+        await invalidateAll();
+        expenses.set($page.data.expenses?.items);
+      }
+      await applyAction(result);
+    }
+  }
 </script>
 
 <div>
@@ -177,7 +194,18 @@
         </Table.Root>
         <AlertDialog.Footer>
           <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-          <AlertDialog.Action>Delete</AlertDialog.Action>
+          <form action="?/batchDelete" method="post" use:enhance={submitBatchDelete}>
+            {#each $expenses as expense, idx}
+              {#if Object.keys($selectedDataIds).includes(idx.toString())}
+                <input type="hidden" name={idx.toString()} value={expense.id}>
+              {/if}
+            {/each}
+            <button type="submit">
+              <AlertDialog.Action asChild let:builder>
+                <Button builders={[builder]} variant="destructive">Delete</Button>
+              </AlertDialog.Action>
+            </button>
+          </form>
         </AlertDialog.Footer>
       </AlertDialog.Content>
     </AlertDialog.Root>

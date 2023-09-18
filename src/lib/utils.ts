@@ -9,14 +9,14 @@ import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 export type Expense = {
 	id: string;
 	date: any;
-	expense: any;
+	expense: string;
 	category: {
-		id: any;
-		name: any;
-		color: any;
+		id: string;
+		name: string;
+		color: string;
 	};
 	amount: any;
-	notes: any;
+	notes: string;
 };
 
 export type ExpenseCategory = {

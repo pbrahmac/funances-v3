@@ -228,5 +228,65 @@ export const actions = {
     }
 
     return { form };
+  },
+  batchDelete: async (event) => {
+    const formData = Array.from(await (await event.request.formData()).values());
+    const itemsToDelete = formData.map((formData) => formData.toString());
+
+    // const buildSchema = (/** @type {FormDataEntryValue[]} */ itemsToDelete) => {
+    //   let zodObjects = new Map();
+    //   itemsToDelete.forEach((item, idx) => {
+    //     zodObjects.set(idx, z.string({ required_error: 'Required.' }).trim());
+    //   });
+
+    //   return Object.fromEntries(zodObjects);
+    // }
+
+    const test = itemsToDelete.forEach(async (itemId) => {
+      try {
+        // auth user and get id
+        const user_id = event.locals.user?.id;
+
+        // get details of to be deleted expense
+        const deletedExpense = await event.locals.pb.collection('expenses').getOne(itemId, { requestKey: null });
+        const deletedExpenseDate = new Date(deletedExpense.date);
+
+        // delete record
+        await event.locals.pb.collection('expenses').delete(itemId, { requestKey: null });
+
+        // update aggregates table
+        try {
+          const aggregateRecord =
+            await event.locals.pb
+              .collection('expense_aggregates')
+              .getFirstListItem(
+                `month = ${deletedExpenseDate.getMonth() + 1} && type_id = "${deletedExpense.expense_type
+                }"`, { requestKey: null }
+              );
+          await event.locals.pb.collection('expense_aggregates').update(aggregateRecord.id, {
+            user_id: user_id,
+            type_id: deletedExpense.expense_type,
+            amount: aggregateRecord.amount - deletedExpense.amount,
+            month: deletedExpenseDate.getMonth() + 1,
+            year: deletedExpenseDate.getFullYear()
+          }, { requestKey: null });
+
+          if (aggregateRecord.amount - deletedExpense.amount == 0) {
+            await event.locals.pb.collection('expense_aggregates').delete(aggregateRecord.id, { requestKey: null });
+          }
+        } catch (/** @type {any} */ err) {
+          if (err.status == 404) {
+            console.log('No record of aggregate here.');
+          } else {
+            console.log('Error: ', err);
+            return fail(err.status, err.message);
+          }
+        }
+      } catch (/** @type {any} */ err) {
+        console.log('Error: ', err);
+        return fail(400, err.message);
+      }
+    })
+    return { success: true };
   }
 };

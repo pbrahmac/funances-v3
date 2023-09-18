@@ -19,7 +19,7 @@ export async function load(event) {
     date: rawExpense.date,
     expense: rawExpense.title,
     category: {
-      id: rawExpense.expand?.expense_type.id,
+      id: rawExpense.expense_type,
       name: rawExpense.expand?.expense_type.type,
       color: rawExpense.expand?.expense_type.tagColor
     },
@@ -84,7 +84,7 @@ export const actions = {
         date: finalDate.toISOString(),
         title: form.data.expense,
         details: form.data.notes ?? '',
-        amount: form.data.amount
+        amount: parseFloat(form.data.amount)
       });
 
       // update aggregates table
