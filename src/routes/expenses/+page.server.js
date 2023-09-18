@@ -62,8 +62,8 @@ export async function load(event) {
           name: expense.expand?.expense_type.type || 'N/A',
           color: expense.expand?.expense_type.tagColor || '#64748b'
         },
-        amount: expense.amount,
-        notes: expense.details
+        notes: expense.details,
+        amount: expense.amount
       }));
 
       // return {
@@ -232,15 +232,6 @@ export const actions = {
   batchDelete: async (event) => {
     const formData = Array.from(await (await event.request.formData()).values());
     const itemsToDelete = formData.map((formData) => formData.toString());
-
-    // const buildSchema = (/** @type {FormDataEntryValue[]} */ itemsToDelete) => {
-    //   let zodObjects = new Map();
-    //   itemsToDelete.forEach((item, idx) => {
-    //     zodObjects.set(idx, z.string({ required_error: 'Required.' }).trim());
-    //   });
-
-    //   return Object.fromEntries(zodObjects);
-    // }
 
     const test = itemsToDelete.forEach(async (itemId) => {
       try {

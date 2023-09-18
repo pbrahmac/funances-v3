@@ -16,7 +16,6 @@
   import { CaretSort, ChevronDown } from "radix-icons-svelte";
 	import type { Writable } from "svelte/store";
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import type { editExpenseSchema } from '$lib/schemas/editExpense';
 	import { applyAction, enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { invalidateAll } from '$app/navigation';
@@ -65,6 +64,15 @@
 			header: 'Expense',
 			accessor: (item: Expense) => item.expense
 		}),
+    table.column({
+			header: 'Notes',
+			accessor: (item) => (item.notes.length > 0 ? item.notes : '—'),
+			plugins: {
+				sort: {
+					disable: true
+				}
+			}
+		}),
 		table.column({
 			header: 'Category',
 			accessor: (item: Expense) => item.category,
@@ -78,7 +86,7 @@
 				}
 			}
 		}),
-		table.column({
+    table.column({
 			header: 'Amount',
 			accessor: (item) => `${formatCurrency(item.amount)}`,
 			plugins: {
@@ -88,15 +96,6 @@
         filter: {
           exclude: true
         }
-			}
-		}),
-		table.column({
-			header: 'Notes',
-			accessor: (item) => (item.notes.length > 0 ? item.notes : '—'),
-			plugins: {
-				sort: {
-					disable: true
-				}
 			}
 		}),
     table.column({
@@ -217,6 +216,7 @@
       <AddExpenseForm form={addExpenseForm} {categories} store={expenses} />
     </Dialog.Root>
   </div>
+  <!-- data table -->
   <div class="rounded-md border">
     <Table.Root {...$tableAttrs}>
       <Table.Header>
@@ -234,25 +234,14 @@
                         <CaretSort class="ml-2 h-4 w-4" />
                       </Button>
                     </div>
-                  {:else if cell.id === "Category"}
-                  <div class="text-center">
-                    <Button variant="ghost" on:click={props.sort.toggle}>
-                      <Render of={cell.render()} />
-                      <CaretSort class="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
                   {:else}
                     <Button variant="ghost" on:click={props.sort.toggle}>
                       <Render of={cell.render()} />
                       <CaretSort class="ml-2 h-4 w-4" />
                     </Button>
                   {/if}
-                {:else if cell.id === "Notes"}
-                  <div class="text-right">
-                    <Render of={cell.render()} />
-                  </div>
                 {:else}
-                <Render of={cell.render()} />
+                  <Render of={cell.render()} />
                 {/if}
               </Table.Head>
             </Subscribe>
@@ -274,14 +263,6 @@
                       </div>
                     {:else if cell.id === "Expense"}
                       <div class="capitalize">
-                        <Render of={cell.render()} />
-                      </div>
-                    {:else if cell.id === "Category"}
-                      <div class="text-center">
-                        <Render of={cell.render()} />
-                      </div>
-                    {:else if cell.id === "Notes"}
-                      <div class="text-right">
                         <Render of={cell.render()} />
                       </div>
                     {:else}

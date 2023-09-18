@@ -15,8 +15,8 @@ export type Expense = {
 		name: string;
 		color: string;
 	};
-	amount: any;
 	notes: string;
+	amount: any;
 };
 
 export type ExpenseCategory = {
