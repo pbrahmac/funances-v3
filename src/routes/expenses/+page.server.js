@@ -1,11 +1,9 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
+import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
 import { formatDate, serializeNonPOJOs } from '$lib/utils';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 import { z } from 'zod';
-
-// Constants and initial variables
-
 
 // helper functions
 const dateWindow = (monthOffset = 1) => {
@@ -19,10 +17,14 @@ const dateWindow = (monthOffset = 1) => {
   return { from: fromDate, to: toDate };
 }
 
+// Constants and initial variables
+let [fromDate, toDate] = [dateWindow().from, dateWindow().to];
+
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
   // initialize forms
   const addExpenseForm = await superValidate(addExpenseSchema);
+  const dateWindowForm = await superValidate(dateWindowSchemaMaker(fromDate, toDate));
 
   // get limit and pageNum params for pagination
   const limit = Number(event.url.searchParams.get('limit')) || 10;
@@ -41,14 +43,8 @@ export async function load(event) {
 
     // fetch from Pocketbase
     try {
-      // const rawExpenses = await event.locals.pb.collection('expenses').getList(pageNum, limit, {
-      //   filter: `date >= "${formatDate(dateWindow().from, false)}" && date <= "${formatDate(dateWindow().to)}"`,
-      //   sort: '-date',
-      //   expand: 'expense_type'
-      // });
-
       const rawExpenses = await event.locals.pb.collection('expenses').getFullList({
-        filter: `date >= "${formatDate(dateWindow().from, false)}" && date <= "${formatDate(dateWindow().to)}"`,
+        filter: `date >= "${formatDate(fromDate, false)}" && date <= "${formatDate(toDate)}"`,
         sort: '-date',
         expand: 'expense_type'
       });
@@ -65,14 +61,6 @@ export async function load(event) {
         notes: expense.details,
         amount: expense.amount
       }));
-
-      // return {
-      //   items: expenses,
-      //   page: rawExpenses.page,
-      //   perPage: rawExpenses.perPage,
-      //   totalItems: rawExpenses.totalItems,
-      //   totalPages: rawExpenses.totalPages,
-      // }
 
       return {
         items: expenses
@@ -95,7 +83,13 @@ export async function load(event) {
     }));
   }
 
-  return { addExpenseForm: addExpenseForm, expenses: getExpenses(limit, pageNum), expenseTypes: getExpenseTypes() };
+  return {
+    addExpenseForm: addExpenseForm,
+    dateWindowForm: dateWindowForm,
+    dateWindow: { from: fromDate, to: toDate },
+    expenses: getExpenses(limit, pageNum),
+    expenseTypes: getExpenseTypes()
+  };
 }
 
 /** @type {import('./$types').Actions} */
@@ -279,5 +273,31 @@ export const actions = {
       }
     })
     return { success: true };
+  },
+  updateWindow: async (event) => {
+    const form = await superValidate(event, dateWindowSchemaMaker(dateWindow().from, dateWindow().to));
+
+    // validate errors
+    if (!form.valid) {
+      return fail(400, { form });
+    }
+
+    // fix timezone issues with dates
+    // set from date to start at 12:00:00 AM
+    let newFromDate = new Date(form.data.fromDatePicker);
+    const fromEpoch = newFromDate.getTime();
+    newFromDate = new Date(fromEpoch + newFromDate.getTimezoneOffset() * 60 * 1000);
+
+    // set to date to end at 11:59:59 PM
+    let newToDate = new Date(form.data.toDatePicker);
+    const toEpoch = newToDate.getTime();
+    newToDate = new Date(toEpoch + newToDate.getTimezoneOffset() * 60 * 1000 + 86400 * 1000 - 1);
+
+    // update fromDate and toDate
+    // load function will re-run on page submit, causing data with new dates to be pulled
+    fromDate = newFromDate;
+    toDate = newToDate;
+
+    return { form };
   }
 };

@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
+  import * as Form from '$lib/components/ui/form';
   import * as Table from '$lib/components/ui/table';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -20,10 +21,14 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
   
   export let expenses: Writable<Expense[]>;
   export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
   export let categories: ExpenseCategory[];
+
+  // on change form submission variable
+  let form: any;
   
   const table = createTable(expenses, {
     page: addPagination(),
@@ -132,6 +137,16 @@
       await applyAction(result);
     }
   }
+
+  const submitUpdateWindow: SubmitFunction = () => {
+    return async ({result}) => {
+      if (result.type == 'success') {
+        await invalidateAll();
+        expenses.set($page.data.expenses?.items);
+      }
+      await applyAction(result);
+    }
+  }
 </script>
 
 <div>
@@ -143,6 +158,22 @@
       type="text"
       bind:value={$filterValue}
     />
+    <!-- date window -->
+    <Form.Root form={$page.data.dateWindowForm} schema={dateWindowSchemaMaker($page.data.dateWindow.from, $page.data.dateWindow.to)} let:config asChild>
+      <form bind:this={form} action="?/updateWindow" method="post" class="flex items-center justify-center space-x-2 ml-2" use:enhance={submitUpdateWindow}>
+        <Form.Field {config} name="fromDatePicker">
+          <Form.Item>
+            <Form.Input type="date" on:change={() => form.requestSubmit()} />
+          </Form.Item>
+        </Form.Field>
+        <p>-</p>
+        <Form.Field {config} name="toDatePicker">
+          <Form.Item>
+            <Form.Input type="date" on:change={() => form.requestSubmit()} />
+          </Form.Item>
+        </Form.Field>
+      </form>
+    </Form.Root>
     <!-- column visibility -->
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild let:builder>
