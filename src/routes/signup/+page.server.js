@@ -34,7 +34,6 @@ export async function load() {
 export const actions = {
   default: async (event) => {
     const form = await superValidate(event, signUpFormSchema);
-    console.log(form.data);
 
     // validate form
     if (!form.valid) {

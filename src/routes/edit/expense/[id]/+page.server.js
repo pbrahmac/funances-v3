@@ -54,8 +54,6 @@ export const actions = {
   default: async (event) => {
     const form = await superValidate(event, editExpenseSchema);
 
-    console.log(form.data);
-
     // validate errors
     if (!form.valid) {
       return fail(400, { form });
