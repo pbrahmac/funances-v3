@@ -13,7 +13,7 @@ export async function load(event) {
    */
   let income;
 
-  const rawIncome = await event.locals.pb.collection('expenses').getOne(id, { expand: 'expense_type' });
+  const rawIncome = await event.locals.pb.collection('income').getOne(id);
   income = {
     id: rawIncome.id,
     date: rawIncome.date,
@@ -31,10 +31,10 @@ export async function load(event) {
     income: editIncomeSchema.shape.income.default(income.income),
     date: editIncomeSchema.shape.date.default(formatDatepickerString(new Date(income.date))),
     notes: editIncomeSchema.shape.notes.default(income.notes),
-    gross_amount: editIncomeSchema.shape.gross_amount.default(income.gross_amount),
-    taxes: editIncomeSchema.shape.taxes.default(income.taxes),
-    benefits: editIncomeSchema.shape.benefits.default(income.benefits),
-    retirement_401k: editIncomeSchema.shape.retirement_401k.default(income.retirement_401k),
+    gross_amount: editIncomeSchema.shape.gross_amount.default(income.gross_amount.toString()),
+    taxes: editIncomeSchema.shape.taxes.default(income.taxes.toString()),
+    benefits: editIncomeSchema.shape.benefits.default(income.benefits.toString()),
+    retirement_401k: editIncomeSchema.shape.retirement_401k.default(income.retirement_401k.toString()),
     is_paycheck: editIncomeSchema.shape.is_paycheck.default(income.is_paycheck)
   });
 

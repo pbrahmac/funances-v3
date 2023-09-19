@@ -29,7 +29,7 @@
     <Dialog.Title>Add Income</Dialog.Title>
   </Dialog.Header>
   <Form.Root {form} schema={addIncomeSchema} class="m-4" let:config asChild>
-    <form action="?/addExpense" method="post" use:enhance={submitAddIncome}>
+    <form action="?/addIncome" method="post" use:enhance={submitAddIncome}>
       <Form.Field {config} name="date">
         <Form.Item>
           <Form.Label>Date</Form.Label>
@@ -80,14 +80,14 @@
         </Form.Item>
       </Form.Field>
       <Form.Field {config} name="is_paycheck">
-        <Form.Item>
+        <Form.Item class="flex items-end space-x-2">
           <Form.Label>Paycheck?</Form.Label>
           <Form.Checkbox />
           <Form.Validation />
         </Form.Item>
       </Form.Field>
       <Dialog.Close>
-        <Form.Button class="mt-2" type="submit">Add</Form.Button>
+        <Form.Button class="mt-4" type="submit">Add</Form.Button>
       </Dialog.Close>
     </form>
   </Form.Root>
