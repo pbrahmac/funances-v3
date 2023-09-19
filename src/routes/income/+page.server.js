@@ -10,6 +10,7 @@ const dateWindow = () => {
   let [fromDate, toDate] = [new Date(), new Date()];
   // reset both to 00:00:00 and from month to Jan
   fromDate.setMonth(0);
+  fromDate.setDate(1);
   fromDate.setHours(0, 0, 0, 0);
   toDate.setHours(0, 0, 0, 0);
   // set initial end date to be until 11:59:59 of that day
