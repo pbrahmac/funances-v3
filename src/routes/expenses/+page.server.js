@@ -227,7 +227,7 @@ export const actions = {
     const formData = Array.from(await (await event.request.formData()).values());
     const itemsToDelete = formData.map((formData) => formData.toString());
 
-    const test = itemsToDelete.forEach(async (itemId) => {
+    itemsToDelete.forEach(async (itemId) => {
       try {
         // auth user and get id
         const user_id = event.locals.user?.id;

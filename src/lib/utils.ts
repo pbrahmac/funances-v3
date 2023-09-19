@@ -25,6 +25,18 @@ export type ExpenseCategory = {
 	color: any;
 };
 
+export type Income = {
+	id: string;
+	date: any;
+	income: string;
+	notes: string;
+	gross_amount: any;
+	benefits: any;
+	retirement_401k: any;
+	taxes: any;
+	is_paycheck: boolean;
+};
+
 // functions
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
