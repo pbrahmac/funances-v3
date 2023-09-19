@@ -21,6 +21,7 @@
 	import { page } from '$app/stores';
 	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
 	import type { addIncomeSchema } from '$lib/schemas/addIncome';
+	import PaycheckBadge from './PaycheckBadge.svelte';
   
   export let incomes: Writable<Income[]>;
   export let addIncomeForm: SuperValidated<typeof addIncomeSchema>;
@@ -77,6 +78,18 @@
 			}
 		}),
     table.column({
+      header: 'Paycheck',
+      accessor: (item) => item.is_paycheck,
+      cell: (item) => {
+        return createRender(PaycheckBadge, { is_paycheck: item.value })
+      },
+      plugins: {
+        sort: {
+          disable: true
+        }
+      }
+    }),
+    table.column({
 			header: 'Amount',
 			accessor: (item) => `${formatCurrency(item.gross_amount - (item.taxes + item.retirement_401k + item.benefits))}`,
 			plugins: {
@@ -108,7 +121,7 @@
   let hideForId = Object.fromEntries(ids.map((id) => [id, true]));
 
   $: $hiddenColumnIds = Object.entries(hideForId).filter(([, hide]) => !hide).map(([id]) => id);
-  const hideableCols = ["Notes"];
+  const hideableCols = ["Notes", "Paycheck"];
 
   // form enhance
   const submitBatchDelete: SubmitFunction = () => {
