@@ -33,6 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"apexcharts": "^3.42.0",
 		"bits-ui": "^0.5.7",
 		"clsx": "^2.0.0",
 		"formsnap": "^0.0.9",
