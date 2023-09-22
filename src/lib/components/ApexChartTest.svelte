@@ -1,18 +1,44 @@
 <script lang="ts">
-	import ApexCharts from 'apexcharts';
+	import { onMount } from 'svelte';
+	import type { PageData } from '../../routes/$types';
+	import { formatCurrency } from '$lib/utils';
+
+	// props
+	export let data: PageData;
+	export let chartIdx: number;
+	export let color: string;
 
 	let options = {
 		chart: {
-			type: 'line'
-		},
-		series: [
-			{
-				name: 'sales',
-				data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+			type: 'area',
+			sparkline: {
+				enabled: true
+			},
+			toolbar: {
+				show: false
 			}
-		],
-		xaxis: {
-			categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-		}
+		},
+		tooltip: {
+			enabled: true,
+			custom: (param: any) => {
+				return (
+					'<div class="p-2 bg-secondary">' +
+					'<span class="text-sm">' +
+					formatCurrency(param.series[param.seriesIndex][param.dataPointIndex]) +
+					'</span>' +
+					'</div>'
+				);
+			}
+		},
+		colors: [color],
+		series: [{ data: data.monthlyTotalExpenses ?? [] }]
 	};
+
+	onMount(async () => {
+		const ApexCharts = await import('apexcharts');
+		let chart = new ApexCharts.default(document.getElementById(`chart-${chartIdx}`), options);
+		chart.render();
+	});
 </script>
+
+<div id={`chart-${chartIdx}`} />
