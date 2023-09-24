@@ -3,8 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Cookie, Rocket } from 'radix-icons-svelte';
 	import { formatCurrency } from '$lib/utils';
-	import FrappeChartTest from '$lib/components/FrappeChartTest.svelte';
-	import ApexChartTest from '$lib/components/ApexChartTest.svelte';
+	import SparklineChart from '$lib/components/charts/SparklineChart.svelte';
 
 	// props
 	export let data: PageData;
@@ -14,23 +13,24 @@
 		{
 			title: 'Expenses',
 			icon: Cookie,
-			description: 'Total of all expenses this year.',
-			chart: ApexChartTest,
-			chartOptions: { data, color: '#dc2626' },
+			description: 'Total money spent.',
+			chart: SparklineChart,
+			chartOptions: { data: data.monthlyTotalExpenses, color: '#dc2626' },
 			amount: formatCurrency(data.totalExpenses ?? 0)
 		},
 		{
 			title: 'Income',
 			icon: Rocket,
-			description: 'Total of all income this year.',
-			chart: ApexChartTest,
-			chartOptions: { data, color: '#16a34a' },
+			description: 'Total post-tax money earned.',
+			chart: SparklineChart,
+			chartOptions: { data: data.monthlyTotalIncomes, color: '#16a34a' },
 			amount: formatCurrency(data.totalIncomes ?? 0)
 		}
 	];
 </script>
 
 <div class="fullPageContainer p-6">
+	<!-- overview cards -->
 	<div class="w-full flex flex-col items-center justify-center">
 		<div class="grid grid-flow-col gap-4 max-w-7xl">
 			{#each overview_cards as card, idx}
@@ -55,6 +55,5 @@
 				</Card.Root>
 			{/each}
 		</div>
-		<pre>{JSON.stringify(data.incomes, null, 2)}</pre>
 	</div>
 </div>

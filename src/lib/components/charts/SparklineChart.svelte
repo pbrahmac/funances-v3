@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { PageData } from '../../routes/$types';
 	import { formatCurrency } from '$lib/utils';
 
 	// props
-	export let data: PageData;
+	export let data: number[] | undefined;
 	export let chartIdx: number;
-	export let color: string;
+	export let color: string = '#0891b2';
 
 	let options = {
 		chart: {
 			type: 'area',
+			height: 50,
 			sparkline: {
 				enabled: true
 			},
@@ -31,7 +31,7 @@
 			}
 		},
 		colors: [color],
-		series: [{ data: data.monthlyTotalExpenses ?? [] }]
+		series: [{ name: 'series', data: data ?? [] }]
 	};
 
 	onMount(async () => {
