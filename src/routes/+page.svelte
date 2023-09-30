@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import * as Card from '$lib/components/ui/card';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { Cookie, Rocket } from 'radix-icons-svelte';
 	import { formatCurrency } from '$lib/utils';
 	import SparklineChart from '$lib/components/charts/SparklineChart.svelte';
@@ -29,7 +30,7 @@
 	];
 </script>
 
-<div class="fullPageContainer p-6">
+<div class="fullPageContainer p-6 space-y-4">
 	<!-- overview cards -->
 	<div class="w-full flex flex-col items-center justify-center">
 		<div class="grid grid-flow-col gap-4 max-w-7xl">
@@ -55,5 +56,16 @@
 				</Card.Root>
 			{/each}
 		</div>
+	</div>
+	<!-- expense/income switcher tab -->
+	<div class="flex justify-center">
+		<Tabs.Root value="expenses" class="flex flex-col items-center">
+			<Tabs.List>
+				<Tabs.Trigger value="expenses">Expenses</Tabs.Trigger>
+				<Tabs.Trigger value="income">Income</Tabs.Trigger>
+			</Tabs.List>
+			<Tabs.Content value="expenses">Expense dashboards to go here.</Tabs.Content>
+			<Tabs.Content value="income">Income dashboards to go here.</Tabs.Content>
+		</Tabs.Root>
 	</div>
 </div>

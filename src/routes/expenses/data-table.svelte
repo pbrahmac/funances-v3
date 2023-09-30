@@ -6,6 +6,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { Separator } from '$lib/components/ui/separator';
 	import AddExpenseForm from '$lib/components/AddExpenseForm.svelte';
 	import DataTableActions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
@@ -124,7 +125,7 @@
 	const { headerRows, rows, pageRows, tableAttrs, tableBodyAttrs, pluginStates, flatColumns } =
 		table.createViewModel(columns);
 	const { filterValue } = pluginStates.filter;
-	const { hasNextPage, hasPreviousPage, pageIndex, pageCount, pageSize } = pluginStates.page;
+	const { hasNextPage, hasPreviousPage, pageIndex, pageCount } = pluginStates.page;
 	const { hiddenColumnIds } = pluginStates.hide;
 	const { selectedDataIds } = pluginStates.select;
 
@@ -135,6 +136,17 @@
 		.filter(([, hide]) => !hide)
 		.map(([id]) => id);
 	const hideableCols = ['Category', 'Notes'];
+
+	$: rowsTotal = formatCurrency(
+		$rows.reduce(
+			(sum, row) =>
+				sum +
+				parseFloat(
+					(row.cells.at(-2) ?? row.cells[4]).render().toString().slice(1).replaceAll(',', '')
+				),
+			0
+		)
+	);
 
 	// form enhance
 	const submitBatchDelete: SubmitFunction = () => {
@@ -169,6 +181,9 @@
 			type="text"
 			bind:value={$filterValue}
 		/>
+		<!-- total amount -->
+		<div class="bg-secondary rounded-full py-2 px-3 text-sm font-medium ml-2">{rowsTotal}</div>
+		<Separator orientation="vertical" class="h-8 ml-2 mr-1" />
 		<!-- date window -->
 		<Form.Root
 			form={$page.data.dateWindowForm}
@@ -332,11 +347,6 @@
 			</Table.Body>
 		</Table.Root>
 	</div>
-	<!-- <div class="flex items-center justify-end space-x-2 py-4">
-    {#each Array(expenses?.totalPages) as _, idx}
-      <a href="/expenses?limit={expenses?.perPage}&pageNum={idx+1}">{idx+1}</a>
-    {/each}
-  </div> -->
 	<div class="flex items-center justify-end space-x-2 py-4">
 		<div class="flex-1 text-sm text-muted-foreground">
 			{Object.keys($selectedDataIds).length} of{' '}
@@ -361,7 +371,7 @@
 	</div>
 	<span class="flex items-center justify-end text-sm text-muted-foreground">
 		{$pageCount > 1
-			? `Showing ${$pageSize} of ${$rows.length} entries.`
+			? `Showing ${$pageRows.length} of ${$rows.length} entries.`
 			: `Showing ${$rows.length} entries.`}
 	</span>
 </div>

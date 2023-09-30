@@ -6,6 +6,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+	import { Separator } from '$lib/components/ui/separator';
 	import AddIncomeForm from '$lib/components/AddIncomeForm.svelte';
 	import DataTableActions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
@@ -137,6 +138,17 @@
 		.map(([id]) => id);
 	const hideableCols = ['Notes', 'Paycheck'];
 
+	$: rowsTotal = formatCurrency(
+		$rows.reduce(
+			(sum, row) =>
+				sum +
+				parseFloat(
+					(row.cells.at(-2) ?? row.cells[4]).render().toString().slice(1).replaceAll(',', '')
+				),
+			0
+		)
+	);
+
 	// form enhance
 	const submitBatchDelete: SubmitFunction = () => {
 		return async ({ result }) => {
@@ -165,6 +177,9 @@
 	<div class="flex items-center py-4">
 		<!-- searchbar -->
 		<Input class="max-w-sm" placeholder="Search incomes..." type="text" bind:value={$filterValue} />
+		<!-- total amount -->
+		<div class="bg-secondary rounded-full py-2 px-3 text-sm font-medium ml-2">{rowsTotal}</div>
+		<Separator orientation="vertical" class="h-8 ml-2 mr-1" />
 		<!-- date window -->
 		<Form.Root
 			form={$page.data.dateWindowForm}
@@ -362,7 +377,7 @@
 	</div>
 	<span class="flex items-center justify-end text-sm text-muted-foreground">
 		{$pageCount > 1
-			? `Showing ${$pageSize} of ${$rows.length} entries.`
+			? `Showing ${$pageRows.length} of ${$rows.length} entries.`
 			: `Showing ${$rows.length} entries.`}
 	</span>
 </div>
