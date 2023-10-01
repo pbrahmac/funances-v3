@@ -147,7 +147,10 @@ export const formatDateNeat = (date: Date, condensed: boolean = false) => {
 	});
 };
 
-export const formatDatepickerString = (date = new Date(), timeZone: 'local' | 'UTC' = 'local') => {
+export const formatDatepickerString = (
+	date = new Date(),
+	timeZone: 'local' | 'UTC' = 'local'
+): string => {
 	if (timeZone === 'local') {
 		return `${date.getFullYear()}-${
 			date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1

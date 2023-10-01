@@ -52,7 +52,7 @@
 			{:else}
 				{#each loggedOutItems as item}
 					<a
-						class="ml-2 px-3 py-2 rounded text-sm text-muted-foreground transition-colors hover:bg-secondary"
+						class="ml-2 px-3 py-2 rounded text-sm transition-colors hover:bg-secondary"
 						href={item.link}
 						class:text-foreground={$page.url.pathname === item.link}
 						class:bg-secondary={$page.url.pathname === item.link}
