@@ -6,6 +6,8 @@ import tailwindColors from 'tailwindcss/colors';
 import type { DefaultColors } from 'tailwindcss/types/generated/colors';
 
 // types
+export type MenuItem = { title: string; link: string };
+
 export type Expense = {
 	id: string;
 	date: any;
