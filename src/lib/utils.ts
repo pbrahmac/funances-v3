@@ -97,7 +97,7 @@ export const serializeNonPOJOs = (obj: any) => {
 };
 
 export function getAvatarURL(
-	name: string,
+	name: string | undefined,
 	size = 120,
 	variant = 'beam',
 	colors = ['22577a', '38a3a5', '57cc99', '80ed99', 'c7f9cc']

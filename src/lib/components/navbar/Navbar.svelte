@@ -29,7 +29,7 @@
 <MobileNavbar {user} {loggedInItems} {loggedOutItems} {darkModeStore} />
 
 <!-- desktop -->
-<nav class="h-20 hidden lg:flex items-center justify-between border-b-2 shadow-sm">
+<nav class="hidden lg:flex items-center justify-between h-20 border-b-2 shadow-sm">
 	<a
 		href="/"
 		class="ml-6 lowercase text-3xl font-semibold underline underline-offset-4 transition-all hover:underline-offset-8"
