@@ -37,13 +37,14 @@
 	>
 
 	<div class="h-10 flex items-center space-x-2 last:mr-4">
-		<ul class="flex items-center justify-center">
+		<ul class="flex items-center justify-center text-muted-foreground">
 			{#if user}
 				{#each loggedInItems as item}
 					<a
-						class="ml-2 px-3 py-2 rounded text-sm text-muted-foreground transition-colors hover:bg-secondary"
+						class="ml-2 px-3 py-2 rounded text-sm transition-colors hover:bg-secondary"
 						href={item.link}
-						aria-current={$page.url.pathname === item.link ? 'page' : undefined}
+						class:text-foreground={$page.url.pathname === item.link}
+						class:bg-secondary={$page.url.pathname === item.link}
 					>
 						{item.title}
 					</a>
@@ -53,7 +54,8 @@
 					<a
 						class="ml-2 px-3 py-2 rounded text-sm text-muted-foreground transition-colors hover:bg-secondary"
 						href={item.link}
-						aria-current={$page.url.pathname === item.link ? 'page' : undefined}
+						class:text-foreground={$page.url.pathname === item.link}
+						class:bg-secondary={$page.url.pathname === item.link}
 					>
 						{item.title}
 					</a>
@@ -69,9 +71,3 @@
 		<LightSwitch {darkModeStore} />
 	</div>
 </nav>
-
-<style>
-	a[aria-current='page'] {
-		@apply bg-secondary text-foreground;
-	}
-</style>
