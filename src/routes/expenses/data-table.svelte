@@ -7,7 +7,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
-	import AddExpenseForm from '$lib/components/AddExpenseForm.svelte';
+	import AddExpenseForm from '$lib/components/forms/AddExpenseForm.svelte';
 	import DataTableActions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import type { addExpenseSchema } from '$lib/schemas/addExpense';

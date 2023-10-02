@@ -68,5 +68,4 @@
 			<Tabs.Content value="income">Income dashboards to go here.</Tabs.Content>
 		</Tabs.Root>
 	</div>
-	<pre>{JSON.stringify(data.monthlyTotalIncomes, null, 2)}</pre>
 </div>

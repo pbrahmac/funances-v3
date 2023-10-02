@@ -1,6 +1,6 @@
 // place files you want to import through the `$lib` alias in this folder.
-import Navbar from "./components/navbar/Navbar.svelte";
-import CategoryBadge from "./components/CategoryBadge.svelte";
-import ViewTransition from "./components/navigation.svelte";
+import Navbar from './components/navbar/Navbar.svelte';
+import CategoryBadge from '../routes/expenses/CategoryBadge.svelte';
+import ViewTransition from './components/navigation.svelte';
 
-export { Navbar, CategoryBadge, ViewTransition }
+export { Navbar, CategoryBadge, ViewTransition };
