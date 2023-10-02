@@ -20,5 +20,11 @@
 				<Table.Cell>{formatPercentage(allocation.percentage)}</Table.Cell>
 			</Table.Row>
 		{/each}
+		<Table.Row class="font-semibold">
+			<Table.Cell>Total</Table.Cell>
+			<Table.Cell>
+				{formatPercentage(allocations.reduce((sum, allocation) => sum + allocation.percentage, 0))}
+			</Table.Cell>
+		</Table.Row>
 	</Table.Body>
 </Table.Root>

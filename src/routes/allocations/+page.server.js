@@ -1,5 +1,13 @@
+import { formatDate } from '$lib/utils';
+
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
+	// set dates for beginning and end of current year (to filter fetch)
+	const thisYear = new Date().getUTCFullYear();
+	let [fromDate, toDate] = [new Date(`01-01-${thisYear}`), new Date(`12-31-${thisYear}`)];
+	toDate = new Date(toDate.getTime() + 86400 * 1000 - 1);
+
+	// get data
 	async function getAllocations() {
 		// fetch from Pocketbase
 		const rawAllocations = await event.locals.pb.collection('allocations').getFullList();
@@ -15,7 +23,9 @@ export async function load(event) {
 
 	async function getIncomes() {
 		// fetch from Pocketbase
-		const rawIncomes = await event.locals.pb.collection('income').getFullList();
+		const rawIncomes = await event.locals.pb.collection('income').getFullList({
+			filter: `date >= "${formatDate(fromDate)}" && date <= "${formatDate(toDate)}"`
+		});
 		/**
 		 * @type {import('$lib/utils').Income[]}
 		 */
@@ -36,7 +46,7 @@ export async function load(event) {
 	async function getAllocationStatuses() {
 		const rawAllocationStatuses = await event.locals.pb
 			.collection('allocation_status')
-			.getFullList({ expand: 'allocation_id' });
+			.getFullList({ expand: 'allocation_id', filter: `year=${thisYear}` });
 		/**
 		 * @type {import('$lib/utils').AllocationStatus[]}
 		 */
@@ -100,10 +110,9 @@ export async function load(event) {
 
 	/**
 	 * Makes a 2D map of allocation statuses
-	 * @param {import('$lib/utils').Allocation[]} allocations array of allocation percentages
 	 * @param {import('$lib/utils').AllocationStatus[]} allocationStatuses array of statuses of each allocation
 	 */
-	async function eachMonthAllocationStatus(allocations, allocationStatuses) {
+	async function eachMonthAllocationStatus(allocationStatuses) {
 		/**
 		 * @type {Map<number, Map<string, boolean>>}
 		 */
@@ -127,6 +136,6 @@ export async function load(event) {
 		allocations: getAllocations(),
 		incomes: getIncomes(),
 		eachMonthAllocationAmount: eachMonthAllocationAmount(allocations, monthlyTotalIncomes(incomes)),
-		eachMonthAllocationStatus: eachMonthAllocationStatus(allocations, allocationStatuses)
+		eachMonthAllocationStatus: eachMonthAllocationStatus(allocationStatuses)
 	};
 }

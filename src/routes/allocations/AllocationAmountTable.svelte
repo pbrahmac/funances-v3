@@ -30,5 +30,18 @@
 				{/each}
 			</Table.Row>
 		{/each}
+		<Table.Row class="font-semibold bg-secondary">
+			<Table.Cell>Total</Table.Cell>
+			{#each allocationNames as name}
+				<Table.Cell>
+					{formatCurrency(
+						[...eachMonthAllocationAmount.values()].reduce(
+							(sum, allocationMap) => sum + (allocationMap.get(name) ?? 0),
+							0
+						)
+					)}
+				</Table.Cell>
+			{/each}
+		</Table.Row>
 	</Table.Body>
 </Table.Root>
