@@ -106,17 +106,12 @@ export const actions = {
 			// auth user and get id
 			const user_id = event.locals.user?.id;
 
-			console.log('form date string: ', form.data.date);
-
 			// add current time to inputted date
 			const inputtedDate = new Date(form.data.date);
-			console.log('input date: ', inputtedDate);
 			let finalDate = new Date();
 			finalDate.setDate(inputtedDate.getUTCDate());
 			finalDate.setMonth(inputtedDate.getUTCMonth());
 			finalDate.setFullYear(inputtedDate.getUTCFullYear());
-
-			console.log('final date: ', finalDate);
 
 			// make request to create new expense record
 			await event.locals.pb.collection('expenses').create({

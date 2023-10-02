@@ -92,7 +92,7 @@
 			},
 			plugins: {
 				sort: {
-					disable: true
+					getSortValue: (item) => item
 				}
 			}
 		}),
@@ -297,7 +297,7 @@
 							{#each headerRow.cells as cell (cell.id)}
 								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
 									<Table.Head {...attrs} class="[&:has([role=checkbox])]:pl-3">
-										{#if ['Date', 'Amount'].includes(cell.id)}
+										{#if ['Date', 'Amount', 'Paycheck'].includes(cell.id)}
 											{#if cell.id === 'Amount'}
 												<div class="text-right">
 													<Button variant="ghost" on:click={props.sort.toggle}>

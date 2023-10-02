@@ -19,5 +19,4 @@
 		<p>{`@${user?.username}`}</p>
 	</div>
 	<Separator />
-	<p>All settings will go here.</p>
 </div>

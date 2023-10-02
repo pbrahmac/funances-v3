@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { formatCurrency } from '$lib/utils';
+	import { formatCurrency, monthIdxToName } from '$lib/utils';
 
 	// props
 	export let data: number[] | undefined;
@@ -23,6 +23,9 @@
 			custom: (param: any) => {
 				return (
 					'<div class="p-2 bg-secondary">' +
+					'<span class="">' +
+					`${monthIdxToName(param.dataPointIndex, 'short')} - ` +
+					'</span>' +
 					'<span class="text-sm">' +
 					formatCurrency(param.series[param.seriesIndex][param.dataPointIndex]) +
 					'</span>' +

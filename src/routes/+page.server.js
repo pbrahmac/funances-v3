@@ -41,7 +41,9 @@ export async function load(event) {
 			/**
 			 * @type {Map<number, number>}
 			 */
-			const monthIncomeMap = new Map();
+			const monthIncomeMap = new Map(
+				[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
+			);
 
 			rawIncomeTotals.forEach((income) => {
 				const monthIdx = new Date(income.date).getMonth();
@@ -52,8 +54,6 @@ export async function load(event) {
 			});
 			return Array.from(monthIncomeMap.values());
 		}
-
-		monthlyTotalIncomes(rawIncomeTotals);
 
 		return {
 			monthlyTotalExpenses: monthlyTotalExpenses(rawExpenseTotals, expenseTypes),

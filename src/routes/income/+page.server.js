@@ -94,9 +94,9 @@ export const actions = {
 			// add current time to inputted date
 			const inputtedDate = new Date(form.data.date);
 			let finalDate = new Date();
-			finalDate.setDate(inputtedDate.getDate());
-			finalDate.setMonth(inputtedDate.getMonth());
-			finalDate.setFullYear(inputtedDate.getFullYear());
+			finalDate.setDate(inputtedDate.getUTCDate());
+			finalDate.setMonth(inputtedDate.getUTCMonth());
+			finalDate.setFullYear(inputtedDate.getUTCFullYear());
 
 			// make request to create new expense record
 			await event.locals.pb.collection('income').create({

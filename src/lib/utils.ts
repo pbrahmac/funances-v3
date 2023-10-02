@@ -153,12 +153,12 @@ export const formatDatepickerString = (
 ): string => {
 	if (timeZone === 'local') {
 		return `${date.getFullYear()}-${
-			date.getMonth() < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
-		}-${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}`;
+			date.getMonth() < 9 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+		}-${date.getDate() < 9 ? '0' + date.getDate() : date.getDate()}`;
 	} else {
 		return `${date.getUTCFullYear()}-${
-			date.getUTCMonth() < 10 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1
-		}-${date.getUTCDate() < 10 ? '0' + date.getUTCDate() : date.getUTCDate()}`;
+			date.getUTCMonth() < 9 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1
+		}-${date.getUTCDate() < 9 ? '0' + date.getUTCDate() : date.getUTCDate()}`;
 	}
 };
 
@@ -173,4 +173,29 @@ export const formatCurrency = (amount: number): string => {
 	});
 
 	return formatter.format(amount);
+};
+
+export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
+	const monthMap = new Map([
+		[0, { long: 'January', short: 'Jan' }],
+		[1, { long: 'February', short: 'Feb' }],
+		[2, { long: 'march', short: 'Mar' }],
+		[3, { long: 'April', short: 'Apr' }],
+		[4, { long: 'May', short: 'May' }],
+		[5, { long: 'June', short: 'Jun' }],
+		[6, { long: 'July', short: 'Jul' }],
+		[7, { long: 'August', short: 'Aug' }],
+		[8, { long: 'September', short: 'Sep' }],
+		[9, { long: 'October', short: 'Oct' }],
+		[10, { long: 'November', short: 'Nov' }],
+		[11, { long: 'December', short: 'Dec' }]
+	]);
+
+	if (format === 'short') {
+		return monthMap.get(idx)?.short;
+	} else if (format === 'long') {
+		return monthMap.get(idx)?.long;
+	} else {
+		return 'Invalid';
+	}
 };
