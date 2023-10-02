@@ -18,13 +18,13 @@ export type Expense = {
 		color: string;
 	};
 	notes: string;
-	amount: any;
+	amount: number;
 };
 
 export type ExpenseCategory = {
 	id: string;
-	name: any;
-	color: any;
+	name: string;
+	color: string;
 };
 
 export type Income = {
@@ -32,23 +32,36 @@ export type Income = {
 	date: any;
 	income: string;
 	notes: string;
-	gross_amount: any;
-	benefits: any;
-	retirement_401k: any;
-	taxes: any;
+	gross_amount: number;
+	benefits: number;
+	retirement_401k: number;
+	taxes: number;
 	is_paycheck: boolean;
 };
 
-// functions
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
+export type Allocation = {
+	category: string;
+	percentage: number;
+};
+
+export type AllocationStatus = {
+	id: string;
+	year: number;
+	month: number;
+	allocation: any;
+	isAllocated: boolean;
+};
 
 type FlyAndScaleParams = {
 	y?: number;
 	x?: number;
 	start?: number;
 	duration?: number;
+};
+
+// functions
+export const cn = (...inputs: ClassValue[]) => {
+	return twMerge(clsx(inputs));
 };
 
 export const flyAndScale = (
@@ -96,16 +109,16 @@ export const serializeNonPOJOs = (obj: any) => {
 	return structuredClone(obj);
 };
 
-export function getAvatarURL(
+export const getAvatarURL = (
 	name: string | undefined,
 	size = 120,
 	variant = 'beam',
 	colors = ['22577a', '38a3a5', '57cc99', '80ed99', 'c7f9cc']
-) {
+) => {
 	return name
 		? `https://source.boringavatars.com/${variant}/${size}/${name}?colors=${colors.join(',')}`
 		: '';
-}
+};
 
 const hashStr = (str: string) => {
 	let hash = 0;
@@ -179,7 +192,7 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 	const monthMap = new Map([
 		[0, { long: 'January', short: 'Jan' }],
 		[1, { long: 'February', short: 'Feb' }],
-		[2, { long: 'march', short: 'Mar' }],
+		[2, { long: 'March', short: 'Mar' }],
 		[3, { long: 'April', short: 'Apr' }],
 		[4, { long: 'May', short: 'May' }],
 		[5, { long: 'June', short: 'Jun' }],
@@ -198,4 +211,9 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 	} else {
 		return 'Invalid';
 	}
+};
+
+export const formatPercentage = (decimal: number) => {
+	const num = (decimal * 100).toFixed(2);
+	return `${num}%`;
 };

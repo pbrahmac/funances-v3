@@ -7,7 +7,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
-	import AddIncomeForm from '$lib/components/AddIncomeForm.svelte';
+	import AddIncomeForm from '$lib/components/forms/AddIncomeForm.svelte';
 	import DataTableActions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import { formatCurrency, formatDateNeat, type Income } from '$lib/utils';

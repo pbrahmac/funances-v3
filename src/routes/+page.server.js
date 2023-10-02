@@ -5,13 +5,9 @@ export async function load(event) {
 	try {
 		// get raw data from pocketbase
 		const expenseTypes = await event.locals.pb.collection('expense_types').getFullList(50);
-		const rawExpenseTotals = await event.locals.pb
-			.collection('expense_aggregates')
-			.getFullList({ requestKey: null });
+		const rawExpenseTotals = await event.locals.pb.collection('expense_aggregates').getFullList();
 
-		const rawIncomeTotals = await event.locals.pb
-			.collection('income')
-			.getFullList({ requestKey: null });
+		const rawIncomeTotals = await event.locals.pb.collection('income').getFullList();
 
 		// helper functions to process data as needed
 		/**
@@ -33,7 +29,7 @@ export async function load(event) {
 		}
 
 		/**
-		 * Returns income totals by month
+		 * Aggregates income totals by month
 		 * @param {import('pocketbase').RecordModel[]} rawIncomeTotals raw income total data from PocketBase
 		 * @returns {number[]}
 		 */
