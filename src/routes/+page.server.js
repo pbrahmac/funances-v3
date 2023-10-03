@@ -6,7 +6,6 @@ export async function load(event) {
 		// get raw data from pocketbase
 		const expenseTypes = await event.locals.pb.collection('expense_types').getFullList(50);
 		const rawExpenseTotals = await event.locals.pb.collection('expense_aggregates').getFullList();
-
 		const rawIncomeTotals = await event.locals.pb.collection('income').getFullList();
 
 		// helper functions to process data as needed
@@ -19,13 +18,21 @@ export async function load(event) {
 			if (!rawExpenseTotals) {
 				return;
 			}
-			const numMonths = Math.ceil(rawExpenseTotals.length / expenseTypes.length);
-			const monthlyTotals = [...Array(numMonths).keys()].map((monthIdx) => {
-				const filteredEntries = rawExpenseTotals.filter((entry) => entry.month === monthIdx + 1);
-				return filteredEntries.reduce((sum, entry) => sum + entry.amount, 0);
+			const monthExpenseMap = new Map(
+				[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
+			);
+
+			rawExpenseTotals.forEach((item) => {
+				const currMonth = item.month - 1;
+				if (!monthExpenseMap.get(currMonth)) {
+					monthExpenseMap.set(currMonth, item.amount);
+				} else {
+					const curr = monthExpenseMap.get(currMonth);
+					monthExpenseMap.set(currMonth, curr + item.amount);
+				}
 			});
 
-			return monthlyTotals;
+			return [...monthExpenseMap.values()];
 		}
 
 		/**
@@ -59,8 +66,7 @@ export async function load(event) {
 				(sum, entry) =>
 					sum + entry.gross_amount - (entry.taxes + entry.benefits + entry.retirement_401k),
 				0
-			),
-			incomes: rawIncomeTotals
+			)
 		};
 	} catch (/** @type {any} */ err) {
 		return fail(400, err);

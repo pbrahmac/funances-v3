@@ -156,7 +156,8 @@ export const formatDateNeat = (date: Date, condensed: boolean = false) => {
 	return new Date(date).toLocaleDateString('en-us', {
 		year: condensed ? '2-digit' : 'numeric',
 		month: condensed ? '2-digit' : 'short',
-		day: condensed ? '2-digit' : 'numeric'
+		day: condensed ? '2-digit' : 'numeric',
+		timeZone: 'PST'
 	});
 };
 

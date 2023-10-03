@@ -9,9 +9,9 @@ import { z } from 'zod';
 const dateWindow = (monthOffset = 1) => {
 	let [fromDate, toDate] = [new Date(), new Date()];
 	// reset both to 00:00:00
-	fromDate.setMonth(fromDate.getMonth() - monthOffset);
+	fromDate.setUTCMonth(fromDate.getMonth() - monthOffset);
 	fromDate.setHours(0, 0, 0, 0);
-	toDate.setHours(0, 0, 0, 0);
+	toDate.setUTCHours(0, 0, 0, 0);
 	// set initial end date to be until 11:59:59 of that day
 	toDate = new Date(toDate.getTime() + 86400 * 1000 - 1);
 	return { from: fromDate, to: toDate };
@@ -19,6 +19,8 @@ const dateWindow = (monthOffset = 1) => {
 
 // Constants and initial variables
 let [fromDate, toDate] = [dateWindow().from, dateWindow().to];
+// console.log(fromDate.toUTCString());
+// console.log(toDate.toString());
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {

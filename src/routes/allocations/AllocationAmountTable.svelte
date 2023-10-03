@@ -20,9 +20,9 @@
 	<Table.Body>
 		{#each monthIdxs as idx}
 			<Table.Row>
-				<Table.Cell class="text-muted-foreground font-medium"
-					>{monthIdxToName(idx, 'long')}</Table.Cell
-				>
+				<Table.Cell class="text-muted-foreground font-medium">
+					{monthIdxToName(idx, 'long')}
+				</Table.Cell>
 				{#each allocationNames as name}
 					<Table.Cell>
 						{formatCurrency(eachMonthAllocationAmount.get(idx)?.get(name) ?? -1)}
