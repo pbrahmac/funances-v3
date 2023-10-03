@@ -19,21 +19,21 @@
 			<Tabs.Trigger value="amount">Amounts</Tabs.Trigger>
 			<Tabs.Trigger value="percentage">Percentages</Tabs.Trigger>
 		</Tabs.List>
-		<Tabs.Content value="status" class="w-full">
+		<Tabs.Content value="status" class="w-full xl:max-w-6xl">
 			<AllocationStatusTable
 				{allocationNames}
 				{monthIdxs}
 				eachMonthAllocationStatus={data.eachMonthAllocationStatus}
 			/>
 		</Tabs.Content>
-		<Tabs.Content value="amount" class="w-full">
+		<Tabs.Content value="amount" class="w-full xl:max-w-6xl">
 			<AllocationAmountTable
 				{allocationNames}
 				{monthIdxs}
 				eachMonthAllocationAmount={data.eachMonthAllocationAmount}
 			/>
 		</Tabs.Content>
-		<Tabs.Content value="percentage" class="w-max">
+		<Tabs.Content value="percentage" class="w-full xl:max-w-xl">
 			<AllocationPercentageTable allocations={data.allocations} />
 		</Tabs.Content>
 	</Tabs.Root>

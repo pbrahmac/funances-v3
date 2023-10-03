@@ -170,8 +170,6 @@
 			await applyAction(result);
 		};
 	};
-
-	console.log($page.data.dateWindow.to);
 </script>
 
 <div>

@@ -13,6 +13,7 @@
 	export let monthIdxs: number[];
 	export let eachMonthAllocationStatus: Map<number, Map<string, { id: string; status: boolean }>>;
 
+	// create 2D array of form objects for the DOM object to bind to
 	const forms = [...Array(monthIdxs.length).keys()].map(() =>
 		[...Array(allocationNames.length).keys()].map(() => {
 			let form: any;

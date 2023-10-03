@@ -19,8 +19,6 @@ const dateWindow = (monthOffset = 1) => {
 
 // Constants and initial variables
 let [fromDate, toDate] = [dateWindow().from, dateWindow().to];
-// console.log(fromDate.toUTCString());
-// console.log(toDate.toString());
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
