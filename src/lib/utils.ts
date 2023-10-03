@@ -40,6 +40,7 @@ export type Income = {
 };
 
 export type Allocation = {
+	id: string;
 	category: string;
 	percentage: number;
 };

@@ -1,4 +1,7 @@
+import { z } from 'zod';
 import { formatDate } from '$lib/utils';
+import { superValidate } from 'sveltekit-superforms/client';
+import { fail } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -15,6 +18,7 @@ export async function load(event) {
 		 * @type {import('$lib/utils').Allocation[]}
 		 */
 		const allocations = rawAllocations.map((allocation) => ({
+			id: allocation.id,
 			category: allocation.category,
 			percentage: allocation.percentage
 		}));
@@ -114,15 +118,19 @@ export async function load(event) {
 	 */
 	async function eachMonthAllocationStatus(allocationStatuses) {
 		/**
-		 * @type {Map<number, Map<string, boolean>>}
+		 * @type {Map<number, Map<string, {id: string, status: boolean}>>}
 		 */
 		const monthlyAllocationMap = new Map([...Array(12).entries()]);
 		allocationStatuses.forEach((status) => {
 			if (!monthlyAllocationMap.get(status.month)) {
-				const categoryMap = new Map([[status.allocation, status.isAllocated]]);
+				const categoryMap = new Map([
+					[status.allocation, { id: status.id, status: status.isAllocated }]
+				]);
 				monthlyAllocationMap.set(status.month, categoryMap);
 			} else {
-				monthlyAllocationMap.get(status.month)?.set(status.allocation, status.isAllocated);
+				monthlyAllocationMap
+					.get(status.month)
+					?.set(status.allocation, { id: status.id, status: status.isAllocated });
 			}
 		});
 		return monthlyAllocationMap;
@@ -139,3 +147,57 @@ export async function load(event) {
 		eachMonthAllocationStatus: eachMonthAllocationStatus(allocationStatuses)
 	};
 }
+
+/** @type {import('./$types').Actions} */
+export const actions = {
+	updateChecked: async (event) => {
+		const form = await superValidate(
+			event,
+			z.object({
+				id: z.string({ required_error: 'Required.' }).trim(),
+				month: z.string({ required_error: 'Required.' }).trim(),
+				allocation_id: z.string({ required_error: 'Required.' }).trim()
+			})
+		);
+
+		// validate errors
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		try {
+			// auth user and get id
+			const user_id = event.locals.user?.id;
+
+			// get current allocation status
+			let currStatus;
+			try {
+				currStatus = await event.locals.pb.collection('allocation_status').getOne(form.data.id);
+			} catch (err) {
+				console.log('Undefined current allocation status.');
+			}
+
+			// create form data object for creation or updating
+			const allocationObj = {
+				year: new Date().getFullYear(),
+				month: form.data.month,
+				user_id: user_id,
+				allocation_id: form.data.allocation_id,
+				isAllocated: form.data.id !== 'undefined' ? !currStatus?.isAllocated : true
+			};
+
+			if (form.data.id === 'undefined') {
+				// create allocation status and set it to true IF id is undefined
+				await event.locals.pb.collection('allocation_status').create(allocationObj);
+			} else {
+				// update allocation status
+				await event.locals.pb.collection('allocation_status').update(form.data.id, allocationObj);
+			}
+		} catch (/**@type {any} */ err) {
+			console.log(err.status, err.message);
+			return fail(400, { form });
+		}
+
+		return { form };
+	}
+};

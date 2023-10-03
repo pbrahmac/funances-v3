@@ -3,7 +3,10 @@
 	import { formatCurrency, monthIdxToName } from '$lib/utils';
 
 	// props
-	export let allocationNames: string[];
+	export let allocationNames: {
+		id: string;
+		allocation: string;
+	}[];
 	export let monthIdxs: number[];
 	export let eachMonthAllocationAmount: Map<number, Map<string, number>>;
 </script>
@@ -13,7 +16,7 @@
 		<Table.Row>
 			<Table.Head />
 			{#each allocationNames as name}
-				<Table.Head>{name}</Table.Head>
+				<Table.Head>{name.allocation}</Table.Head>
 			{/each}
 		</Table.Row>
 	</Table.Header>
@@ -25,7 +28,7 @@
 				</Table.Cell>
 				{#each allocationNames as name}
 					<Table.Cell>
-						{formatCurrency(eachMonthAllocationAmount.get(idx)?.get(name) ?? -1)}
+						{formatCurrency(eachMonthAllocationAmount.get(idx)?.get(name.allocation) ?? -1)}
 					</Table.Cell>
 				{/each}
 			</Table.Row>
@@ -36,7 +39,7 @@
 				<Table.Cell>
 					{formatCurrency(
 						[...eachMonthAllocationAmount.values()].reduce(
-							(sum, allocationMap) => sum + (allocationMap.get(name) ?? 0),
+							(sum, allocationMap) => sum + (allocationMap.get(name.allocation) ?? 0),
 							0
 						)
 					)}

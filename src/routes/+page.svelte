@@ -28,7 +28,6 @@
 			amount: formatCurrency(data.totalIncomes ?? 0)
 		}
 	];
-	console.log(data.monthlyTotalExpenses);
 </script>
 
 <div class="fullPageContainer p-6 space-y-4">
