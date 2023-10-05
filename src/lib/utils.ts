@@ -215,7 +215,7 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 	}
 };
 
-export const formatPercentage = (decimal: number) => {
-	const num = (decimal * 100).toFixed(2);
+export const formatPercentage = (decimal: number, precision: number = 2) => {
+	const num = (decimal * 100).toFixed(precision);
 	return `${num}%`;
 };
