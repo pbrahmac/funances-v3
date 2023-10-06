@@ -10,6 +10,10 @@
 	let incomesStore = writable(data.incomes?.items);
 </script>
 
+<svelte:head>
+	<title>Income</title>
+</svelte:head>
+
 <div class="fullPageContainer p-6">
 	<DataTable incomes={incomesStore} addIncomeForm={data.addIncomeForm} />
 </div>

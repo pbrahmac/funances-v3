@@ -12,6 +12,10 @@
 	const allocationNames = data.allocations.map((obj) => ({ id: obj.id, allocation: obj.category }));
 </script>
 
+<svelte:head>
+	<title>Allocations</title>
+</svelte:head>
+
 <div class="fullPageContainer p-6">
 	<Tabs.Root value="status" class="flex flex-col items-center justify-center">
 		<Tabs.List class="w-fit mb-6">

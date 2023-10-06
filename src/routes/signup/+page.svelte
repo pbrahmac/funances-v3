@@ -8,6 +8,10 @@
 	export let data: PageData;
 </script>
 
+<svelte:head>
+	<title>Sign Up</title>
+</svelte:head>
+
 <div class="fullPageContainer flex items-center justify-center">
 	<Card.Root class="w-96">
 		<Card.Header>

@@ -43,6 +43,10 @@
 	// chartOptions: { data: data.monthlyTotalIncomes, color: '#16a34a' },
 </script>
 
+<svelte:head>
+	<title>Funances</title>
+</svelte:head>
+
 <div class="fullPageContainer p-6">
 	<!-- mobile overview switcher -->
 	<MobileOverviewSwitcher {expenseCards} {incomeCards} />

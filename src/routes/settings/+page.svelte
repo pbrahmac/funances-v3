@@ -19,6 +19,10 @@
 	const allocationTableEditStates = data.allocations.map(() => false);
 </script>
 
+<svelte:head>
+	<title>Settings</title>
+</svelte:head>
+
 <div class="fullPageContainer p-3 lg:p-6">
 	<!-- mobile -->
 	<MobileSettings user={data.user} {fallback} />

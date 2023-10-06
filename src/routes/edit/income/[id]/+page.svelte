@@ -7,6 +7,10 @@
 	export let data: PageData;
 </script>
 
+<svelte:head>
+	<title>Edit Income</title>
+</svelte:head>
+
 <div class="fullPageContainer p-6 flex items-center justify-center">
 	<Card.Root class="max-w-xl">
 		<Card.Header>

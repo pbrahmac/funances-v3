@@ -10,6 +10,10 @@
 	let expensesStore = writable(data.expenses?.items);
 </script>
 
+<svelte:head>
+	<title>Expenses</title>
+</svelte:head>
+
 <div class="fullPageContainer p-6">
 	<DataTable
 		expenses={expensesStore}
