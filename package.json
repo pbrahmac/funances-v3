@@ -37,6 +37,7 @@
 		"bits-ui": "^0.5.7",
 		"clsx": "^2.0.0",
 		"formsnap": "^0.0.9",
+		"lucide-svelte": "^0.284.0",
 		"pocketbase": "^0.18.0",
 		"radix-icons-svelte": "^1.2.1",
 		"tailwind-merge": "^1.14.0",

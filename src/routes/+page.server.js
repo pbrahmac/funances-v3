@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 export async function load(event) {
 	try {
 		// get raw data from pocketbase
-		const expenseTypes = await event.locals.pb.collection('expense_types').getFullList(50);
+		// const expenseTypes = await event.locals.pb.collection('expense_types').getFullList();
 		const rawExpenseTotals = await event.locals.pb.collection('expense_aggregates').getFullList();
 		const rawIncomeTotals = await event.locals.pb.collection('income').getFullList();
 
@@ -12,9 +12,8 @@ export async function load(event) {
 		/**
 		 * Returns expense totals by month
 		 * @param {import('pocketbase').RecordModel[]} rawExpenseTotals raw expense total data from PocketBase
-		 * * @param {import('pocketbase').RecordModel[]} expenseTypes types of expenses
 		 */
-		function monthlyTotalExpenses(rawExpenseTotals, expenseTypes) {
+		function monthlyTotalExpenses(rawExpenseTotals) {
 			if (!rawExpenseTotals) {
 				return;
 			}
@@ -59,7 +58,7 @@ export async function load(event) {
 		}
 
 		return {
-			monthlyTotalExpenses: monthlyTotalExpenses(rawExpenseTotals, expenseTypes),
+			monthlyTotalExpenses: monthlyTotalExpenses(rawExpenseTotals),
 			monthlyTotalIncomes: monthlyTotalIncomes(rawIncomeTotals),
 			totalExpenses: rawExpenseTotals.reduce((sum, entry) => sum + entry.amount, 0),
 			totalIncomes: rawIncomeTotals.reduce(

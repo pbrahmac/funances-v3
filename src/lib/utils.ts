@@ -191,6 +191,9 @@ export const formatCurrency = (amount: number): string => {
 };
 
 export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
+	if (idx < 0 || idx > 11) {
+		return 'Invalid';
+	}
 	const monthMap = new Map([
 		[0, { long: 'January', short: 'Jan' }],
 		[1, { long: 'February', short: 'Feb' }],
@@ -218,4 +221,27 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 export const formatPercentage = (decimal: number, precision: number = 2) => {
 	const num = (decimal * 100).toFixed(precision);
 	return `${num}%`;
+};
+
+export const calcLastMonthRatio = (
+	data: number[] | undefined,
+	month: 'thisMonth' | 'lastMonth'
+) => {
+	if (!data) {
+		return '';
+	}
+	let [firstIdx, secondIdx] = [0, 0];
+	if (data.length < 3 && data.length > 1) {
+		[firstIdx, secondIdx] = [-1, -2];
+	} else if (data.length < 2) {
+		[firstIdx, secondIdx] = [0, 0];
+	}
+	[firstIdx, secondIdx] = month == 'thisMonth' ? [-1, -2] : [-2, -3];
+
+	const [firstAmount, secondAmount] = [data.at(firstIdx) ?? 0, data.at(secondIdx) ?? 1];
+	const ratio = firstAmount / secondAmount - 1;
+
+	return firstIdx === 0 && secondIdx === 0
+		? 'First month of the year!'
+		: `${formatPercentage(ratio, 1)} from last month`;
 };
