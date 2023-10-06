@@ -29,6 +29,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
+	import MobileDataTableBar from './MobileDataTableBar.svelte';
 
 	export let expenses: Writable<Expense[]>;
 	export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
@@ -173,7 +174,21 @@
 </script>
 
 <div>
-	<div class="flex items-center py-4">
+	<MobileDataTableBar
+		{addExpenseForm}
+		{categories}
+		{expenses}
+		{filterValue}
+		{flatColumns}
+		{form}
+		{hideableCols}
+		{hideForId}
+		{rowsTotal}
+		{selectedDataIds}
+		{submitBatchDelete}
+		{submitUpdateWindow}
+	/>
+	<div class="hidden lg:flex items-center py-4">
 		<!-- searchbar -->
 		<Input
 			class="max-w-sm"
