@@ -3,6 +3,7 @@
 	import OverviewCard from '$lib/components/dashboard/OverviewCard.svelte';
 	import Button from '../ui/button/button.svelte';
 	import { CaretDown, CaretUp } from 'radix-icons-svelte';
+	import { slide } from 'svelte/transition';
 
 	// props
 	export let expenseCards: {
@@ -39,30 +40,32 @@
 			</Button>
 		</div>
 		{#if isOverviewOpen}
-			<Tabs.Content value="expenses">
-				<div class="grid grid-flow-row gap-4 max-w-7xl">
-					{#each expenseCards as card}
-						<OverviewCard
-							title={card.title}
-							subtext={card.subtext}
-							amount={card.amount}
-							icon={card.icon}
-						/>
-					{/each}
-				</div>
-			</Tabs.Content>
-			<Tabs.Content value="income">
-				<div class="grid grid-flow-row gap-4 max-w-7xl">
-					{#each incomeCards as card}
-						<OverviewCard
-							title={card.title}
-							subtext={card.subtext}
-							amount={card.amount}
-							icon={card.icon}
-						/>
-					{/each}
-				</div>
-			</Tabs.Content>
+			<div transition:slide>
+				<Tabs.Content value="expenses">
+					<div class="grid grid-flow-row gap-4 max-w-7xl">
+						{#each expenseCards as card}
+							<OverviewCard
+								title={card.title}
+								subtext={card.subtext}
+								amount={card.amount}
+								icon={card.icon}
+							/>
+						{/each}
+					</div>
+				</Tabs.Content>
+				<Tabs.Content value="income">
+					<div class="grid grid-flow-row gap-4 max-w-7xl">
+						{#each incomeCards as card}
+							<OverviewCard
+								title={card.title}
+								subtext={card.subtext}
+								amount={card.amount}
+								icon={card.icon}
+							/>
+						{/each}
+					</div>
+				</Tabs.Content>
+			</div>
 		{/if}
 	</Tabs.Root>
 </div>
