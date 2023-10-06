@@ -174,12 +174,19 @@
 </script>
 
 <div>
-	<div class="flex items-center py-4">
-		<!-- searchbar -->
-		<Input class="max-w-sm" placeholder="Search incomes..." type="text" bind:value={$filterValue} />
-		<!-- total amount -->
-		<div class="bg-secondary rounded-full py-2 px-3 text-sm font-medium ml-2">{rowsTotal}</div>
-		<Separator orientation="vertical" class="h-8 ml-2 mr-1" />
+	<div class="grid grid-cols-1 gap-3 lg:gap-2 lg:flex items-center justify-center w-full py-4">
+		<div class="flex items-center justify-center w-full lg:max-w-lg">
+			<!-- searchbar -->
+			<Input
+				class="max-w-sm"
+				placeholder="Search incomes..."
+				type="text"
+				bind:value={$filterValue}
+			/>
+			<!-- total amount -->
+			<div class="bg-secondary rounded-full py-2 px-3 text-sm font-medium ml-2">{rowsTotal}</div>
+		</div>
+		<Separator orientation="vertical" class="hidden lg:flex h-8 mr-1" />
 		<!-- date window -->
 		<Form.Root
 			form={$page.data.dateWindowForm}
@@ -207,85 +214,92 @@
 				</Form.Field>
 			</form>
 		</Form.Root>
-		<!-- column visibility -->
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild let:builder>
-				<Button variant="outline" class="ml-auto" builders={[builder]}>
-					Columns <span class="ml-2 w-4 h-4"><ChevronDown /></span>
-				</Button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
-				{#each flatColumns as col}
-					{#if hideableCols.includes(col.id)}
-						<DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-							{col.header}
-						</DropdownMenu.CheckboxItem>
-					{/if}
-				{/each}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
-		<!-- batch delete -->
-		<AlertDialog.Root>
-			<AlertDialog.Trigger asChild let:builder>
-				{@const selectedLength = Object.keys($selectedDataIds).length}
-				<Button builders={[builder]} variant="secondary" class="ml-2" disabled={selectedLength == 0}
-					>{`Batch Delete (${selectedLength})`}</Button
-				>
-			</AlertDialog.Trigger>
-			<AlertDialog.Content>
-				<AlertDialog.Header>
-					<AlertDialog.Title>Are you sure?</AlertDialog.Title>
-				</AlertDialog.Header>
-				<Table.Root>
-					<Table.Caption>These incomes will be deleted.</Table.Caption>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Date</Table.Head>
-							<Table.Head class="text-center">Income</Table.Head>
-							<Table.Head class="text-right">Amount</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each $incomes as income, idx}
-							{#if Object.keys($selectedDataIds).includes(idx.toString())}
-								<Table.Row>
-									<Table.Cell>{formatDateNeat(income.date, true)}</Table.Cell>
-									<Table.Cell class="text-center">{income.income}</Table.Cell>
-									<Table.Cell class="text-right"
-										>{formatCurrency(
-											income.gross_amount -
-												(income.taxes + income.retirement_401k + income.benefits)
-										)}</Table.Cell
-									>
-								</Table.Row>
-							{/if}
-						{/each}
-					</Table.Body>
-				</Table.Root>
-				<AlertDialog.Footer>
-					<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-					<form action="?/batchDelete" method="post" use:enhance={submitBatchDelete}>
-						{#each $incomes as income, idx}
-							{#if Object.keys($selectedDataIds).includes(idx.toString())}
-								<input type="hidden" name={idx.toString()} value={income.id} />
-							{/if}
-						{/each}
-						<button type="submit">
-							<AlertDialog.Action asChild let:builder>
-								<Button builders={[builder]} variant="destructive">Delete</Button>
-							</AlertDialog.Action>
-						</button>
-					</form>
-				</AlertDialog.Footer>
-			</AlertDialog.Content>
-		</AlertDialog.Root>
-		<!-- add income -->
-		<Dialog.Root>
-			<Dialog.Trigger asChild let:builder>
-				<Button builders={[builder]} variant="default" class="ml-2">Add Income</Button>
-			</Dialog.Trigger>
-			<AddIncomeForm form={addIncomeForm} store={incomes} />
-		</Dialog.Root>
+		<div class="flex items-center justify-center">
+			<!-- column visibility -->
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger asChild let:builder>
+					<Button variant="outline" class="lg:ml-auto" builders={[builder]}>
+						Columns <span class="ml-2 w-4 h-4"><ChevronDown /></span>
+					</Button>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content>
+					{#each flatColumns as col}
+						{#if hideableCols.includes(col.id)}
+							<DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
+								{col.header}
+							</DropdownMenu.CheckboxItem>
+						{/if}
+					{/each}
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+			<!-- batch delete -->
+			<AlertDialog.Root>
+				<AlertDialog.Trigger asChild let:builder>
+					{@const selectedLength = Object.keys($selectedDataIds).length}
+					<Button
+						builders={[builder]}
+						variant="secondary"
+						class="ml-2"
+						disabled={selectedLength == 0}>{`Batch Delete (${selectedLength})`}</Button
+					>
+				</AlertDialog.Trigger>
+				<AlertDialog.Content>
+					<AlertDialog.Header>
+						<AlertDialog.Title>Are you sure?</AlertDialog.Title>
+					</AlertDialog.Header>
+					<Table.Root>
+						<Table.Caption>These incomes will be deleted.</Table.Caption>
+						<Table.Header>
+							<Table.Row>
+								<Table.Head>Date</Table.Head>
+								<Table.Head class="text-center">Income</Table.Head>
+								<Table.Head class="text-right">Amount</Table.Head>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{#each $incomes as income, idx}
+								{#if Object.keys($selectedDataIds).includes(idx.toString())}
+									<Table.Row>
+										<Table.Cell>{formatDateNeat(income.date, true)}</Table.Cell>
+										<Table.Cell class="text-center">{income.income}</Table.Cell>
+										<Table.Cell class="text-right"
+											>{formatCurrency(
+												income.gross_amount -
+													(income.taxes + income.retirement_401k + income.benefits)
+											)}</Table.Cell
+										>
+									</Table.Row>
+								{/if}
+							{/each}
+						</Table.Body>
+					</Table.Root>
+					<AlertDialog.Footer>
+						<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+						<form action="?/batchDelete" method="post" use:enhance={submitBatchDelete}>
+							{#each $incomes as income, idx}
+								{#if Object.keys($selectedDataIds).includes(idx.toString())}
+									<input type="hidden" name={idx.toString()} value={income.id} />
+								{/if}
+							{/each}
+							<button type="submit">
+								<AlertDialog.Action asChild let:builder>
+									<Button builders={[builder]} variant="destructive">Delete</Button>
+								</AlertDialog.Action>
+							</button>
+						</form>
+					</AlertDialog.Footer>
+				</AlertDialog.Content>
+			</AlertDialog.Root>
+		</div>
+		<div class="flex items-center justify-center">
+			<!-- add income -->
+			<Dialog.Root>
+				<Dialog.Trigger asChild let:builder>
+					<Button builders={[builder]} variant="default" class="ml-2">Add Income</Button>
+				</Dialog.Trigger>
+				<AddIncomeForm form={addIncomeForm} store={incomes} />
+			</Dialog.Root>
+		</div>
 	</div>
 	<!-- data table -->
 	<div class="rounded-md border">
@@ -348,11 +362,6 @@
 			</Table.Body>
 		</Table.Root>
 	</div>
-	<!-- <div class="flex items-center justify-end space-x-2 py-4">
-    {#each Array(incomes?.totalPages) as _, idx}
-      <a href="/incomes?limit={incomes?.perPage}&pageNum={idx+1}">{idx+1}</a>
-    {/each}
-  </div> -->
 	<div class="flex items-center justify-end space-x-2 py-4">
 		<div class="flex-1 text-sm text-muted-foreground">
 			{Object.keys($selectedDataIds).length} of{' '}

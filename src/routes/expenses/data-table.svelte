@@ -29,7 +29,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
-	import MobileDataTableBar from './MobileDataTableBar.svelte';
 
 	export let expenses: Writable<Expense[]>;
 	export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
@@ -174,31 +173,19 @@
 </script>
 
 <div>
-	<MobileDataTableBar
-		{addExpenseForm}
-		{categories}
-		{expenses}
-		{filterValue}
-		{flatColumns}
-		{form}
-		{hideableCols}
-		{hideForId}
-		{rowsTotal}
-		{selectedDataIds}
-		{submitBatchDelete}
-		{submitUpdateWindow}
-	/>
-	<div class="hidden lg:flex items-center py-4">
-		<!-- searchbar -->
-		<Input
-			class="max-w-sm"
-			placeholder="Search expenses..."
-			type="text"
-			bind:value={$filterValue}
-		/>
-		<!-- total amount -->
-		<div class="bg-secondary rounded-full py-2 px-3 text-sm font-medium ml-2">{rowsTotal}</div>
-		<Separator orientation="vertical" class="h-8 ml-2 mr-1" />
+	<div class="grid grid-cols-1 gap-3 lg:gap-2 lg:flex items-center justify-center w-full py-4">
+		<div class="flex items-center justify-center w-full lg:max-w-lg">
+			<!-- searchbar -->
+			<Input
+				class="w-full"
+				placeholder="Search expenses..."
+				type="text"
+				bind:value={$filterValue}
+			/>
+			<!-- total amount -->
+			<div class="bg-secondary rounded-full py-2 px-3 text-sm font-medium ml-2">{rowsTotal}</div>
+		</div>
+		<Separator orientation="vertical" class="hidden lg:flex h-8 ml-2 mr-1" />
 		<!-- date window -->
 		<Form.Root
 			form={$page.data.dateWindowForm}
@@ -226,80 +213,87 @@
 				</Form.Field>
 			</form>
 		</Form.Root>
-		<!-- column visibility -->
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild let:builder>
-				<Button variant="outline" class="ml-auto" builders={[builder]}>
-					Columns <span class="ml-2 w-4 h-4"><ChevronDown /></span>
-				</Button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
-				{#each flatColumns as col}
-					{#if hideableCols.includes(col.id)}
-						<DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
-							{col.header}
-						</DropdownMenu.CheckboxItem>
-					{/if}
-				{/each}
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
-		<!-- batch delete -->
-		<AlertDialog.Root>
-			<AlertDialog.Trigger asChild let:builder>
-				{@const selectedLength = Object.keys($selectedDataIds).length}
-				<Button builders={[builder]} variant="secondary" class="ml-2" disabled={selectedLength == 0}
-					>{`Batch Delete (${selectedLength})`}</Button
-				>
-			</AlertDialog.Trigger>
-			<AlertDialog.Content>
-				<AlertDialog.Header>
-					<AlertDialog.Title>Are you sure?</AlertDialog.Title>
-				</AlertDialog.Header>
-				<Table.Root>
-					<Table.Caption>These expenses will be deleted.</Table.Caption>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Date</Table.Head>
-							<Table.Head class="text-center">Expense</Table.Head>
-							<Table.Head class="text-right">Amount</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each $expenses as expense, idx}
-							{#if Object.keys($selectedDataIds).includes(idx.toString())}
-								<Table.Row>
-									<Table.Cell>{formatDateNeat(expense.date, true)}</Table.Cell>
-									<Table.Cell class="text-center">{expense.expense}</Table.Cell>
-									<Table.Cell class="text-right">{formatCurrency(expense.amount)}</Table.Cell>
-								</Table.Row>
-							{/if}
-						{/each}
-					</Table.Body>
-				</Table.Root>
-				<AlertDialog.Footer>
-					<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-					<form action="?/batchDelete" method="post" use:enhance={submitBatchDelete}>
-						{#each $expenses as expense, idx}
-							{#if Object.keys($selectedDataIds).includes(idx.toString())}
-								<input type="hidden" name={idx.toString()} value={expense.id} />
-							{/if}
-						{/each}
-						<button type="submit">
-							<AlertDialog.Action asChild let:builder>
-								<Button builders={[builder]} variant="destructive">Delete</Button>
-							</AlertDialog.Action>
-						</button>
-					</form>
-				</AlertDialog.Footer>
-			</AlertDialog.Content>
-		</AlertDialog.Root>
-		<!-- add expense -->
-		<Dialog.Root>
-			<Dialog.Trigger asChild let:builder>
-				<Button builders={[builder]} variant="default" class="ml-2">Add Expense</Button>
-			</Dialog.Trigger>
-			<AddExpenseForm form={addExpenseForm} {categories} store={expenses} />
-		</Dialog.Root>
+		<div class="flex items-center justify-center">
+			<!-- column visibility -->
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger asChild let:builder>
+					<Button variant="outline" class="lg:ml-auto" builders={[builder]}>
+						Columns <span class="ml-2 w-4 h-4"><ChevronDown /></span>
+					</Button>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content>
+					{#each flatColumns as col}
+						{#if hideableCols.includes(col.id)}
+							<DropdownMenu.CheckboxItem bind:checked={hideForId[col.id]}>
+								{col.header}
+							</DropdownMenu.CheckboxItem>
+						{/if}
+					{/each}
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+			<!-- batch delete -->
+			<AlertDialog.Root>
+				<AlertDialog.Trigger asChild let:builder>
+					{@const selectedLength = Object.keys($selectedDataIds).length}
+					<Button
+						builders={[builder]}
+						variant="secondary"
+						class="ml-2"
+						disabled={selectedLength == 0}>{`Batch Delete (${selectedLength})`}</Button
+					>
+				</AlertDialog.Trigger>
+				<AlertDialog.Content>
+					<AlertDialog.Header>
+						<AlertDialog.Title>Are you sure?</AlertDialog.Title>
+					</AlertDialog.Header>
+					<Table.Root>
+						<Table.Caption>These expenses will be deleted.</Table.Caption>
+						<Table.Header>
+							<Table.Row>
+								<Table.Head>Date</Table.Head>
+								<Table.Head class="text-center">Expense</Table.Head>
+								<Table.Head class="text-right">Amount</Table.Head>
+							</Table.Row>
+						</Table.Header>
+						<Table.Body>
+							{#each $expenses as expense, idx}
+								{#if Object.keys($selectedDataIds).includes(idx.toString())}
+									<Table.Row>
+										<Table.Cell>{formatDateNeat(expense.date, true)}</Table.Cell>
+										<Table.Cell class="text-center">{expense.expense}</Table.Cell>
+										<Table.Cell class="text-right">{formatCurrency(expense.amount)}</Table.Cell>
+									</Table.Row>
+								{/if}
+							{/each}
+						</Table.Body>
+					</Table.Root>
+					<AlertDialog.Footer>
+						<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+						<form action="?/batchDelete" method="post" use:enhance={submitBatchDelete}>
+							{#each $expenses as expense, idx}
+								{#if Object.keys($selectedDataIds).includes(idx.toString())}
+									<input type="hidden" name={idx.toString()} value={expense.id} />
+								{/if}
+							{/each}
+							<button type="submit">
+								<AlertDialog.Action asChild let:builder>
+									<Button builders={[builder]} variant="destructive">Delete</Button>
+								</AlertDialog.Action>
+							</button>
+						</form>
+					</AlertDialog.Footer>
+				</AlertDialog.Content>
+			</AlertDialog.Root>
+		</div>
+		<div class="flex items-center justify-center">
+			<!-- add expense -->
+			<Dialog.Root>
+				<Dialog.Trigger asChild let:builder>
+					<Button builders={[builder]} variant="default" class="ml-2">Add Expense</Button>
+				</Dialog.Trigger>
+				<AddExpenseForm form={addExpenseForm} {categories} store={expenses} />
+			</Dialog.Root>
+		</div>
 	</div>
 	<!-- data table -->
 	<div class="rounded-md border">

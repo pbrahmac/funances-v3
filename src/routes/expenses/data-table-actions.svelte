@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import { Trash, Pencil1 } from 'radix-icons-svelte';
 	import type { Expense } from '$lib/utils';
 	import { applyAction, enhance } from '$app/forms';
@@ -43,16 +43,16 @@
 					<div>This will permanently delete this expense.</div>
 				</AlertDialog.Description>
 			</AlertDialog.Header>
-			<AlertDialog.Footer>
-				<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-				<form action="?/delete" method="post" use:enhance={submitDelete}>
+			<AlertDialog.Footer class="gap-y-2">
+				<form action="?/delete" method="post" class="w-full" use:enhance={submitDelete}>
 					<input type="hidden" name="id" value={expense.id} />
-					<button type="submit">
+					<button type="submit" class="w-full lg:w-fit lg:float-right">
 						<AlertDialog.Action asChild let:builder>
-							<Button builders={[builder]} variant="destructive">Delete</Button>
+							<Button builders={[builder]} variant="destructive" class="w-full">Delete</Button>
 						</AlertDialog.Action>
 					</button>
 				</form>
+				<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
 			</AlertDialog.Footer>
 		</AlertDialog.Content>
 	</AlertDialog.Root>
