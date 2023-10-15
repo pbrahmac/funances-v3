@@ -293,12 +293,7 @@
 		</div>
 		<div class="flex items-center justify-center">
 			<!-- add income -->
-			<Dialog.Root>
-				<Dialog.Trigger asChild let:builder>
-					<Button builders={[builder]} variant="default" class="ml-2">Add Income</Button>
-				</Dialog.Trigger>
-				<AddIncomeForm form={addIncomeForm} store={incomes} />
-			</Dialog.Root>
+			<AddIncomeForm form={addIncomeForm} store={incomes} />
 		</div>
 	</div>
 	<!-- data table -->
