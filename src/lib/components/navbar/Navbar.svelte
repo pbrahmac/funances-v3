@@ -63,11 +63,11 @@
 			{/if}
 		</ul>
 		<Separator orientation="vertical" />
+		<LightSwitch {darkModeStore} />
 		{#if user}
 			<div class="px-3 h-full">
 				<AvatarComponent {user} />
 			</div>
 		{/if}
-		<LightSwitch {darkModeStore} />
 	</div>
 </nav>
