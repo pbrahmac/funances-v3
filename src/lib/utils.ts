@@ -220,7 +220,7 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 
 export const formatPercentage = (decimal: number, precision: number = 2) => {
 	const num = (decimal * 100).toFixed(precision);
-	return `${num}%`;
+	return decimal >= 0 ? `+${num}%` : `${num}%`;
 };
 
 export const calcLastMonthRatio = (
