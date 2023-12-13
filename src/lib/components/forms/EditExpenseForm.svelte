@@ -7,10 +7,8 @@
 	import { editExpenseSchema } from '$lib/schemas/editExpense';
 	import { formatDatepickerString, type Expense, type ExpenseCategory } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { superValidate } from 'sveltekit-superforms/client';
 
 	export let expense: Expense;
 	export let form: SuperValidated<typeof editExpenseSchema>;

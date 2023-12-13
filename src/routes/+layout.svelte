@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Navbar, ViewTransition } from '$lib';
-	import { onMount } from 'svelte';
-	import '../app.postcss';
 	import { createDarkModeStore } from '$lib/stores/darkMode';
+	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	import '../app.postcss';
 	import type { LayoutData } from './$types';
 
 	// props

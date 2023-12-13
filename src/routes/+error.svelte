@@ -1,6 +1,5 @@
 <script>
 	import { page } from '$app/stores';
-	import { Separator } from '$lib/components/ui/separator';
 </script>
 
 <div class="fullPageContainer flex flex-col items-center justify-center space-y-6">

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { formatCurrency, monthIdxToName } from '$lib/utils';
+	import { onMount } from 'svelte';
 
 	// props
 	export let data: number[] | undefined;

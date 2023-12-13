@@ -1,40 +1,32 @@
 <script lang="ts">
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Form from '$lib/components/ui/form';
-	import * as Table from '$lib/components/ui/table';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import AddExpenseForm from '$lib/components/forms/AddExpenseForm.svelte';
-	import DataTableActions from './data-table-actions.svelte';
-	import DataTableCheckbox from './data-table-checkbox.svelte';
-	import type { addExpenseSchema } from '$lib/schemas/addExpense';
-	import { CategoryBadge } from '$lib';
-	import {
-		cn,
-		formatCurrency,
-		formatDateNeat,
-		type Expense,
-		type ExpenseCategory
-	} from '$lib/utils';
-	import { createTable, createRender, Render, Subscribe } from 'svelte-headless-table';
-	import {
-		addPagination,
-		addSortBy,
-		addTableFilter,
-		addHiddenColumns,
-		addSelectedRows
-	} from 'svelte-headless-table/plugins';
-	import { CaretSort, ChevronDown } from 'radix-icons-svelte';
-	import type { Writable } from 'svelte/store';
-	import type { SuperValidated } from 'sveltekit-superforms';
 	import { applyAction, enhance } from '$app/forms';
-	import type { SubmitFunction } from '@sveltejs/kit';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
+	import { CategoryBadge } from '$lib';
+	import AddExpenseForm from '$lib/components/forms/AddExpenseForm.svelte';
 	import DateRangeForm from '$lib/components/forms/DateRangeForm.svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Input } from '$lib/components/ui/input';
+	import { Separator } from '$lib/components/ui/separator';
+	import * as Table from '$lib/components/ui/table';
+	import type { addExpenseSchema } from '$lib/schemas/addExpense';
+	import { formatCurrency, formatDateNeat, type Expense, type ExpenseCategory } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { CaretSort, ChevronDown } from 'radix-icons-svelte';
+	import { Render, Subscribe, createRender, createTable } from 'svelte-headless-table';
+	import {
+		addHiddenColumns,
+		addPagination,
+		addSelectedRows,
+		addSortBy,
+		addTableFilter
+	} from 'svelte-headless-table/plugins';
+	import type { Writable } from 'svelte/store';
+	import type { SuperValidated } from 'sveltekit-superforms';
+	import DataTableActions from './data-table-actions.svelte';
+	import DataTableCheckbox from './data-table-checkbox.svelte';
 
 	export let expenses: Writable<Expense[]>;
 	export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;

@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { writable } from 'svelte/store';
 	import type { PageData } from './$types';
 	import DataTable from './data-table.svelte';
-	import { writable } from 'svelte/store';
 
 	// props
 	export let data: PageData;

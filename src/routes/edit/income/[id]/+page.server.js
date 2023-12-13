@@ -2,7 +2,6 @@ import { editIncomeSchema } from '$lib/schemas/editIncome';
 import { formatDatepickerString } from '$lib/utils';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
-import { serializeNonPOJOs } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {

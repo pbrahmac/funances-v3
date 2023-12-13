@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import type { PageData } from './$types';
 	import AllocationAmountTable from './AllocationAmountTable.svelte';
-	import AllocationStatusTable from './AllocationStatusTable.svelte';
 	import AllocationPercentageTable from './AllocationPercentageTable.svelte';
+	import AllocationStatusTable from './AllocationStatusTable.svelte';
 
 	// props
 	export let data: PageData;

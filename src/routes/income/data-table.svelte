@@ -14,7 +14,7 @@
 	import { formatCurrency, formatDateNeat, type Income } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { CaretSort, ChevronDown } from 'radix-icons-svelte';
-	import { createRender, createTable, Render, Subscribe } from 'svelte-headless-table';
+	import { Render, Subscribe, createRender, createTable } from 'svelte-headless-table';
 	import {
 		addHiddenColumns,
 		addPagination,
@@ -24,9 +24,9 @@
 	} from 'svelte-headless-table/plugins';
 	import type { Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
+	import PaycheckBadge from './PaycheckBadge.svelte';
 	import DataTableActions from './data-table-actions.svelte';
 	import DataTableCheckbox from './data-table-checkbox.svelte';
-	import PaycheckBadge from './PaycheckBadge.svelte';
 
 	export let incomes: Writable<Income[]>;
 	export let addIncomeForm: SuperValidated<typeof addIncomeSchema>;

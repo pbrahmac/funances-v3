@@ -1,9 +1,9 @@
 <script lang="ts">
-	import * as Tabs from '$lib/components/ui/tabs';
 	import OverviewCard from '$lib/components/dashboard/OverviewCard.svelte';
-	import Button from '../ui/button/button.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
 	import { CaretDown, CaretUp } from 'radix-icons-svelte';
 	import { slide } from 'svelte/transition';
+	import Button from '../ui/button/button.svelte';
 
 	// props
 	export let expenseCards: {
