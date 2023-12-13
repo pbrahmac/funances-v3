@@ -2,11 +2,9 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Form from '$lib/components/ui/form';
-	import * as Popover from '$lib/components/ui/popover';
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { RangeCalendar } from '$lib/components/ui/range-calendar';
 	import { Separator } from '$lib/components/ui/separator';
 	import AddExpenseForm from '$lib/components/forms/AddExpenseForm.svelte';
 	import DataTableActions from './data-table-actions.svelte';
@@ -28,38 +26,19 @@
 		addHiddenColumns,
 		addSelectedRows
 	} from 'svelte-headless-table/plugins';
-	import { CaretSort, ChevronDown, Calendar as CalendarIcon } from 'radix-icons-svelte';
-	import {
-		CalendarDate,
-		DateFormatter,
-		getLocalTimeZone,
-		type DateValue,
-		today,
-		parseDate
-	} from '@internationalized/date';
-	import type { DateRange } from 'bits-ui';
+	import { CaretSort, ChevronDown } from 'radix-icons-svelte';
 	import type { Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { applyAction, enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { dateWindowSchemaMaker, newDateRangeSchema } from '$lib/schemas/dateWindowSchema';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
+	import DateRangeForm from '$lib/components/forms/DateRangeForm.svelte';
 
 	export let expenses: Writable<Expense[]>;
 	export let addExpenseForm: SuperValidated<typeof addExpenseSchema>;
 	export let categories: ExpenseCategory[];
-
-	// date range picker setup
-	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
-
-	let value: DateRange | undefined = {
-		start: today(getLocalTimeZone()).subtract({ months: 1 }),
-		end: today(getLocalTimeZone())
-	};
-
-	let startValue: DateValue | undefined = undefined;
 
 	// on change form submission variable
 	let form: any;
@@ -200,50 +179,6 @@
 </script>
 
 <div>
-	<!-- <form
-		bind:this={form}
-		action="?/updateWindowNew"
-		method="post"
-		on:change={() => form.requestSubmit()}
-	>
-		<Popover.Root openFocus>
-			<Popover.Trigger asChild let:builder>
-				<Button
-					variant="outline"
-					class={cn(
-						'w-[300px] justify-start text-left font-normal',
-						!value && 'text-muted-foreground'
-					)}
-					builders={[builder]}
-				>
-					<CalendarIcon class="mr-2 h-4 w-4" />
-					{#if value && value.start}
-						{#if value.end}
-							{df.format(value.start.toDate(getLocalTimeZone()))} - {df.format(
-								value.end.toDate(getLocalTimeZone())
-							)}
-						{:else}
-							{df.format(value.start.toDate(getLocalTimeZone()))}
-						{/if}
-					{:else if startValue}
-						{df.format(startValue.toDate(getLocalTimeZone()))}
-					{:else}
-						Pick a date range
-					{/if}
-				</Button>
-			</Popover.Trigger>
-			<Popover.Content class="w-auto p-0" align="start">
-				<RangeCalendar
-					bind:value
-					bind:startValue
-					placeholder={value?.start}
-					initialFocus
-					numberOfMonths={2}
-				/>
-			</Popover.Content>
-		</Popover.Root>
-		<Button variant="outline" type="submit">Submit</Button>
-	</form> -->
 	<div class="grid grid-cols-1 gap-3 lg:gap-2 lg:flex items-center justify-center w-full py-4">
 		<div class="flex items-center justify-center w-full lg:max-w-lg">
 			<!-- searchbar -->
@@ -258,86 +193,11 @@
 		</div>
 		<Separator orientation="vertical" class="hidden lg:flex h-8 ml-2 mr-1" />
 		<!-- date window -->
-		<!-- testing new component -->
-
-		<Form.Root
-			schema={newDateRangeSchema}
-			form={$page.data.newDateRangeForm}
-			let:config
-			action="?/updateWindowNew"
-			class="space-y-8"
-			bind:this={form}
-			on:change={() => form.requestSubmit()}
-		>
-			<Form.Field {config} name="dateRange">
-				<Form.Item class="flex flex-col">
-					<Popover.Root>
-						<Popover.Trigger asChild let:builder>
-							<Button
-								variant="outline"
-								class={cn(
-									'w-[300px] justify-start text-left font-normal',
-									!value && 'text-muted-foreground'
-								)}
-								builders={[builder]}
-							>
-								<CalendarIcon class="mr-2 h-4 w-4" />
-								{#if value && value.start}
-									{#if value.end}
-										{df.format(value.start.toDate(getLocalTimeZone()))} - {df.format(
-											value.end.toDate(getLocalTimeZone())
-										)}
-									{:else}
-										{df.format(value.start.toDate(getLocalTimeZone()))}
-									{/if}
-								{:else if startValue}
-									{df.format(startValue.toDate(getLocalTimeZone()))}
-								{:else}
-									Pick a date range
-								{/if}
-							</Button>
-						</Popover.Trigger>
-						<Popover.Content class="w-auto p-0" align="start">
-							<RangeCalendar
-								bind:value
-								bind:startValue
-								placeholder={value?.start}
-								initialFocus
-								numberOfMonths={2}
-							/>
-						</Popover.Content>
-					</Popover.Root>
-				</Form.Item>
-			</Form.Field>
-			<Button type="submit">Submit</Button>
-		</Form.Root>
-		<!-- old form -->
-		<!-- <Form.Root
-			form={$page.data.dateWindowForm}
-			schema={dateWindowSchemaMaker($page.data.dateWindow.from, $page.data.dateWindow.to)}
-			let:config
-			asChild
-		>
-			<form
-				bind:this={form}
-				action="?/updateWindow"
-				method="post"
-				class="flex items-center justify-center space-x-2 ml-2"
-				use:enhance={submitUpdateWindow}
-			>
-				<Form.Field {config} name="fromDatePicker">
-					<Form.Item>
-						<Form.Input type="date" on:change={() => form.requestSubmit()} />
-					</Form.Item>
-				</Form.Field>
-				<p>-</p>
-				<Form.Field {config} name="toDatePicker">
-					<Form.Item>
-						<Form.Input type="date" on:change={() => form.requestSubmit()} />
-					</Form.Item>
-				</Form.Field>
-			</form>
-		</Form.Root> -->
+		<DateRangeForm
+			form={$page.data.dateRangeForm}
+			formAction={'?/updateWindow'}
+			submitFunction={submitUpdateWindow}
+		/>
 		<div class="flex items-center justify-center">
 			<!-- column visibility -->
 			<DropdownMenu.Root>

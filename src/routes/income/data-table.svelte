@@ -1,33 +1,31 @@
 <script lang="ts">
-	import * as AlertDialog from '$lib/components/ui/alert-dialog';
-	import * as Form from '$lib/components/ui/form';
-	import * as Table from '$lib/components/ui/table';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { Separator } from '$lib/components/ui/separator';
-	import AddIncomeForm from '$lib/components/forms/AddIncomeForm.svelte';
-	import DataTableActions from './data-table-actions.svelte';
-	import DataTableCheckbox from './data-table-checkbox.svelte';
-	import { formatCurrency, formatDateNeat, type Income } from '$lib/utils';
-	import { createTable, createRender, Render, Subscribe } from 'svelte-headless-table';
-	import {
-		addPagination,
-		addSortBy,
-		addTableFilter,
-		addHiddenColumns,
-		addSelectedRows
-	} from 'svelte-headless-table/plugins';
-	import { CaretSort, ChevronDown } from 'radix-icons-svelte';
-	import type { Writable } from 'svelte/store';
-	import type { SuperValidated } from 'sveltekit-superforms';
 	import { applyAction, enhance } from '$app/forms';
-	import type { SubmitFunction } from '@sveltejs/kit';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
+	import AddIncomeForm from '$lib/components/forms/AddIncomeForm.svelte';
+	import DateRangeForm from '$lib/components/forms/DateRangeForm.svelte';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { Input } from '$lib/components/ui/input';
+	import { Separator } from '$lib/components/ui/separator';
+	import * as Table from '$lib/components/ui/table';
 	import type { addIncomeSchema } from '$lib/schemas/addIncome';
+	import { formatCurrency, formatDateNeat, type Income } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { CaretSort, ChevronDown } from 'radix-icons-svelte';
+	import { createRender, createTable, Render, Subscribe } from 'svelte-headless-table';
+	import {
+		addHiddenColumns,
+		addPagination,
+		addSelectedRows,
+		addSortBy,
+		addTableFilter
+	} from 'svelte-headless-table/plugins';
+	import type { Writable } from 'svelte/store';
+	import type { SuperValidated } from 'sveltekit-superforms';
+	import DataTableActions from './data-table-actions.svelte';
+	import DataTableCheckbox from './data-table-checkbox.svelte';
 	import PaycheckBadge from './PaycheckBadge.svelte';
 
 	export let incomes: Writable<Income[]>;
@@ -188,32 +186,11 @@
 		</div>
 		<Separator orientation="vertical" class="hidden lg:flex h-8 mr-1" />
 		<!-- date window -->
-		<Form.Root
-			form={$page.data.dateWindowForm}
-			schema={dateWindowSchemaMaker($page.data.dateWindow.from, $page.data.dateWindow.to)}
-			let:config
-			asChild
-		>
-			<form
-				bind:this={form}
-				action="?/updateWindow"
-				method="post"
-				class="flex items-center justify-center space-x-2 ml-2"
-				use:enhance={submitUpdateWindow}
-			>
-				<Form.Field {config} name="fromDatePicker">
-					<Form.Item>
-						<Form.Input type="date" on:change={() => form.requestSubmit()} />
-					</Form.Item>
-				</Form.Field>
-				<p>-</p>
-				<Form.Field {config} name="toDatePicker">
-					<Form.Item>
-						<Form.Input type="date" on:change={() => form.requestSubmit()} />
-					</Form.Item>
-				</Form.Field>
-			</form>
-		</Form.Root>
+		<DateRangeForm
+			form={$page.data.dateRangeForm}
+			formAction="?/updateWindow"
+			submitFunction={submitUpdateWindow}
+		/>
 		<div class="flex items-center justify-center">
 			<!-- column visibility -->
 			<DropdownMenu.Root>

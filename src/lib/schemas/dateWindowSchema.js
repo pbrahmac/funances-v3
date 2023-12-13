@@ -24,8 +24,3 @@ export const dateWindowSchemaMaker = (fromDate, toDate) => {
 
 	return schema;
 };
-
-export const dateRangeSchema = z.object({
-	start: z.date(),
-	end: z.date()
-});
