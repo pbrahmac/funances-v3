@@ -3,9 +3,9 @@
 	import { getFormField } from "formsnap";
 	import type { Select as SelectPrimitive } from "bits-ui";
 
-	type $$Props = SelectPrimitive.Props;
+	type $$Props = SelectPrimitive.Props<unknown>;
 	const { setValue, name, value } = getFormField();
-	export let onSelectedChange: $$Props["onSelectedChange"];
+	export let onSelectedChange: $$Props["onSelectedChange"] = undefined;
 </script>
 
 <Select.Root

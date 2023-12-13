@@ -1,5 +1,5 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
-import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
+import { dateWindowSchemaMaker, newDateRangeSchema } from '$lib/schemas/dateWindowSchema';
 import { formatDate, serializeNonPOJOs } from '$lib/utils';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
@@ -25,6 +25,7 @@ export async function load(event) {
 	// initialize forms
 	const addExpenseForm = await superValidate(addExpenseSchema);
 	const dateWindowForm = await superValidate(dateWindowSchemaMaker(fromDate, toDate));
+	const newDateRangeForm = await superValidate(newDateRangeSchema);
 
 	// get limit and pageNum params for pagination
 	const limit = Number(event.url.searchParams.get('limit')) || 10;
@@ -86,6 +87,7 @@ export async function load(event) {
 	return {
 		addExpenseForm: addExpenseForm,
 		dateWindowForm: dateWindowForm,
+		newDateRangeForm: newDateRangeForm,
 		dateWindow: { from: fromDate, to: toDate },
 		expenses: getExpenses(limit, pageNum),
 		expenseTypes: getExpenseTypes()
@@ -315,5 +317,15 @@ export const actions = {
 		toDate = newToDate;
 
 		return { form };
+	},
+	updateWindowNew: async (event) => {
+		const form = await superValidate(event, newDateRangeSchema);
+
+		console.log(form);
+
+		// validate errors
+		if (!form.valid) {
+			return fail(400, { form });
+		}
 	}
 };

@@ -25,19 +25,19 @@
 		"svelte": "^4.0.5",
 		"svelte-check": "^3.4.3",
 		"svelte-headless-table": "^0.17.5",
-		"sveltekit-superforms": "^1.6.1",
+		"sveltekit-superforms": "^1.11.0",
 		"tailwindcss": "^3.3.2",
 		"typescript": "^5.0.0",
 		"vite": "^4.4.2",
-		"zod": "^3.22.2"
+		"zod": "^3.22.4"
 	},
 	"type": "module",
 	"dependencies": {
 		"@internationalized/date": "^3.5.0",
 		"apexcharts": "^3.42.0",
-		"bits-ui": "^0.5.7",
+		"bits-ui": "^0.11.7",
 		"clsx": "^2.0.0",
-		"formsnap": "^0.0.9",
+		"formsnap": "^0.4.1",
 		"lucide-svelte": "^0.284.0",
 		"pocketbase": "^0.18.0",
 		"radix-icons-svelte": "^1.2.1",
