@@ -65,10 +65,7 @@
 			<Popover.Trigger asChild let:builder>
 				<Button
 					variant="outline"
-					class={cn(
-						'w-[300px] justify-start text-left font-normal',
-						!value && 'text-muted-foreground'
-					)}
+					class={cn('justify-start text-left font-normal', !value && 'text-muted-foreground')}
 					builders={[builder]}
 				>
 					<CalendarIcon class="mr-2 h-4 w-4" />
