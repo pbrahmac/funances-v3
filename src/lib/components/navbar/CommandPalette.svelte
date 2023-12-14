@@ -2,8 +2,13 @@
 	import { goto } from '$app/navigation';
 	import * as Command from '$lib/components/ui/command';
 	import { BadgeDollarSign, BadgePercent, Landmark, LayoutPanelLeft } from 'lucide-svelte';
+	import type { BaseModel } from 'pocketbase';
 	import { onMount } from 'svelte';
 
+	// props
+	export let user: BaseModel | undefined;
+
+	// open state
 	let open: boolean = false;
 
 	// command items objects
@@ -23,10 +28,12 @@
 			}
 		}
 
-		document.addEventListener('keydown', handleKeyDown);
-		return () => {
-			document.removeEventListener('keydown', handleKeyDown);
-		};
+		if (user) {
+			document.addEventListener('keydown', handleKeyDown);
+			return () => {
+				document.removeEventListener('keydown', handleKeyDown);
+			};
+		}
 	});
 </script>
 

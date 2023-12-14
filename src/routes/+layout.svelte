@@ -30,7 +30,7 @@
 <div class="main">
 	<ViewTransition />
 	<Navbar user={data.user} {darkModeStore} />
-	<CommandPalette />
+	<CommandPalette user={data.user} />
 	<slot />
 </div>
 
