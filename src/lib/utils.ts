@@ -136,10 +136,11 @@ export const nameToColor = (type: string) => {
 	return tailwindColors[colors[index] as keyof DefaultColors][500];
 };
 
+export const padTo2Digits = (num: number) => {
+	return num.toString().padStart(2, '0');
+};
+
 export const formatDate = (dateToFormat: Date, includeTime: boolean = true) => {
-	const padTo2Digits = (num: number) => {
-		return num.toString().padStart(2, '0');
-	};
 	const date = [
 		dateToFormat.getFullYear(),
 		padTo2Digits(dateToFormat.getMonth() + 1),
@@ -167,13 +168,17 @@ export const formatDatepickerString = (
 	timeZone: 'local' | 'UTC' = 'local'
 ): string => {
 	if (timeZone === 'local') {
-		return `${date.getFullYear()}-${
-			date.getMonth() < 9 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
-		}-${date.getDate() < 9 ? '0' + date.getDate() : date.getDate()}`;
+		return [
+			date.getFullYear(),
+			padTo2Digits(date.getMonth() + 1),
+			padTo2Digits(date.getDate())
+		].join('-');
 	} else {
-		return `${date.getUTCFullYear()}-${
-			date.getUTCMonth() < 9 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1
-		}-${date.getUTCDate() < 9 ? '0' + date.getUTCDate() : date.getUTCDate()}`;
+		return [
+			date.getUTCFullYear(),
+			padTo2Digits(date.getUTCMonth() + 1),
+			padTo2Digits(date.getUTCDate())
+		].join('-');
 	}
 };
 
@@ -181,13 +186,11 @@ export const formatCurrency = (amount: number): string => {
 	if (amount == -1) {
 		return '--';
 	}
-	const formatter = new Intl.NumberFormat('en-US', {
+	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
 		minimumFractionDigits: 2
-	});
-
-	return formatter.format(amount);
+	}).format(amount);
 };
 
 export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
@@ -195,32 +198,36 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 		return 'Invalid';
 	}
 	const monthMap = new Map([
-		[0, { long: 'January', short: 'Jan' }],
-		[1, { long: 'February', short: 'Feb' }],
-		[2, { long: 'March', short: 'Mar' }],
-		[3, { long: 'April', short: 'Apr' }],
-		[4, { long: 'May', short: 'May' }],
-		[5, { long: 'June', short: 'Jun' }],
-		[6, { long: 'July', short: 'Jul' }],
-		[7, { long: 'August', short: 'Aug' }],
-		[8, { long: 'September', short: 'Sep' }],
-		[9, { long: 'October', short: 'Oct' }],
-		[10, { long: 'November', short: 'Nov' }],
-		[11, { long: 'December', short: 'Dec' }]
+		[0, 'January'],
+		[1, 'February'],
+		[2, 'March'],
+		[3, 'April'],
+		[4, 'May'],
+		[5, 'June'],
+		[6, 'July'],
+		[7, 'August'],
+		[8, 'September'],
+		[9, 'October'],
+		[10, 'November'],
+		[11, 'December']
 	]);
 
 	if (format === 'short') {
-		return monthMap.get(idx)?.short;
+		return monthMap.get(idx)?.slice(0, 3);
 	} else if (format === 'long') {
-		return monthMap.get(idx)?.long;
+		return monthMap.get(idx);
 	} else {
 		return 'Invalid';
 	}
 };
 
-export const formatPercentage = (decimal: number, precision: number = 2) => {
-	const num = (decimal * 100).toFixed(precision);
-	return decimal >= 0 ? `+${num}%` : `${num}%`;
+export const formatPercentage = (
+	decimal: number,
+	precision: number = 2,
+	signed: boolean = false
+) => {
+	const percentage = `${(decimal * 100).toFixed(precision)}%`;
+	return signed ? (decimal > 0 ? `+${percentage}` : percentage) : percentage;
 };
 
 export const calcLastMonthRatio = (
@@ -243,5 +250,5 @@ export const calcLastMonthRatio = (
 
 	return firstIdx === 0 && secondIdx === 0
 		? 'First month of the year!'
-		: `${formatPercentage(ratio, 1)} from last month`;
+		: `${formatPercentage(ratio, 1, true)} from last month`;
 };
