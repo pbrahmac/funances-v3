@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Navbar, ViewTransition } from '$lib';
+	import { ViewTransition } from '$lib';
+	import { CommandPalette, Navbar } from '$lib/components/navbar';
 	import { createDarkModeStore } from '$lib/stores/darkMode';
 	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
@@ -29,6 +30,7 @@
 <div class="main">
 	<ViewTransition />
 	<Navbar user={data.user} {darkModeStore} />
+	<CommandPalette user={data.user} />
 	<slot />
 </div>
 

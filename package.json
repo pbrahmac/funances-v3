@@ -37,6 +37,7 @@
 		"apexcharts": "^3.42.0",
 		"bits-ui": "^0.11.7",
 		"clsx": "^2.0.0",
+		"cmdk-sv": "^0.0.12",
 		"formsnap": "^0.4.1",
 		"lucide-svelte": "^0.284.0",
 		"pocketbase": "^0.18.0",

@@ -2,8 +2,7 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import AddIncomeForm from '$lib/components/forms/AddIncomeForm.svelte';
-	import DateRangeForm from '$lib/components/forms/DateRangeForm.svelte';
+	import { AddIncomeForm, DateRangeForm } from '$lib/components/forms';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';

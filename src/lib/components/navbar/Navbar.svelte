@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { AvatarComponent, LightSwitch, MobileNavbar } from '$lib/components/navbar';
 	import { Separator } from '$lib/components/ui/separator';
 	import type { MenuItem } from '$lib/utils';
 	import type { BaseModel } from 'pocketbase';
 	import type { Writable } from 'svelte/store';
-	import AvatarComponent from './AvatarComponent.svelte';
-	import LightSwitch from './LightSwitch.svelte';
-	import MobileNavbar from './MobileNavbar.svelte';
 
 	// props
 	export let darkModeStore: Writable<boolean>;
