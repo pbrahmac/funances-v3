@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import * as Command from '$lib/components/ui/command';
-	import { BadgeDollarSign, LayoutPanelLeft, Landmark, BadgePercent } from 'lucide-svelte';
+	import { BadgeDollarSign, BadgePercent, Landmark, LayoutPanelLeft } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
-	let open = false;
+	let open: boolean = false;
 
 	// command items objects
 	const pages = [

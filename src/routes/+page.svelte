@@ -1,6 +1,6 @@
 <script lang="ts">
-	import MobileOverviewSwitcher from '$lib/components/dashboard/MobileOverviewSwitcher.svelte';
-	import OverviewCard from '$lib/components/dashboard/OverviewCard.svelte';
+	import { MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
+	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { calcLastMonthRatio, formatCurrency, monthIdxToName } from '$lib/utils';
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
@@ -38,6 +38,7 @@
 			amount: formatCurrency(data.totalIncomes ?? 0)
 		}
 	];
+
 	// chart stuff
 	// chart: SparklineChart,
 	// chartOptions: { data: data.monthlyTotalIncomes, color: '#16a34a' },
@@ -52,11 +53,14 @@
 	<MobileOverviewSwitcher {expenseCards} {incomeCards} />
 	<!-- expense/income switcher tab -->
 	<div class="hidden lg:flex justify-center">
-		<Tabs.Root value="expenses" class="flex flex-col items-center w-full">
-			<Tabs.List class="mb-4">
-				<Tabs.Trigger value="expenses">Expenses</Tabs.Trigger>
-				<Tabs.Trigger value="income">Income</Tabs.Trigger>
-			</Tabs.List>
+		<Tabs.Root value="expenses" class="flex flex-col items-start w-full">
+			<div class="flex items-start justify-between w-full">
+				<Tabs.List class="mb-4">
+					<Tabs.Trigger value="expenses">Expenses</Tabs.Trigger>
+					<Tabs.Trigger value="income">Income</Tabs.Trigger>
+				</Tabs.List>
+				<Button variant="secondary" disabled><kbd class="font-mono">⌘K to search</kbd></Button>
+			</div>
 			<Tabs.Content value="expenses">
 				<div class="grid grid-flow-row lg:grid-flow-col gap-4 max-w-7xl">
 					{#each expenseCards as card}

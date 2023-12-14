@@ -1,5 +1,5 @@
 <script lang="ts">
-	import OverviewCard from '$lib/components/dashboard/OverviewCard.svelte';
+	import { OverviewCard } from '$lib/components/dashboard';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { CaretDown, CaretUp } from 'radix-icons-svelte';
 	import { slide } from 'svelte/transition';

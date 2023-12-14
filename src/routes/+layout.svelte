@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Navbar, ViewTransition } from '$lib';
+	import { ViewTransition } from '$lib';
+	import { CommandPalette, Navbar } from '$lib/components/navbar';
 	import { createDarkModeStore } from '$lib/stores/darkMode';
 	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import '../app.postcss';
 	import type { LayoutData } from './$types';
-	import { CommandPalette } from '$lib/components/navbar';
 
 	// props
 	export let data: LayoutData;
