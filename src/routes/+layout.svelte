@@ -5,6 +5,7 @@
 	import type { Writable } from 'svelte/store';
 	import '../app.postcss';
 	import type { LayoutData } from './$types';
+	import { CommandPalette } from '$lib/components/navbar';
 
 	// props
 	export let data: LayoutData;
@@ -29,6 +30,7 @@
 <div class="main">
 	<ViewTransition />
 	<Navbar user={data.user} {darkModeStore} />
+	<CommandPalette />
 	<slot />
 </div>
 
