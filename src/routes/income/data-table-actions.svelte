@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { applyAction, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Trash, Pencil1 } from 'radix-icons-svelte';
 	import type { Income } from '$lib/utils';
-	import { applyAction, enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { page } from '$app/stores';
-	import { invalidateAll } from '$app/navigation';
+	import { Pencil1, Trash } from 'radix-icons-svelte';
 	import type { Writable } from 'svelte/store';
 
 	export let income: Income;

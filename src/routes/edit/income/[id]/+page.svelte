@@ -1,10 +1,33 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import { Button } from '$lib/components/ui/button';
+	import { Calendar } from '$lib/components/ui/calendar';
 	import * as Card from '$lib/components/ui/card';
 	import * as Form from '$lib/components/ui/form';
+	import * as Popover from '$lib/components/ui/popover';
 	import { editIncomeSchema } from '$lib/schemas/editIncome';
+	import { cn, formatDatepickerString } from '$lib/utils';
+	import {
+		DateFormatter,
+		getLocalTimeZone,
+		parseDate,
+		today,
+		type DateValue
+	} from '@internationalized/date';
+	import { Calendar as CalendarIcon } from 'radix-icons-svelte';
+	import { writable, type Writable } from 'svelte/store';
+	import type { PageData } from './$types';
 
+	// props
 	export let data: PageData;
+
+	// date picker setup
+	const df = new DateFormatter('en-US', {
+		dateStyle: 'long'
+	});
+	const formStore: Writable<string | undefined> = writable('');
+	let value: DateValue | undefined = $formStore
+		? parseDate($formStore)
+		: parseDate(formatDatepickerString(new Date(data.income.date)));
 </script>
 
 <svelte:head>
@@ -20,9 +43,31 @@
 			<Card.Content>
 				<input type="hidden" name="id" value={data.income?.id} />
 				<Form.Field {config} name="date">
-					<Form.Item>
+					<Form.Item class="flex flex-col items-start">
 						<Form.Label>Date</Form.Label>
-						<Form.Input type="date" />
+						<Popover.Root>
+							<Popover.Trigger asChild let:builder>
+								<Button
+									variant="outline"
+									class={cn(
+										'justify-start text-left font-normal',
+										!value && 'text-muted-foreground'
+									)}
+									builders={[builder]}
+								>
+									<CalendarIcon class="mr-2 h-4 w-4" />
+									{value ? df.format(value.toDate(getLocalTimeZone())) : 'Pick a date'}
+								</Button>
+							</Popover.Trigger>
+							<Popover.Content class="w-auto p-2">
+								<Calendar
+									maxValue={today(getLocalTimeZone())}
+									bind:value
+									onValueChange={(v) => ($formStore = v?.toString())}
+								/>
+							</Popover.Content>
+						</Popover.Root>
+						<Form.Input type="hidden" bind:value={$formStore} />
 						<Form.Validation />
 					</Form.Item>
 				</Form.Field>

@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import LightSwitch from './LightSwitch.svelte';
-	import { HamburgerMenu, Cross1 } from 'radix-icons-svelte';
-	import type { Writable } from 'svelte/store';
 	import type { MenuItem } from '$lib/utils';
 	import type { BaseModel } from 'pocketbase';
+	import { Cross1, HamburgerMenu } from 'radix-icons-svelte';
+	import type { Writable } from 'svelte/store';
 	import { slide } from 'svelte/transition';
+	import LightSwitch from './LightSwitch.svelte';
 
 	// props
 	export let user: BaseModel | undefined;

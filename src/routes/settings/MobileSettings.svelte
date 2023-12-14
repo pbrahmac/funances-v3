@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { getAvatarURL } from '$lib/utils';
 	import { Separator } from '$lib/components/ui/separator';
+	import { getAvatarURL } from '$lib/utils';
 	import type { BaseModel } from 'pocketbase';
 
 	export let user: BaseModel | undefined;

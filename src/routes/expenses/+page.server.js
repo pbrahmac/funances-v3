@@ -1,5 +1,5 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
-import { dateWindowSchemaMaker } from '$lib/schemas/dateWindowSchema';
+import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
 import { formatDate, serializeNonPOJOs } from '$lib/utils';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
@@ -24,7 +24,7 @@ let [fromDate, toDate] = [dateWindow().from, dateWindow().to];
 export async function load(event) {
 	// initialize forms
 	const addExpenseForm = await superValidate(addExpenseSchema);
-	const dateWindowForm = await superValidate(dateWindowSchemaMaker(fromDate, toDate));
+	const dateRangeForm = await superValidate(dateRangeSchema);
 
 	// get limit and pageNum params for pagination
 	const limit = Number(event.url.searchParams.get('limit')) || 10;
@@ -85,7 +85,7 @@ export async function load(event) {
 
 	return {
 		addExpenseForm: addExpenseForm,
-		dateWindowForm: dateWindowForm,
+		dateRangeForm: dateRangeForm,
 		dateWindow: { from: fromDate, to: toDate },
 		expenses: getExpenses(limit, pageNum),
 		expenseTypes: getExpenseTypes()
@@ -288,10 +288,7 @@ export const actions = {
 		return { success: true };
 	},
 	updateWindow: async (event) => {
-		const form = await superValidate(
-			event,
-			dateWindowSchemaMaker(dateWindow().from, dateWindow().to)
-		);
+		const form = await superValidate(event, dateRangeSchema);
 
 		// validate errors
 		if (!form.valid) {
@@ -300,12 +297,12 @@ export const actions = {
 
 		// fix timezone issues with dates
 		// set from date to start at 12:00:00 AM
-		let newFromDate = new Date(form.data.fromDatePicker);
+		let newFromDate = new Date(form.data.start);
 		const fromEpoch = newFromDate.getTime();
 		newFromDate = new Date(fromEpoch + newFromDate.getTimezoneOffset() * 60 * 1000);
 
 		// set to date to end at 11:59:59 PM
-		let newToDate = new Date(form.data.toDatePicker);
+		let newToDate = new Date(form.data.end);
 		const toEpoch = newToDate.getTime();
 		newToDate = new Date(toEpoch + newToDate.getTimezoneOffset() * 60 * 1000 + 86400 * 1000 - 1);
 

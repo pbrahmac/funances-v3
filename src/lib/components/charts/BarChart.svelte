@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { formatCurrency, monthIdxToName, type ExpenseCategory } from '$lib/utils';
+	import { formatCurrency, type ExpenseCategory } from '$lib/utils';
 	import type { ApexOptions } from 'apexcharts';
-	import { number } from 'zod';
+	import { onMount } from 'svelte';
 
 	// props
 	export let data: Map<string, number>;

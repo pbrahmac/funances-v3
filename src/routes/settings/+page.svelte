@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { PageData } from './$types';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import * as Table from '$lib/components/ui/table';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import { formatPercentage, getAvatarURL } from '$lib/utils';
 	import { Separator } from '$lib/components/ui/separator';
-	import MobileSettings from './MobileSettings.svelte';
+	import * as Table from '$lib/components/ui/table';
+	import { formatPercentage, getAvatarURL } from '$lib/utils';
 	import { Check, Cross2, Pencil1, Plus, Trash } from 'radix-icons-svelte';
+	import type { PageData } from './$types';
+	import MobileSettings from './MobileSettings.svelte';
 
 	// props
 	export let data: PageData;

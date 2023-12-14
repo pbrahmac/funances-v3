@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import type { BaseModel } from 'pocketbase';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { getAvatarURL } from '$lib/utils';
+	import type { BaseModel } from 'pocketbase';
 
 	// props
 	export let user: BaseModel;

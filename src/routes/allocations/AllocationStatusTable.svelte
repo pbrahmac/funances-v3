@@ -3,7 +3,6 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Table from '$lib/components/ui/table';
 	import { monthIdxToName } from '$lib/utils';
-	import { Check, Cross2 } from 'radix-icons-svelte';
 
 	// props
 	export let allocationNames: {

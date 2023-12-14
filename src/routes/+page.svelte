@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
-	import { calcLastMonthRatio, formatCurrency, formatPercentage, monthIdxToName } from '$lib/utils';
-	import OverviewCard from '$lib/components/dashboard/OverviewCard.svelte';
 	import MobileOverviewSwitcher from '$lib/components/dashboard/MobileOverviewSwitcher.svelte';
+	import OverviewCard from '$lib/components/dashboard/OverviewCard.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import { calcLastMonthRatio, formatCurrency, monthIdxToName } from '$lib/utils';
+	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
+	import type { PageData } from './$types';
 
 	// props
 	export let data: PageData;
