@@ -6,14 +6,16 @@
 	export let items: { href: string; title: string }[];
 </script>
 
-<nav class="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
+<nav
+	class="flex flex-wrap justify-center lg:justify-start space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1"
+>
 	{#each items as item}
 		<Button
 			href={item.href}
 			variant="ghost"
 			class={cn(
 				$page.url.pathname === item.href
-					? 'bg-muted hover:bg-muted'
+					? 'bg-secondary hover:bg-secondary'
 					: 'hover:bg-transparent hover:underline',
 				'justify-start'
 			)}

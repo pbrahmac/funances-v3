@@ -4,7 +4,8 @@
 
 	const sidebarItems = [
 		{ href: '/settings', title: 'Profile' },
-		{ href: '/settings/allocations', title: 'Allocations' }
+		{ href: '/settings/allocations', title: 'Allocations' },
+		{ href: '/settings/expense-categories', title: 'Expense Categories' }
 	];
 </script>
 

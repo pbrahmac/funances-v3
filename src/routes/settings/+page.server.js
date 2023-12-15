@@ -1,23 +1,38 @@
-import { setError, superValidate } from 'sveltekit-superforms/client';
-import { profileFormSchema } from './ProfileForm.svelte';
 import { fail } from '@sveltejs/kit';
+import { setError, superValidate } from 'sveltekit-superforms/client';
+import { passwordChangeSchema } from './ChangePasswordForm.svelte';
+import { profileFormSchema } from './EditProfileForm.svelte';
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async (event) => {
+	// init forms
+	const profileForm = await superValidate(profileFormSchema);
+	const passwordChangeForm = await superValidate(passwordChangeSchema);
+
+	// object to return
+	/**
+	 * @type {{profileForm: import('sveltekit-superforms').SuperValidated<any>, passwordChangeForm: import('sveltekit-superforms').SuperValidated<any>, userDetails: import('pocketbase').RecordModel | undefined}}
+	 */
+	const returnProperties = {
+		profileForm: profileForm,
+		passwordChangeForm: passwordChangeForm,
+		userDetails: undefined
+	};
+
 	// get user details
 	try {
 		const userId = event.locals.user?.id ?? '';
 		const userObj = await event.locals.pb.collection('users').getOne(userId);
-		return { userDetails: userObj, form: await superValidate(profileFormSchema) };
+		Object.assign(returnProperties, { userDetails: userObj });
 	} catch (err) {
 		console.error('Could not fetch user details.');
-		return { form: await superValidate(profileFormSchema) };
 	}
+	return returnProperties;
 };
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-	default: async (event) => {
+	editProfile: async (event) => {
 		const form = await superValidate(event, profileFormSchema);
 
 		if (!form.valid) {
@@ -48,14 +63,31 @@ export const actions = {
 			console.error('Failed to update profile.');
 			return fail(400, { form });
 		}
+	},
+	changePassword: async (event) => {
+		const form = await superValidate(event, passwordChangeSchema);
+
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		// get user and update record
+		try {
+			const userId = event.locals.user?.id ?? '';
+			const updateData = {
+				password: form.data.password,
+				passwordConfirm: form.data.passwordConfirm,
+				oldPassword: form.data.oldPassword
+			};
+			await event.locals.pb.collection('users').update(userId, updateData);
+		} catch (/** @type {any} */ err) {
+			if (err.status === 400) {
+				return setError(
+					form,
+					'oldPassword',
+					'Something went wrong (double check your old password?).'
+				);
+			}
+		}
 	}
 };
-
-// export async function load(event) {
-// 	async function getAllocations() {
-// 		const rawAllocations = await event.locals.pb.collection('allocations').getFullList();
-// 		return rawAllocations;
-// 	}
-
-// 	return { allocations: getAllocations() };
-// }

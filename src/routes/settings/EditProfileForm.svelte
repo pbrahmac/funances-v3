@@ -40,7 +40,14 @@
 	export let userDetails: RecordModel | undefined;
 </script>
 
-<Form.Root method="POST" {form} schema={profileFormSchema} let:config class="space-y-4">
+<Form.Root
+	method="POST"
+	action="?/editProfile"
+	{form}
+	schema={profileFormSchema}
+	let:config
+	class="space-y-4"
+>
 	<Form.Item>
 		<Form.Field {config} name="firstName">
 			<Form.Label>First Name</Form.Label>
