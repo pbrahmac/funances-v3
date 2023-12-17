@@ -14,7 +14,7 @@
 		<Table.Root>
 			<Table.Caption>List of current allocations.</Table.Caption>
 			<Table.Header>
-				<Table.Row class="">
+				<Table.Row>
 					<Table.Head>Allocation</Table.Head>
 					<Table.Head class="text-right">Percentage</Table.Head>
 				</Table.Row>
@@ -30,7 +30,7 @@
 					<Table.Cell>Total</Table.Cell>
 					<Table.Cell class="text-right">
 						<span
-							class="px-1 py-1"
+							class={allocationsTotal >= 1 ? 'px-1 py-1 rounded' : ''}
 							class:bg-red-400={allocationsTotal > 1}
 							class:bg-yellow-500={allocationsTotal === 1}
 						>

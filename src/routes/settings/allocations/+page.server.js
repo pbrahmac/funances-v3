@@ -32,7 +32,7 @@ export const actions = {
 
 			const updateData = {
 				user_id: userId,
-				category: form.data.category,
+				category: form.data.allocation,
 				percentage: form.data.percentage
 			};
 			await event.locals.pb.collection('allocations').create(updateData);
@@ -71,7 +71,7 @@ export const actions = {
 				.getOne(form.data.id);
 			const updateData = {
 				user_id: userId,
-				category: form.data.category ?? currentAllocation.category,
+				category: form.data.allocation ?? currentAllocation.category,
 				percentage: form.data.percentage ?? currentAllocation.percentage
 			};
 			await event.locals.pb.collection('allocations').update(form.data.id, updateData);

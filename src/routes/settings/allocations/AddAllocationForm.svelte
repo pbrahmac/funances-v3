@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { z } from 'zod';
 	export const addAllocationSchema = z.object({
-		category: z.string().min(2, 'Required field').max(32).trim(),
+		allocation: z.string().min(2, 'Required field').max(32).trim(),
 		percentage: z
 			.string()
 			.min(2, 'Required field')
@@ -33,8 +33,8 @@
 	class="space-y-4 w-full lg:w-2/3"
 >
 	<Form.Item>
-		<Form.Field {config} name="category">
-			<Form.Label>Category</Form.Label>
+		<Form.Field {config} name="allocation">
+			<Form.Label>Allocation</Form.Label>
 			<Form.Input />
 			<Form.Validation />
 		</Form.Field>

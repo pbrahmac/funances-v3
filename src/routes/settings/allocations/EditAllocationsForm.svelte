@@ -3,7 +3,7 @@
 
 	export const editAllocationSchema = z.object({
 		id: z.string(),
-		category: z.string().max(32).trim().optional(),
+		allocation: z.string().max(32).trim().optional(),
 		percentage: z
 			.string()
 			.regex(/^0*\.\d*[1-9]{1}0*$/, 'Invalid percentage.')
@@ -60,8 +60,8 @@
 		</Form.Field>
 	</Form.Item>
 	<Form.Item>
-		<Form.Field {config} name="category">
-			<Form.Label>Category</Form.Label>
+		<Form.Field {config} name="allocation">
+			<Form.Label>Allocation</Form.Label>
 			<Form.Input placeholder={selectedObj?.category} disabled={!selected} />
 			<Form.Validation />
 		</Form.Field>

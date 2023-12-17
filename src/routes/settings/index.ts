@@ -5,13 +5,17 @@ import AddAllocationForm from './allocations/AddAllocationForm.svelte';
 import AllocationsTable from './allocations/AllocationsTable.svelte';
 import DeleteAllocationForm from './allocations/DeleteAllocationForm.svelte';
 import EditAllocationsForm from './allocations/EditAllocationsForm.svelte';
+import CategoriesTable from './expense-categories/CategoriesTable.svelte';
+import EditExpenseCategory from './expense-categories/EditExpenseCategory.svelte';
 
 export {
 	AddAllocationForm,
 	AllocationsTable,
+	CategoriesTable,
 	ChangePasswordForm,
 	DeleteAllocationForm,
 	EditAllocationsForm,
+	EditExpenseCategory,
 	EditProfileForm,
 	SidebarNav
 };
