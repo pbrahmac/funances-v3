@@ -14,13 +14,11 @@
 </script>
 
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
-	import * as Select from '$lib/components/ui/select';
 	import * as Form from '$lib/components/ui/form';
-	import type { RecordModel } from 'pocketbase';
+	import * as Select from '$lib/components/ui/select';
 	import type { Selected } from 'bits-ui';
+	import type { RecordModel } from 'pocketbase';
 	import type { SuperValidated } from 'sveltekit-superforms';
-	import { formatPercentage } from '$lib/utils';
 
 	// props
 	export let allocations: RecordModel[];
@@ -31,7 +29,6 @@
 	// edit allocation selected variables
 	let selected: Selected<string> | undefined = undefined;
 	$: selectedObj = allocations.find((alloc) => alloc.id === selected?.value);
-	$: percentageVal = '';
 </script>
 
 <h4 class="text-lg">Edit</h4>
@@ -54,7 +51,7 @@
 	{form}
 	schema={editAllocationSchema}
 	let:config
-	class="space-y-4 lg:w-2/3"
+	class="space-y-4 w-full lg:w-2/3"
 >
 	<Form.Item>
 		<Form.Field {config} name="id">
@@ -71,11 +68,7 @@
 	<Form.Item>
 		<Form.Field {config} name="percentage">
 			<Form.Label>Percentage</Form.Label>
-			<Form.Input
-				bind:value={percentageVal}
-				placeholder={selectedObj?.percentage}
-				disabled={!selected}
-			/>
+			<Form.Input placeholder={selectedObj?.percentage} disabled={!selected} />
 			<Form.Validation />
 		</Form.Field>
 	</Form.Item>

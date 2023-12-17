@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
 	import type { PageData } from './$types';
+	import AllocationsTable from './AllocationsTable.svelte';
 	import EditAllocationsForm from './EditAllocationsForm.svelte';
 
 	export let data: PageData;
@@ -13,7 +14,7 @@
 			Add, remove, or change allocation names and percentages.
 		</p>
 	</div>
+	<AllocationsTable allocations={data.allocations} />
 	<Separator />
 	<EditAllocationsForm form={data.editAllocationForm} allocations={data.allocations} />
-	<!-- <pre>{JSON.stringify(data.allocations, null, 2)}</pre> -->
 </div>
