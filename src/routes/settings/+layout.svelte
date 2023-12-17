@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
-	import SidebarNav from './SidebarNav.svelte';
+	import { SidebarNav } from './index';
 
 	const sidebarItems = [
 		{ href: '/settings', title: 'Profile' },

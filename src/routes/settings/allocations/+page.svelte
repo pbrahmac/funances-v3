@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
-	import type { PageData } from './$types';
-	import AllocationsTable from './AllocationsTable.svelte';
-	import EditAllocationsForm from './EditAllocationsForm.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import AddAllocationForm from './AddAllocationForm.svelte';
+	import {
+		AddAllocationForm,
+		AllocationsTable,
+		DeleteAllocationForm,
+		EditAllocationsForm
+	} from '../index';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 </script>
@@ -30,6 +33,8 @@
 		<Tabs.Content value="edit">
 			<EditAllocationsForm form={data.editAllocationForm} allocations={data.allocations} />
 		</Tabs.Content>
-		<Tabs.Content value="delete">Delete form here</Tabs.Content>
+		<Tabs.Content value="delete">
+			<DeleteAllocationForm form={data.deleteAllocationForm} allocations={data.allocations} />
+		</Tabs.Content>
 	</Tabs.Root>
 </div>
