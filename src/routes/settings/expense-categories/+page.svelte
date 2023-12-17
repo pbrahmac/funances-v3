@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
-	import { CategoriesTable, EditExpenseCategory } from '../index';
-	import type { PageData } from './$types';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { AddExpenseCategory, CategoriesTable, EditExpenseCategory } from '../index';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 </script>
@@ -20,7 +20,9 @@
 			<Tabs.Trigger value="edit">Edit</Tabs.Trigger>
 			<Tabs.Trigger value="delete">Delete</Tabs.Trigger>
 		</Tabs.List>
-		<Tabs.Content value="add">Add</Tabs.Content>
+		<Tabs.Content value="add">
+			<AddExpenseCategory form={data.addExpenseCategoryForm} />
+		</Tabs.Content>
 		<Tabs.Content value="edit">
 			<EditExpenseCategory categories={data.expense_types} form={data.editExpenseCategoryForm} />
 		</Tabs.Content>
