@@ -71,7 +71,7 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// get user and update record
+		// get user id and update record
 		try {
 			const userId = event.locals.user?.id ?? '';
 			const updateData = {

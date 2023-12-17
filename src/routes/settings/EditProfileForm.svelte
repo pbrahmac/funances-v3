@@ -46,7 +46,7 @@
 	{form}
 	schema={profileFormSchema}
 	let:config
-	class="space-y-4"
+	class="space-y-4 lg:w-2/3"
 >
 	<Form.Item>
 		<Form.Field {config} name="firstName">

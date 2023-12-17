@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Separator } from '$lib/components/ui/separator';
 	import type { PageData } from './$types';
+	import EditAllocationsForm from './EditAllocationsForm.svelte';
 
 	export let data: PageData;
 </script>
@@ -13,6 +14,6 @@
 		</p>
 	</div>
 	<Separator />
-	<div>Form goes here</div>
-	<pre>{JSON.stringify(data.allocations, null, 2)}</pre>
+	<EditAllocationsForm form={data.editAllocationForm} allocations={data.allocations} />
+	<!-- <pre>{JSON.stringify(data.allocations, null, 2)}</pre> -->
 </div>

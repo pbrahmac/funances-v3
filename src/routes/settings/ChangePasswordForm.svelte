@@ -37,26 +37,26 @@
 	{form}
 	schema={passwordChangeSchema}
 	let:config
-	class="space-y-4"
+	class="space-y-4 lg:w-2/3"
 >
 	<Form.Item>
 		<Form.Field {config} name="oldPassword">
 			<Form.Label>Old Password</Form.Label>
-			<Form.Input type="password" placeholder="········" />
+			<Form.Input type="password" placeholder="••••••••" />
 			<Form.Validation />
 		</Form.Field>
 	</Form.Item>
 	<Form.Item>
 		<Form.Field {config} name="password">
 			<Form.Label>New Password</Form.Label>
-			<Form.Input type="password" placeholder="········" />
+			<Form.Input type="password" placeholder="••••••••" />
 			<Form.Validation />
 		</Form.Field>
 	</Form.Item>
 	<Form.Item>
 		<Form.Field {config} name="passwordConfirm">
 			<Form.Label>Confirm New Password</Form.Label>
-			<Form.Input type="password" placeholder="········" />
+			<Form.Input type="password" placeholder="••••••••" />
 			<Form.Validation />
 		</Form.Field>
 	</Form.Item>
