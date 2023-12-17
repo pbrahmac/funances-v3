@@ -65,7 +65,10 @@
 	<Form.Item>
 		<Form.Field {config} name="username">
 			<Form.Label>Username</Form.Label>
-			<Form.Input placeholder={userDetails?.username} />
+			<div class="flex items-center">
+				<span class="px-2 py-1.5 -z-10 rounded-l-sm bg-secondary drop-shadow-sm">@</span>
+				<Form.Input class="rounded-l-none" placeholder={userDetails?.username} />
+			</div>
 			<Form.Description>What you use to log in.</Form.Description>
 			<Form.Validation />
 		</Form.Field>
