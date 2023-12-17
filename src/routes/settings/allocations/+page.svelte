@@ -3,6 +3,8 @@
 	import type { PageData } from './$types';
 	import AllocationsTable from './AllocationsTable.svelte';
 	import EditAllocationsForm from './EditAllocationsForm.svelte';
+	import * as Tabs from '$lib/components/ui/tabs';
+	import AddAllocationForm from './AddAllocationForm.svelte';
 
 	export let data: PageData;
 </script>
@@ -16,5 +18,18 @@
 	</div>
 	<AllocationsTable allocations={data.allocations} />
 	<Separator />
-	<EditAllocationsForm form={data.editAllocationForm} allocations={data.allocations} />
+	<Tabs.Root value="edit" class="flex flex-col space-y-4">
+		<Tabs.List class="self-center">
+			<Tabs.Trigger value="add">Add</Tabs.Trigger>
+			<Tabs.Trigger value="edit">Edit</Tabs.Trigger>
+			<Tabs.Trigger value="delete">Delete</Tabs.Trigger>
+		</Tabs.List>
+		<Tabs.Content value="add">
+			<AddAllocationForm form={data.addAllocationForm} />
+		</Tabs.Content>
+		<Tabs.Content value="edit">
+			<EditAllocationsForm form={data.editAllocationForm} allocations={data.allocations} />
+		</Tabs.Content>
+		<Tabs.Content value="delete">Delete form here</Tabs.Content>
+	</Tabs.Root>
 </div>

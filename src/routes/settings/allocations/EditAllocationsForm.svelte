@@ -31,8 +31,10 @@
 	$: selectedObj = allocations.find((alloc) => alloc.id === selected?.value);
 </script>
 
-<h4 class="text-lg">Edit</h4>
-<p class="text-muted-foreground text-sm">Select the allocation you want to edit.</p>
+<div class="mb-4">
+	<h4 class="text-lg">Edit</h4>
+	<p class="text-muted-foreground text-sm">Select the allocation you want to edit.</p>
+</div>
 <Select.Root items={allocationsObj} bind:selected>
 	<Select.Trigger class="lg:w-2/3">
 		<Select.Value placeholder="Select allocation" />
@@ -44,7 +46,6 @@
 	</Select.Content>
 </Select.Root>
 
-<!-- {@const allocation = allocations.find((alloc) => alloc.id === $selected?.value)} -->
 <Form.Root
 	method="POST"
 	action="?/editAllocation"
@@ -70,6 +71,7 @@
 			<Form.Label>Percentage</Form.Label>
 			<Form.Input placeholder={selectedObj?.percentage} disabled={!selected} />
 			<Form.Validation />
+			<span class="text-muted-foreground text-sm">Put the decimal value.</span>
 		</Form.Field>
 	</Form.Item>
 	<Form.Button disabled={!selected}>Update</Form.Button>

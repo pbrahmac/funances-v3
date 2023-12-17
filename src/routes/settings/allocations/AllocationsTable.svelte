@@ -29,9 +29,13 @@
 				<Table.Row class="font-semibold">
 					<Table.Cell>Total</Table.Cell>
 					<Table.Cell class="text-right">
-						<span class="px-1 py-1" class:bg-red-400={allocationsTotal > 1}
-							>{formatPercentage(allocationsTotal)}</span
+						<span
+							class="px-1 py-1"
+							class:bg-red-400={allocationsTotal > 1}
+							class:bg-yellow-500={allocationsTotal === 1}
 						>
+							{formatPercentage(allocationsTotal)}
+						</span>
 					</Table.Cell>
 				</Table.Row>
 			</Table.Body>
