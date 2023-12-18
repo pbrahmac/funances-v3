@@ -8,12 +8,12 @@
 </script>
 
 <script lang="ts">
-	import { InfoCircled } from 'radix-icons-svelte';
-	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as Form from '$lib/components/ui/form';
 	import * as Select from '$lib/components/ui/select';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import type { Selected } from 'bits-ui';
 	import type { RecordModel } from 'pocketbase';
+	import { InfoCircled } from 'radix-icons-svelte';
 	import type { SuperValidated } from 'sveltekit-superforms';
 
 	// props

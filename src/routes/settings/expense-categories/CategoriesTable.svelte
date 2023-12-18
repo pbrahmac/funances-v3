@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { RecordModel } from 'pocketbase';
 	import * as Table from '$lib/components/ui/table';
+	import type { RecordModel } from 'pocketbase';
 
 	// props
 	export let categories: RecordModel[];

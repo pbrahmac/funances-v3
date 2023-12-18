@@ -25,7 +25,6 @@
 
 <script lang="ts">
 	import * as Form from '$lib/components/ui/form';
-	import type { RecordModel } from 'pocketbase';
 	import type { SuperValidated } from 'sveltekit-superforms';
 
 	export let form: SuperValidated<PasswordChangeSchema>;
