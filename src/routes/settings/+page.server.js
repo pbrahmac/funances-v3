@@ -59,7 +59,7 @@ export const actions = {
 				lastName: form.data.lastName ?? userObj.lastName
 			};
 			await event.locals.pb.collection('users').update(userId, updateData);
-		} catch (err) {
+		} catch (/** @type {any} */ err) {
 			console.error('Failed to update profile.');
 			return fail(400, { form });
 		}

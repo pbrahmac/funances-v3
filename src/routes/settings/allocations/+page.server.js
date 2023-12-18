@@ -65,15 +65,18 @@ export const actions = {
 
 		// get current allocation details and update record
 		try {
-			const userId = event.locals.user?.id ?? '';
-			const currentAllocation = await event.locals.pb
-				.collection('allocations')
-				.getOne(form.data.id);
 			const updateData = {
-				user_id: userId,
-				category: form.data.allocation ?? currentAllocation.category,
-				percentage: form.data.percentage ?? currentAllocation.percentage
+				user_id: event.locals.user?.id,
+				category: form.data.allocation,
+				percentage: form.data.percentage
 			};
+
+			// remove undefined keys
+			Object.keys(updateData).forEach(
+				// @ts-expect-error
+				(key) => updateData[key] === undefined && delete updateData[key]
+			);
+
 			await event.locals.pb.collection('allocations').update(form.data.id, updateData);
 		} catch (/** @type {any} */ err) {
 			console.error('Something went wrong: ', err.message);

@@ -226,6 +226,9 @@ export const formatPercentage = (
 	precision: number = 2,
 	signed: boolean = false
 ) => {
+	if (!isFinite(decimal) && decimal >= 0) {
+		return signed ? '+∞%' : '∞%';
+	}
 	const percentage = `${(decimal * 100).toFixed(precision)}%`;
 	return signed ? (decimal > 0 ? `+${percentage}` : percentage) : percentage;
 };
@@ -246,7 +249,7 @@ export const calcLastMonthRatio = (
 	[firstIdx, secondIdx] = month == 'thisMonth' ? [-1, -2] : [-2, -3];
 
 	const [firstAmount, secondAmount] = [data.at(firstIdx) ?? 0, data.at(secondIdx) ?? 1];
-	const ratio = firstAmount / secondAmount - 1;
+	let ratio = firstAmount / secondAmount - 1;
 
 	return firstIdx === 0 && secondIdx === 0
 		? 'First month of the year!'

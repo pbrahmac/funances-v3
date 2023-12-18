@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	import type { SuperValidated } from 'sveltekit-superforms';
 	import { z } from 'zod';
 	export const deleteAllocationSchema = z.object({
 		id: z.string()
@@ -13,6 +12,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import type { Selected } from 'bits-ui';
 	import type { RecordModel } from 'pocketbase';
+	import type { SuperValidated } from 'sveltekit-superforms';
 
 	// props
 	export let allocations: RecordModel[];
@@ -28,6 +28,7 @@
 	<h4 class="text-lg">Delete</h4>
 	<p class="text-muted-foreground text-sm">Select the allocation you want to delete.</p>
 </div>
+
 <Select.Root items={allocationsObj} bind:selected>
 	<Select.Trigger class="lg:w-2/3">
 		<Select.Value placeholder="Select allocation" />
@@ -38,6 +39,7 @@
 		{/each}
 	</Select.Content>
 </Select.Root>
+
 <Form.Root
 	method="POST"
 	action="?/deleteAllocation"

@@ -44,7 +44,10 @@
 	</Select.Trigger>
 	<Select.Content>
 		{#each categories as category}
-			<Select.Item value={category.id}>{category.type}</Select.Item>
+			<Select.Item
+				class={!category.isEnabled ? 'line-through text-muted-foreground' : ''}
+				value={category.id}>{category.type}</Select.Item
+			>
 		{/each}
 	</Select.Content>
 </Select.Root>

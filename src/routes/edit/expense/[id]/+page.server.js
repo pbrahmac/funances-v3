@@ -42,7 +42,7 @@ export async function load(event) {
 	// get expense types
 	const rawExpenseTypes = await event.locals.pb
 		.collection('expense_types')
-		.getFullList(50, { sort: 'type' });
+		.getFullList(50, { filter: 'isEnabled = true', sort: 'type' });
 	const expenseTypes = rawExpenseTypes.map((type) => ({
 		id: type.id,
 		name: type.type,

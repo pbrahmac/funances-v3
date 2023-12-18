@@ -9,7 +9,9 @@
 <div class="w-full p-3 flex items-center justify-center">
 	<div class="w-full lg:w-2/3">
 		<Table.Root>
-			<Table.Caption>List of current expense categories.</Table.Caption>
+			<Table.Caption>
+				<div>List of current expense categories.</div>
+			</Table.Caption>
 			<Table.Header>
 				<Table.Row>
 					<Table.Head>Category</Table.Head>
@@ -19,9 +21,14 @@
 			<Table.Body>
 				{#each categories as category}
 					<Table.Row>
-						<Table.Cell>{category.type}</Table.Cell>
+						<Table.Cell class={!category.isEnabled ? 'text-muted-foreground line-through' : ''}>
+							{category.type}
+						</Table.Cell>
 						<Table.Cell class="text-right">
-							<span class="px-2 py-1 rounded" style={`background-color: ${category.tagColor}`}>
+							<span
+								class="px-2 py-1 rounded font-mono"
+								style={`background-color: ${category.tagColor}`}
+							>
 								{category.tagColor}
 							</span>
 						</Table.Cell>

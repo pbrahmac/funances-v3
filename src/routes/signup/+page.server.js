@@ -60,7 +60,8 @@ export const actions = {
 					{
 						type: expenseType,
 						user_id: user.id,
-						tagColor: nameToColor(expenseType)
+						tagColor: nameToColor(expenseType),
+						isEnabled: true
 					},
 					{ $autoCancel: false }
 				);
