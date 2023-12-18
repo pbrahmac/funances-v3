@@ -141,10 +141,13 @@ export async function load(event) {
 	const allocationStatuses = await getAllocationStatuses();
 
 	return {
-		allocations: getAllocations(),
-		incomes: getIncomes(),
-		eachMonthAllocationAmount: eachMonthAllocationAmount(allocations, monthlyTotalIncomes(incomes)),
-		eachMonthAllocationStatus: eachMonthAllocationStatus(allocationStatuses)
+		allocations: await getAllocations(),
+		incomes: await getIncomes(),
+		eachMonthAllocationAmount: await eachMonthAllocationAmount(
+			allocations,
+			monthlyTotalIncomes(incomes)
+		),
+		eachMonthAllocationStatus: await eachMonthAllocationStatus(allocationStatuses)
 	};
 }
 

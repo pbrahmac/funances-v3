@@ -28,14 +28,12 @@ export async function load(event) {
 
 	// get limit and pageNum params for pagination
 	const limit = Number(event.url.searchParams.get('limit')) || 10;
-	const pageNum = Number(event.url.searchParams.get('pageNum')) || 1;
 
 	/**
 	 * Gets paginated list of expenses from Pocketbase
 	 * @param {number} limit The number of items displayed per page
-	 * @param {number} pageNum The offset (for pagination)
 	 */
-	async function getExpenses(limit = 10, pageNum = 1) {
+	async function getExpenses(limit = 10) {
 		// validate limit (to not fetch too many records at once)
 		if (limit > 100) {
 			throw error(400, 'Bad Request');
@@ -74,7 +72,7 @@ export async function load(event) {
 		// fetch expense type information
 		const rawExpenseTypes = await event.locals.pb
 			.collection('expense_types')
-			.getFullList(50, { sort: 'type' });
+			.getFullList(50, { filter: 'isEnabled = true', sort: 'type' });
 
 		return rawExpenseTypes.map((expenseType) => ({
 			id: expenseType.id,
@@ -87,8 +85,8 @@ export async function load(event) {
 		addExpenseForm: addExpenseForm,
 		dateRangeForm: dateRangeForm,
 		dateWindow: { from: fromDate, to: toDate },
-		expenses: getExpenses(limit, pageNum),
-		expenseTypes: getExpenseTypes()
+		expenses: await getExpenses(limit),
+		expenseTypes: await getExpenseTypes()
 	};
 }
 
