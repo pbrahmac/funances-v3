@@ -85,8 +85,8 @@ export async function load(event) {
 		addExpenseForm: addExpenseForm,
 		dateRangeForm: dateRangeForm,
 		dateWindow: { from: fromDate, to: toDate },
-		expenses: getExpenses(limit),
-		expenseTypes: getExpenseTypes()
+		expenses: await getExpenses(limit),
+		expenseTypes: await getExpenseTypes()
 	};
 }
 

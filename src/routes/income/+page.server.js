@@ -73,7 +73,7 @@ export async function load(event) {
 		addIncomeForm: addIncomeForm,
 		dateRangeForm: dateRangeForm,
 		dateWindow: { from: fromDate, to: toDate },
-		incomes: getIncomes(limit, pageNum)
+		incomes: await getIncomes(limit, pageNum)
 	};
 }
 

@@ -4,6 +4,14 @@
 	import { cn } from '$lib/utils';
 
 	export let items: { href: string; title: string }[];
+
+	$: checkCurrentPage = (href: string) => {
+		if ($page.url.pathname.at(-1) === '/') {
+			return $page.url.pathname === `${href}/`;
+		} else {
+			return $page.url.pathname === href;
+		}
+	};
 </script>
 
 <nav
@@ -14,7 +22,7 @@
 			href={item.href}
 			variant="ghost"
 			class={cn(
-				$page.url.pathname === item.href
+				checkCurrentPage(item.href)
 					? 'bg-secondary hover:bg-secondary'
 					: 'hover:bg-transparent hover:underline',
 				'justify-start'

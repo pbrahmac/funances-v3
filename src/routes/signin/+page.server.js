@@ -4,7 +4,7 @@ import { setError, superValidate } from 'sveltekit-superforms/client';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
-	return { form: superValidate(signInFormSchema) };
+	return { form: await superValidate(signInFormSchema) };
 }
 
 /** @type {import('./$types').Actions} */

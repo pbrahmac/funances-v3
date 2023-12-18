@@ -26,7 +26,7 @@
 						</Table.Cell>
 						<Table.Cell class="text-right">
 							<span
-								class="px-2 py-1 rounded font-mono"
+								class="px-2 py-1 rounded font-mono select-none"
 								style={`background-color: ${category.tagColor}`}
 							>
 								{category.tagColor}
