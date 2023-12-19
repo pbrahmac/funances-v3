@@ -1,9 +1,12 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
+	import { checkColorContrast, cn, getTextColorFromBackground } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
 
 	// props
 	export let categories: RecordModel[];
+
+	checkColorContrast('#123456');
 </script>
 
 <div class="w-full p-3 flex items-center justify-center">
@@ -26,7 +29,10 @@
 						</Table.Cell>
 						<Table.Cell class="text-right">
 							<span
-								class="px-2 py-1 rounded font-mono select-none"
+								class={cn(
+									'px-2 py-1 rounded font-mono select-none',
+									getTextColorFromBackground(category.tagColor)
+								)}
 								style={`background-color: ${category.tagColor}`}
 							>
 								{category.tagColor}
