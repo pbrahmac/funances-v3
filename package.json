@@ -34,6 +34,7 @@
 	"type": "module",
 	"dependencies": {
 		"@internationalized/date": "^3.5.0",
+		"@vercel/speed-insights": "^1.0.2",
 		"apexcharts": "^3.42.0",
 		"bits-ui": "^0.11.8",
 		"clsx": "^2.0.0",
