@@ -7,6 +7,7 @@
 	import type { Income } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Pencil1, Trash } from 'radix-icons-svelte';
+	import { toast } from 'svelte-sonner';
 	import type { Writable } from 'svelte/store';
 
 	export let income: Income;
@@ -17,6 +18,9 @@
 			if (result.type == 'success') {
 				await invalidateAll();
 				store.set($page.data.incomes?.items);
+				toast.success('Income deleted.');
+			} else {
+				toast.error('Something went wrong.');
 			}
 			await applyAction(result);
 		};

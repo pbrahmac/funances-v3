@@ -7,6 +7,7 @@
 	import type { Expense } from '$lib/utils';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Pencil1, Trash } from 'radix-icons-svelte';
+	import { toast } from 'svelte-sonner';
 	import type { Writable } from 'svelte/store';
 
 	export let expense: Expense;
@@ -17,6 +18,9 @@
 			if (result.type == 'success') {
 				await invalidateAll();
 				store.set($page.data.expenses?.items);
+				toast.success('Expense deleted.');
+			} else {
+				toast.error('Something went wrong.');
 			}
 			await applyAction(result);
 		};
