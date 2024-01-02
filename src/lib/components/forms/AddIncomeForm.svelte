@@ -159,7 +159,7 @@
 				<Form.Root {form} schema={addIncomeSchema} class="m-4" let:config asChild>
 					<form action="?/addIncome" method="post" use:enhance={submitAddIncome}>
 						<Form.Field {config} name="date">
-							<Form.Item class="flex flex-col items-start">
+							<Form.Item class="flex flex-col">
 								<Form.Label>Date</Form.Label>
 								<Popover.Root>
 									<Popover.Trigger asChild let:builder>
@@ -208,29 +208,31 @@
 								<Form.Validation />
 							</Form.Item>
 						</Form.Field>
-						<Form.Field {config} name="taxes">
-							<Form.Item>
-								<Form.Label>Taxes</Form.Label>
-								<Form.Input inputmode="decimal" />
-								<Form.Validation />
-							</Form.Item>
-						</Form.Field>
-						<Form.Field {config} name="retirement_401k">
-							<Form.Item>
-								<Form.Label>401k</Form.Label>
-								<Form.Input inputmode="decimal" />
-								<Form.Validation />
-							</Form.Item>
-						</Form.Field>
-						<Form.Field {config} name="benefits">
-							<Form.Item>
-								<Form.Label>Benefits</Form.Label>
-								<Form.Input inputmode="decimal" />
-								<Form.Validation />
-							</Form.Item>
-						</Form.Field>
+						<div class="flex space-x-1">
+							<Form.Field {config} name="taxes">
+								<Form.Item>
+									<Form.Label>Taxes</Form.Label>
+									<Form.Input inputmode="decimal" />
+									<Form.Validation />
+								</Form.Item>
+							</Form.Field>
+							<Form.Field {config} name="retirement_401k">
+								<Form.Item>
+									<Form.Label>401k</Form.Label>
+									<Form.Input inputmode="decimal" />
+									<Form.Validation />
+								</Form.Item>
+							</Form.Field>
+							<Form.Field {config} name="benefits">
+								<Form.Item>
+									<Form.Label>Benefits</Form.Label>
+									<Form.Input inputmode="decimal" />
+									<Form.Validation />
+								</Form.Item>
+							</Form.Field>
+						</div>
 						<Form.Field {config} name="is_paycheck">
-							<Form.Item class="flex items-end space-x-2">
+							<Form.Item class="space-x-2">
 								<Form.Label>Paycheck?</Form.Label>
 								<Form.Checkbox />
 								<Form.Validation />

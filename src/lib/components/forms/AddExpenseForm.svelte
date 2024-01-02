@@ -146,8 +146,8 @@
 				<Form.Root {form} schema={addExpenseSchema} let:config asChild>
 					<form action="?/addExpense" method="post" use:enhance={submitAddExpense}>
 						<Form.Field {config} name="date">
-							<Form.Item class="flex flex-col items-start">
-								<Form.Label>Date</Form.Label>
+							<Form.Item class="flex flex-col">
+								<Form.Label class="w-full text-left">Date</Form.Label>
 								<Popover.Root>
 									<Popover.Trigger asChild let:builder>
 										<Button
