@@ -5,6 +5,8 @@
 	import type { MenuItem } from '$lib/utils';
 	import type { BaseModel } from 'pocketbase';
 	import type { Writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button';
+	import { Search } from 'lucide-svelte';
 
 	// props
 	export let darkModeStore: Writable<boolean>;
@@ -61,11 +63,17 @@
 			{/if}
 		</ul>
 		<Separator orientation="vertical" />
-		<LightSwitch {darkModeStore} />
-		{#if user}
-			<div class="px-3 h-full">
+		<div class="flex items-center justify-center space-x-2 px-2">
+			{#if user}
+				<Button variant="secondary" disabled>
+					<Search class="w-4 h-4 mr-2" />
+					<kbd class="font-mono"> with ⌘K </kbd>
+				</Button>
+			{/if}
+			<LightSwitch {darkModeStore} />
+			{#if user}
 				<AvatarComponent {user} />
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </nav>

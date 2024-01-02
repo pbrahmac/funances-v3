@@ -2,9 +2,11 @@
 	import { MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import * as Card from '$lib/components/ui/card';
 	import { calcLastMonthRatio, formatCurrency, monthIdxToName } from '$lib/utils';
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
 	import type { PageData } from './$types';
+	import { Separator } from '$lib/components/ui/separator';
 
 	// props
 	export let data: PageData;
@@ -49,9 +51,20 @@
 </svelte:head>
 
 <div class="fullPageContainer p-6">
-	<!-- mobile overview switcher -->
+	<div class="flex justify-between items-center pb-6">
+		<h1 class="text-3xl">Dashboard</h1>
+		<div class="flex items-center justify-end space-x-4">
+			<Button variant="ghost">Month</Button>
+			<Button variant="ghost">Quarter</Button>
+			<Button variant="ghost">YTD</Button>
+			<Button variant="ghost">Year</Button>
+		</div>
+	</div>
+	<Separator />
+</div>
+
+<!-- <div class="fullPageContainer p-6">
 	<MobileOverviewSwitcher {expenseCards} {incomeCards} />
-	<!-- expense/income switcher tab -->
 	<div class="hidden lg:flex justify-center">
 		<Tabs.Root value="expenses" class="flex flex-col items-start w-full">
 			<div class="flex items-start justify-between w-full">
@@ -87,4 +100,4 @@
 			</Tabs.Content>
 		</Tabs.Root>
 	</div>
-</div>
+</div> -->
