@@ -19,6 +19,7 @@
 	} from '@internationalized/date';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import { Calendar as CalendarIcon } from 'radix-icons-svelte';
+	import { toast } from 'svelte-sonner';
 	import { writable, type Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
 
@@ -43,6 +44,9 @@
 				await invalidateAll();
 				store.set($page.data.incomes?.items);
 				open = false;
+				toast.success('Added income.');
+			} else {
+				toast.error('Something went wrong.');
 			}
 			await applyAction(result);
 		};

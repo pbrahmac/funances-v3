@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ViewTransition } from '$lib';
 	import { CommandPalette, Navbar } from '$lib/components/navbar';
+	import { Toaster } from '$lib/components/ui/sonner';
 	import { createDarkModeStore } from '$lib/stores/darkMode';
 	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
@@ -31,6 +32,7 @@
 	<ViewTransition />
 	<Navbar user={data.user} {darkModeStore} />
 	<CommandPalette user={data.user} />
+	<Toaster position="bottom-center" />
 	<slot />
 </div>
 
