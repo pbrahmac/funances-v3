@@ -7,6 +7,7 @@
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { Separator } from '$lib/components/ui/separator';
+	import { FrappeDonutChart } from '$lib/components/charts';
 
 	// props
 	export let data: PageData;
@@ -61,6 +62,7 @@
 		</div>
 	</div>
 	<Separator />
+	<FrappeDonutChart chartIdx={1} />
 </div>
 
 <!-- <div class="fullPageContainer p-6">

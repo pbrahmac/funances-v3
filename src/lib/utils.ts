@@ -1,4 +1,6 @@
+import type { ZonedDateTime } from '@internationalized/date';
 import { clsx, type ClassValue } from 'clsx';
+import type { RecordModel } from 'pocketbase';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
@@ -140,18 +142,34 @@ export const padTo2Digits = (num: number) => {
 	return num.toString().padStart(2, '0');
 };
 
-export const formatDate = (dateToFormat: Date, includeTime: boolean = true) => {
-	const date = [
-		dateToFormat.getFullYear(),
-		padTo2Digits(dateToFormat.getMonth() + 1),
-		padTo2Digits(dateToFormat.getDate())
-	].join('-');
-	const time = [
-		padTo2Digits(dateToFormat.getMinutes()),
-		padTo2Digits(dateToFormat.getHours()),
-		padTo2Digits(dateToFormat.getSeconds())
-	].join(':');
-	return includeTime ? `${date} ${time}` : `${date} 00:00:00`;
+export const formatDate = (
+	dateToFormat: Date,
+	includeTime: boolean = true,
+	UTC: boolean = false
+) => {
+	const date = UTC
+		? [
+				dateToFormat.getUTCFullYear(),
+				padTo2Digits(dateToFormat.getUTCMonth() + 1),
+				padTo2Digits(dateToFormat.getUTCDate())
+		  ].join('-')
+		: [
+				dateToFormat.getFullYear(),
+				padTo2Digits(dateToFormat.getMonth() + 1),
+				padTo2Digits(dateToFormat.getDate())
+		  ].join('-');
+	const time = UTC
+		? [
+				padTo2Digits(dateToFormat.getUTCMinutes()),
+				padTo2Digits(dateToFormat.getUTCHours()),
+				padTo2Digits(dateToFormat.getUTCSeconds())
+		  ].join(':')
+		: [
+				padTo2Digits(dateToFormat.getMinutes()),
+				padTo2Digits(dateToFormat.getHours()),
+				padTo2Digits(dateToFormat.getSeconds())
+		  ].join(':');
+	return includeTime ? `${date} ${time}` : `${date}`;
 };
 
 export const formatDateNeat = (date: Date, condensed: boolean = false) => {
@@ -254,4 +272,51 @@ export const calcLastMonthRatio = (
 	return firstIdx === 0 && secondIdx === 0
 		? 'First month of the year!'
 		: `${formatPercentage(ratio, 1, true)} from last month`;
+};
+
+/**
+ * Aggregates expense totals by month
+ * @param rawExpenseTotals raw expense total data from PocketBase
+ */
+export const monthlyTotalExpenses = (rawExpenseTotals: RecordModel[]) => {
+	if (!rawExpenseTotals) {
+		return;
+	}
+	const monthExpenseMap = new Map(
+		[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
+	);
+
+	rawExpenseTotals.forEach((item) => {
+		const currMonth = item.month - 1;
+		if (!monthExpenseMap.get(currMonth)) {
+			monthExpenseMap.set(currMonth, item.amount);
+		} else {
+			const curr = monthExpenseMap.get(currMonth);
+			monthExpenseMap.set(currMonth, curr + item.amount);
+		}
+	});
+
+	return [...monthExpenseMap.values()];
+};
+
+/**
+ * Aggregates income totals by month
+ * @param rawIncomeTotals raw income total data from PocketBase
+ */
+export const monthlyTotalIncomes = (rawIncomeTotals: RecordModel[]) => {
+	/**
+	 * @type {Map<number, number>}
+	 */
+	const monthIncomeMap = new Map(
+		[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
+	);
+
+	rawIncomeTotals.forEach((income) => {
+		const monthIdx = new Date(income.date).getMonth();
+		const postTaxIncome =
+			income.gross_amount - (income.benefits + income.retirement_401k + income.taxes);
+
+		monthIncomeMap.set(monthIdx, (monthIncomeMap.get(monthIdx) ?? 0) + postTaxIncome);
+	});
+	return Array.from(monthIncomeMap.values());
 };

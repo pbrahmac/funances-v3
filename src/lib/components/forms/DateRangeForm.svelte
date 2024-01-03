@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Form from '$lib/components/ui/form';
 	import * as Popover from '$lib/components/ui/popover';
+	import * as Select from '$lib/components/ui/select';
 	import { RangeCalendar } from '$lib/components/ui/range-calendar';
 	import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
 	import { cn } from '$lib/utils';
@@ -19,6 +20,8 @@
 	import { Calendar as CalendarIcon } from 'radix-icons-svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import type { SuperValidated } from 'sveltekit-superforms';
+	import { page } from '$app/stores';
+	import { mediaQuery } from 'svelte-legos';
 
 	// props
 	export let form: SuperValidated<typeof dateRangeSchema>;
@@ -26,7 +29,18 @@
 	export let submitFunction: SubmitFunction;
 
 	// submit form on popover close
+	$: open = false;
 	let formObj: any;
+
+	const isDesktop = mediaQuery('(min-width: 768px)');
+
+	// range calendar presets
+	const items = [
+		{ label: 'Month', value: 1 },
+		{ label: '3 Months', value: 3 },
+		{ label: '6 Months', value: 6 },
+		{ label: 'Year', value: 12 }
+	];
 
 	// range calendar setup
 	const df = new DateFormatter('en-US', {
@@ -39,10 +53,8 @@
 	}> = writable({ start: '', end: '' });
 
 	let value: DateRange | undefined = {
-		start: $formStore.start
-			? parseDate($formStore.start)
-			: today(getLocalTimeZone()).subtract({ months: 1 }),
-		end: $formStore.end ? parseDate($formStore.end) : today(getLocalTimeZone())
+		start: $formStore.start ? parseDate($formStore.start) : parseDate($page.data.beginningDate),
+		end: $formStore.end ? parseDate($formStore.end) : parseDate($page.data.endDate)
 	};
 	let startValue: DateValue | undefined = undefined;
 </script>
@@ -56,6 +68,7 @@
 		use:enhance={submitFunction}
 	>
 		<Popover.Root
+			bind:open
 			onOpenChange={(open) => {
 				if (!open) {
 					formObj.requestSubmit();
@@ -84,7 +97,28 @@
 					{/if}
 				</Button>
 			</Popover.Trigger>
-			<Popover.Content class="w-auto p-2" side="top">
+			<Popover.Content class="w-auto p-2 flex flex-col justify-center items-center" side="top">
+				<Select.Root
+					{items}
+					onSelectedChange={(v) => {
+						if (!v) return;
+						value = {
+							start: today(getLocalTimeZone()).subtract({ months: v.value }),
+							end: today(getLocalTimeZone())
+						};
+						$formStore.start = value.start?.toString();
+						$formStore.end = value.end?.toString();
+					}}
+				>
+					<Select.Trigger class="w-2/5 min-w-fit">
+						<Select.Value placeholder="Choose time range" />
+					</Select.Trigger>
+					<Select.Content>
+						{#each items as item}
+							<Select.Item value={item.value}>{item.label}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
 				<RangeCalendar
 					bind:value
 					bind:startValue
@@ -92,7 +126,7 @@
 					minValue={new CalendarDate(1900, 1, 1)}
 					maxValue={today(getLocalTimeZone())}
 					calendarLabel="Date Range"
-					numberOfMonths={2}
+					numberOfMonths={$isDesktop ? 2 : 1}
 					initialFocus
 					onValueChange={(v) => {
 						if (v.start && v.end) {
