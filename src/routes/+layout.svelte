@@ -28,6 +28,8 @@
 	});
 </script>
 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
 <div class="main">
 	<ViewTransition />
 	<Navbar user={data.user} {darkModeStore} />
