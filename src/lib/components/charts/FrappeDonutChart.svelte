@@ -1,39 +1,68 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { PageData } from '../../../routes/$types';
+	import type { ApexOptions } from 'apexcharts';
+	import * as Card from '$lib/components/ui/card';
+	import { cn, formatCurrency } from '$lib/utils';
 
 	// props
 	export let chartIdx: number;
+	export let chartName: string;
+	export let chartData: { values: number[]; labels: string[]; colors: string[] };
+	export let gridDimensionClasses: string = 'col-span-full';
 
 	onMount(async () => {
 		const FrappeCharts = await import('frappe-charts/dist/frappe-charts.esm');
+		const ApexCharts = await import('apexcharts');
+
+		let apexOptions: ApexOptions = {
+			chart: {
+				type: 'donut',
+				fontFamily: 'Poppins'
+			},
+			series: chartData.values,
+			labels: chartData.labels,
+			colors: chartData.colors,
+			legend: { show: false },
+			stroke: { show: false },
+			dataLabels: { enabled: false },
+			states: { hover: { filter: { type: 'none' } } },
+			tooltip: {
+				fillSeriesColor: false,
+				followCursor: false,
+				y: { formatter: (value) => formatCurrency(value) }
+			},
+			plotOptions: {
+				pie: { donut: { size: '80%' } }
+			}
+		};
+
+		let chart = new ApexCharts.default(document.getElementById(`chart-${chartIdx}`), apexOptions);
+		chart.render();
+
 		const data = {
-			labels: [
-				'12am-3am',
-				'3am-6pm',
-				'6am-9am',
-				'9am-12am',
-				'12pm-3pm',
-				'3pm-6pm',
-				'6pm-9pm',
-				'9am-12am'
-			],
+			labels: chartData.labels,
 			datasets: [
 				{
-					name: 'Some Data',
-					type: 'bar',
-					values: [25, 40, 30, 35, 8, 52, 17, -4]
+					name: 'Donut',
+					values: chartData.values
 				}
 			]
 		};
-		const chart = new FrappeCharts.Chart(`#chart-${chartIdx}`, {
-			title: 'Chart',
-			data: data,
-			type: 'axis-mixed',
-			height: 250,
-			colors: ['#7cd6fd', '#743ee2']
-		});
+		// new FrappeCharts.Chart(`#chart-${chartIdx}`, {
+		// 	title: chartName,
+		// 	data: data,
+		// 	type: 'donut',
+		// 	colors: chartData.colors
+		// });
 	});
 </script>
 
-<div id={`chart-${chartIdx}`} />
+<div class={cn(gridDimensionClasses)}>
+	<Card.Root class="min-w-fit">
+		<Card.Header>
+			<Card.Title class="text-center">{chartName}</Card.Title>
+		</Card.Header>
+		<div id={`chart-${chartIdx}`} class="w-full" />
+		<Card.Footer />
+	</Card.Root>
+</div>

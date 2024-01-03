@@ -1,50 +1,76 @@
 <script lang="ts">
 	import { MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
-	import { Button } from '$lib/components/ui/button';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';
 	import { calcLastMonthRatio, formatCurrency, monthIdxToName } from '$lib/utils';
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
-	import type { PageData } from './$types';
 	import { Separator } from '$lib/components/ui/separator';
 	import { FrappeDonutChart } from '$lib/components/charts';
-
-	// props
-	export let data: PageData;
+	import type { RecordModel } from 'pocketbase';
+	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 
 	// overview cards data
-	const expenseCards = [
-		{
-			title: `${monthIdxToName((data.monthlyTotalExpenses?.length ?? 0) - 1, 'long')} Expenses`,
-			icon: BadgeCent,
-			subtext: `${calcLastMonthRatio(data.monthlyTotalExpenses, 'thisMonth')}`,
-			amount: formatCurrency(data.monthlyTotalExpenses?.at(-1) ?? -1)
-		},
-		{
-			title: 'Total Expenses',
-			icon: BadgeDollarSign,
-			subtext: 'Total money spent.',
-			amount: formatCurrency(data.totalExpenses ?? 0)
-		}
-	];
-	const incomeCards = [
-		{
-			title: `${monthIdxToName((data.monthlyTotalIncomes?.length ?? 0) - 2, 'long')} Income`,
-			icon: PiggyBank,
-			subtext: `${calcLastMonthRatio(data.monthlyTotalIncomes, 'lastMonth')}`,
-			amount: formatCurrency(data.monthlyTotalIncomes?.at(-2) ?? -1)
-		},
-		{
-			title: 'Total Income',
-			icon: Landmark,
-			subtext: 'Total money earned.',
-			amount: formatCurrency(data.totalIncomes ?? 0)
-		}
-	];
+	// const expenseCards = [
+	// 	{
+	// 		title: `${monthIdxToName((data.monthlyTotalExpenses?.length ?? 0) - 1, 'long')} Expenses`,
+	// 		icon: BadgeCent,
+	// 		subtext: `${calcLastMonthRatio(data.monthlyTotalExpenses, 'thisMonth')}`,
+	// 		amount: formatCurrency(data.monthlyTotalExpenses?.at(-1) ?? -1)
+	// 	},
+	// 	{
+	// 		title: 'Total Expenses',
+	// 		icon: BadgeDollarSign,
+	// 		subtext: 'Total money spent.',
+	// 		amount: formatCurrency(data.totalExpenses ?? 0)
+	// 	}
+	// ];
+	// const incomeCards = [
+	// 	{
+	// 		title: `${monthIdxToName((data.monthlyTotalIncomes?.length ?? 0) - 2, 'long')} Income`,
+	// 		icon: PiggyBank,
+	// 		subtext: `${calcLastMonthRatio(data.monthlyTotalIncomes, 'lastMonth')}`,
+	// 		amount: formatCurrency(data.monthlyTotalIncomes?.at(-2) ?? -1)
+	// 	},
+	// 	{
+	// 		title: 'Total Income',
+	// 		icon: Landmark,
+	// 		subtext: 'Total money earned.',
+	// 		amount: formatCurrency(data.totalIncomes ?? 0)
+	// 	}
+	// ];
 
-	// chart stuff
-	// chart: SparklineChart,
-	// chartOptions: { data: data.monthlyTotalIncomes, color: '#16a34a' },
+	// time range variables
+	const timeRangeItems = [
+		{ label: 'Month' },
+		{ label: 'Quarter' },
+		{ label: 'YTD' },
+		{ label: 'Year' }
+	];
+	$: selected = 'Month';
+
+	// donut chart
+	const prepExpensesForChart = (expenses: RecordModel[]) => {
+		let aggregateMap = new Map<string, [string, number]>();
+		expenses.forEach((expense) => {
+			const [amount, label, color] = [
+				expense.amount,
+				expense.expand?.expense_type.type,
+				expense.expand?.expense_type.tagColor
+			];
+			if (!aggregateMap.get(label)) {
+				aggregateMap.set(label, [color, amount]);
+			} else {
+				aggregateMap.set(label, [color, aggregateMap.get(label)?.[1] + amount]);
+			}
+		});
+		const dataColors = [...aggregateMap.values()].map((val) => val[0]);
+		const dataValues = [...aggregateMap.values()].map((val) => val[1]);
+		const dataLabels = [...aggregateMap.keys()];
+
+		return { values: dataValues, labels: dataLabels, colors: dataColors };
+	};
 </script>
 
 <svelte:head>
@@ -54,15 +80,29 @@
 <div class="fullPageContainer p-6">
 	<div class="flex justify-between items-center pb-6">
 		<h1 class="text-3xl">Dashboard</h1>
-		<div class="flex items-center justify-end space-x-4">
-			<Button variant="ghost">Month</Button>
-			<Button variant="ghost">Quarter</Button>
-			<Button variant="ghost">YTD</Button>
-			<Button variant="ghost">Year</Button>
-		</div>
+		<form method="post" class="flex items-center justify-end space-x-4" use:enhance>
+			{#each timeRangeItems as item}
+				<button
+					type="submit"
+					class={buttonVariants({ variant: 'ghost' })}
+					class:bg-secondary={selected === item.label}
+					on:click={() => (selected = item.label)}
+					formaction={`?/${item.label.toLowerCase()}`}
+				>
+					{item.label}
+				</button>
+			{/each}
+		</form>
 	</div>
 	<Separator />
-	<FrappeDonutChart chartIdx={1} />
+	<div class="grid grid-cols-6 grid-rows-6 gap-4 justify-center justify-self-center w-full p-4">
+		<FrappeDonutChart
+			chartIdx={1}
+			chartName="Expenses by Category"
+			chartData={prepExpensesForChart($page.data.expenses)}
+			gridDimensionClasses="col-span-3"
+		/>
+	</div>
 </div>
 
 <!-- <div class="fullPageContainer p-6">
