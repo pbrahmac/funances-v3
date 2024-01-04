@@ -6,7 +6,7 @@
 	import { calcLastMonthRatio, dateWindow, formatCurrency, monthIdxToName } from '$lib/utils';
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
 	import { Separator } from '$lib/components/ui/separator';
-	import { FrappeDonutChart } from '$lib/components/charts';
+	import { DonutChart } from '$lib/components/charts';
 	import type { RecordModel } from 'pocketbase';
 	import { page } from '$app/stores';
 	import { applyAction, enhance } from '$app/forms';
@@ -121,12 +121,14 @@
 		</form>
 	</div>
 	<Separator />
-	<div class="grid grid-cols-6 grid-rows-6 gap-4 justify-center justify-self-center w-full p-4">
-		<FrappeDonutChart
-			chartIdx={1}
-			chartName="Expenses by Category"
-			gridDimensionClasses="col-span-3"
-		/>
+	<div class="grid grid-cols-6 gap-4 justify-center justify-self-center w-full p-4">
+		<div class="col-span-3 xl:col-span-2">
+			<DonutChart
+				chartIdx={1}
+				chartName="Expenses by Category"
+				chartRawData={$page.data.expenses}
+			/>
+		</div>
 	</div>
 </div>
 

@@ -84,14 +84,19 @@ export const actions = {
 
 			// use @internationalized/date to fix timezone issues
 			const nativeTodayDate = new Date();
-			const localDate = fromDate(new Date(form.data.date), getLocalTimeZone())
-				.set({
-					hour: nativeTodayDate.getHours(),
-					minute: nativeTodayDate.getMinutes(),
-					second: nativeTodayDate.getSeconds(),
-					millisecond: nativeTodayDate.getMilliseconds()
-				})
-				.add({ days: 1 });
+			const localDate = fromDate(nativeTodayDate, getLocalTimeZone()).set({
+				year: nativeTodayDate.getFullYear(),
+				month: nativeTodayDate.getMonth() + 1,
+				day: nativeTodayDate.getDate()
+			});
+			// const localDate = fromDate(new Date(form.data.date), getLocalTimeZone())
+			// 	.set({
+			// 		hour: nativeTodayDate.getHours(),
+			// 		minute: nativeTodayDate.getMinutes(),
+			// 		second: nativeTodayDate.getSeconds(),
+			// 		millisecond: nativeTodayDate.getMilliseconds()
+			// 	})
+			// 	.add({ days: 1 });
 
 			// make request to create new expense record
 			await event.locals.pb.collection('income').create({
@@ -168,12 +173,14 @@ export const actions = {
 			second: 0,
 			millisecond: 0
 		});
-		let newEndDate = fromDate(new Date(form.data.end), getLocalTimeZone()).set({
-			hour: 23,
-			minute: 59,
-			second: 59,
-			millisecond: 999
-		});
+		let newEndDate = fromDate(new Date(form.data.end), getLocalTimeZone())
+			.set({
+				hour: 23,
+				minute: 59,
+				second: 59,
+				millisecond: 999
+			})
+			.add({ days: 1 });
 
 		/**
 		 * update beginning and end dates

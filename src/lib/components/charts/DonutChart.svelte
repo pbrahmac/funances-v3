@@ -10,9 +10,9 @@
 	// props
 	export let chartIdx: number;
 	export let chartName: string;
-	export let gridDimensionClasses: string = 'col-span-full';
+	export let chartRawData: RecordModel[];
 
-	$: chartData = prepExpensesForChart($page.data.expenses);
+	$: chartData = prepExpensesForChart(chartRawData);
 	let chart: ApexCharts;
 	afterUpdate(async () => {
 		// const FrappeCharts = await import('frappe-charts/dist/frappe-charts.esm');
@@ -47,7 +47,7 @@
 	});
 </script>
 
-<div class={cn(gridDimensionClasses)}>
+<div>
 	<Card.Root class="min-w-fit">
 		<Card.Header>
 			<Card.Title class="text-center">{chartName}</Card.Title>

@@ -1,7 +1,13 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
 import { dateWindow, formatDate, serializeNonPOJOs } from '$lib/utils';
-import { fromDate, getLocalTimeZone } from '@internationalized/date';
+import {
+	fromDate,
+	getLocalTimeZone,
+	parseAbsoluteToLocal,
+	parseDateTime,
+	toZoned
+} from '@internationalized/date';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 import { z } from 'zod';
@@ -181,7 +187,8 @@ export const actions = {
 
 			// get details of to be deleted expense
 			const deletedExpense = await event.locals.pb.collection('expenses').getOne(form.data.id);
-			const deletedExpenseDate = fromDate(deletedExpense.date, getLocalTimeZone());
+			const isoDate = deletedExpense.date.replace(' ', 'T');
+			const deletedExpenseDate = parseAbsoluteToLocal(isoDate);
 
 			// delete record
 			await event.locals.pb.collection('expenses').delete(form.data.id);
@@ -234,7 +241,8 @@ export const actions = {
 				const deletedExpense = await event.locals.pb
 					.collection('expenses')
 					.getOne(itemId, { requestKey: null });
-				const deletedExpenseDate = fromDate(deletedExpense.date, getLocalTimeZone());
+				const isoDate = deletedExpense.date.replace(' ', 'T');
+				const deletedExpenseDate = parseAbsoluteToLocal(isoDate);
 
 				// delete record
 				await event.locals.pb.collection('expenses').delete(itemId, { requestKey: null });
@@ -294,12 +302,14 @@ export const actions = {
 			second: 0,
 			millisecond: 0
 		});
-		let newEndDate = fromDate(new Date(form.data.end), getLocalTimeZone()).set({
-			hour: 23,
-			minute: 59,
-			second: 59,
-			millisecond: 999
-		});
+		let newEndDate = fromDate(new Date(form.data.end), getLocalTimeZone())
+			.set({
+				hour: 23,
+				minute: 59,
+				second: 59,
+				millisecond: 999
+			})
+			.add({ days: 1 });
 
 		/**
 		 * update beginning and end dates

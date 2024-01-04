@@ -1,5 +1,5 @@
 import BarChart from './BarChart.svelte';
-import FrappeDonutChart from './FrappeDonutChart.svelte';
+import DonutChart from './DonutChart.svelte';
 import SparklineChart from './SparklineChart.svelte';
 
-export { BarChart, FrappeDonutChart, SparklineChart };
+export { BarChart, DonutChart, SparklineChart };
