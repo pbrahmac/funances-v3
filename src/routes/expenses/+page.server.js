@@ -1,30 +1,13 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
-import { formatDate, serializeNonPOJOs } from '$lib/utils';
+import { dateWindow, formatDate, serializeNonPOJOs } from '$lib/utils';
 import { fromDate, getLocalTimeZone } from '@internationalized/date';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 import { z } from 'zod';
 
-/**
- * Returns two dates in the LOCAL time zone: today and 1 month before today
- */
-const dateWindow = () => {
-	const localTZ = getLocalTimeZone();
-	let beginningDate = fromDate(new Date(), localTZ)
-		.subtract({ months: 1 })
-		.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-	let endDate = fromDate(new Date(), localTZ).set({
-		hour: 23,
-		minute: 59,
-		second: 59,
-		millisecond: 999
-	});
-	return [beginningDate, endDate];
-};
-
 // Constants and initial variables
-let [beginningDate, endDate] = [...dateWindow()];
+let [beginningDate, endDate] = [...dateWindow('month')];
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {

@@ -1,35 +1,13 @@
 import { addIncomeSchema } from '$lib/schemas/addIncome';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
-import { formatDate } from '$lib/utils';
+import { dateWindow, formatDate } from '$lib/utils';
 import { fromDate, getLocalTimeZone, today } from '@internationalized/date';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 import { z } from 'zod';
 
-/**
- * Returns two dates in the LOCAL time zone: today and Jan 1
- */
-const dateWindow = () => {
-	const localTZ = getLocalTimeZone();
-	let beginningDate = fromDate(new Date(`${today(localTZ).year}-01-01`), localTZ)
-		.set({
-			hour: 0,
-			minute: 0,
-			second: 0,
-			millisecond: 0
-		})
-		.add({ days: 1 });
-	let endDate = fromDate(new Date(), localTZ).set({
-		hour: 23,
-		minute: 59,
-		second: 59,
-		millisecond: 999
-	});
-	return [beginningDate, endDate];
-};
-
 // Constants and initial variables
-let [beginningDate, endDate] = [...dateWindow()];
+let [beginningDate, endDate] = [...dateWindow('ytd')];
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {

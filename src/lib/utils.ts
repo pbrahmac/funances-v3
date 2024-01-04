@@ -1,4 +1,4 @@
-import type { ZonedDateTime } from '@internationalized/date';
+import { fromDate, getLocalTimeZone, today, type ZonedDateTime } from '@internationalized/date';
 import { clsx, type ClassValue } from 'clsx';
 import type { RecordModel } from 'pocketbase';
 import { cubicOut } from 'svelte/easing';
@@ -319,4 +319,79 @@ export const monthlyTotalIncomes = (rawIncomeTotals: RecordModel[]) => {
 		monthIncomeMap.set(monthIdx, (monthIncomeMap.get(monthIdx) ?? 0) + postTaxIncome);
 	});
 	return Array.from(monthIncomeMap.values());
+};
+
+/**
+ * Returns two dates in the LOCAL time zone: today and `timeRange` duration before today
+ * @param the time range you want to go back to from today
+ */
+export const dateWindow = (timeRange: string) => {
+	const localTZ = getLocalTimeZone();
+	let beginningDate = fromDate(new Date(), localTZ);
+	let endDate = fromDate(new Date(), localTZ).set({
+		hour: 23,
+		minute: 59,
+		second: 59,
+		millisecond: 999
+	});
+
+	switch (timeRange) {
+		case 'month':
+			beginningDate = beginningDate
+				.subtract({ months: 1 })
+				.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+			break;
+		case 'quarter':
+			const quarter = Math.floor((today(localTZ).month + 2) / 3);
+			const startMonth = (quarter - 1) * 3 + 1;
+			beginningDate = beginningDate.set({
+				month: startMonth,
+				day: 1,
+				hour: 0,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+			break;
+		case 'ytd':
+			beginningDate = beginningDate.set({
+				month: 1,
+				day: 1,
+				hour: 0,
+				minute: 0,
+				second: 0,
+				millisecond: 0
+			});
+			break;
+		case 'year':
+			beginningDate = beginningDate
+				.subtract({ years: 1 })
+				.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+			break;
+
+		default:
+			throw new Error('Invalid time range preset.');
+	}
+	return [beginningDate, endDate];
+};
+
+export const prepExpensesForChart = (expenses: RecordModel[]) => {
+	let aggregateMap = new Map<string, [string, number]>();
+	expenses.forEach((expense) => {
+		const [amount, label, color] = [
+			expense.amount,
+			expense.expand?.expense_type.type,
+			expense.expand?.expense_type.tagColor
+		];
+		if (!aggregateMap.get(label)) {
+			aggregateMap.set(label, [color, amount]);
+		} else {
+			aggregateMap.set(label, [color, aggregateMap.get(label)?.[1] + amount]);
+		}
+	});
+	const dataColors = [...aggregateMap.values()].map((val) => val[0]);
+	const dataValues = [...aggregateMap.values()].map((val) => val[1]);
+	const dataLabels = [...aggregateMap.keys()];
+
+	return { values: dataValues, labels: dataLabels, colors: dataColors };
 };

@@ -1,23 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { afterUpdate } from 'svelte';
 	import type { ApexOptions } from 'apexcharts';
 	import * as Card from '$lib/components/ui/card';
-	import { cn, formatCurrency } from '$lib/utils';
+	import { cn, formatCurrency, prepExpensesForChart } from '$lib/utils';
+	import type { Writable } from 'svelte/store';
+	import type { RecordModel } from 'pocketbase';
+	import { page } from '$app/stores';
 
 	// props
 	export let chartIdx: number;
 	export let chartName: string;
-	export let chartData: { values: number[]; labels: string[]; colors: string[] };
 	export let gridDimensionClasses: string = 'col-span-full';
 
-	onMount(async () => {
-		const FrappeCharts = await import('frappe-charts/dist/frappe-charts.esm');
+	$: chartData = prepExpensesForChart($page.data.expenses);
+	let chart: ApexCharts;
+	afterUpdate(async () => {
+		// const FrappeCharts = await import('frappe-charts/dist/frappe-charts.esm');
 		const ApexCharts = await import('apexcharts');
 
 		let apexOptions: ApexOptions = {
 			chart: {
 				type: 'donut',
 				fontFamily: 'Poppins'
+				// animations: { dynamicAnimation: { enabled: false } }
 			},
 			series: chartData.values,
 			labels: chartData.labels,
@@ -36,24 +41,9 @@
 			}
 		};
 
-		let chart = new ApexCharts.default(document.getElementById(`chart-${chartIdx}`), apexOptions);
+		chart = new ApexCharts.default(document.getElementById(`chart-${chartIdx}`), apexOptions);
 		chart.render();
-
-		const data = {
-			labels: chartData.labels,
-			datasets: [
-				{
-					name: 'Donut',
-					values: chartData.values
-				}
-			]
-		};
-		// new FrappeCharts.Chart(`#chart-${chartIdx}`, {
-		// 	title: chartName,
-		// 	data: data,
-		// 	type: 'donut',
-		// 	colors: chartData.colors
-		// });
+		chart.updateSeries(chartData.values);
 	});
 </script>
 
