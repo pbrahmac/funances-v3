@@ -1,36 +1,34 @@
 <script lang="ts">
-	import { afterUpdate } from 'svelte';
-	import type { ApexOptions } from 'apexcharts';
 	import * as Card from '$lib/components/ui/card';
-	import { cn, formatCurrency, prepExpensesForChart } from '$lib/utils';
-	import type { Writable } from 'svelte/store';
+	import { formatCurrency, prepExpensesForChart } from '$lib/utils';
+	import type { ApexOptions } from 'apexcharts';
 	import type { RecordModel } from 'pocketbase';
-	import { page } from '$app/stores';
+	import { afterUpdate, onMount } from 'svelte';
 
 	// props
 	export let chartIdx: number;
 	export let chartName: string;
 	export let chartRawData: RecordModel[];
+	export let chartEmptyText: string = 'Nothing to show.';
 
 	$: chartData = prepExpensesForChart(chartRawData);
 	let chart: ApexCharts;
-	afterUpdate(async () => {
-		// const FrappeCharts = await import('frappe-charts/dist/frappe-charts.esm');
+	onMount(async () => {
 		const ApexCharts = await import('apexcharts');
 
 		let apexOptions: ApexOptions = {
-			chart: {
-				type: 'donut',
-				fontFamily: 'Poppins'
-				// animations: { dynamicAnimation: { enabled: false } }
-			},
 			series: chartData.values,
 			labels: chartData.labels,
 			colors: chartData.colors,
+			chart: {
+				type: 'donut',
+				fontFamily: 'Poppins'
+			},
 			legend: { show: false },
 			stroke: { show: false },
 			dataLabels: { enabled: false },
 			states: { hover: { filter: { type: 'none' } } },
+			noData: { text: chartEmptyText, style: { fontFamily: 'Poppins' } },
 			tooltip: {
 				fillSeriesColor: false,
 				followCursor: false,
@@ -42,8 +40,11 @@
 		};
 
 		chart = new ApexCharts.default(document.getElementById(`chart-${chartIdx}`), apexOptions);
-		chart.render();
-		chart.updateSeries(chartData.values);
+		await chart.render();
+	});
+
+	afterUpdate(async () => {
+		await chart.updateSeries(chartData.values);
 	});
 </script>
 

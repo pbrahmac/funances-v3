@@ -6,7 +6,7 @@
 	import { calcLastMonthRatio, dateWindow, formatCurrency, monthIdxToName } from '$lib/utils';
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
 	import { Separator } from '$lib/components/ui/separator';
-	import { DonutChart } from '$lib/components/charts';
+	import { CarbonDonutChart, ProgressBarChart } from '$lib/components/charts';
 	import type { RecordModel } from 'pocketbase';
 	import { page } from '$app/stores';
 	import { applyAction, enhance } from '$app/forms';
@@ -58,7 +58,7 @@
 		{ label: 'YTD' },
 		{ label: 'Year' }
 	];
-	$: selected = 'Month';
+	$: selected = $page.data.chosenPreset;
 
 	const df = new DateFormatter('en-US', { dateStyle: 'medium' });
 	const localTZ = getLocalTimeZone();
@@ -69,11 +69,13 @@
 
 	// chart data update
 	let expensesStore = writable($page.data.expenses);
+	let incomesStore = writable($page.data.incomes);
 	const submitUpdateTimeRange: SubmitFunction = () => {
 		return async ({ result }) => {
 			if (result.type == 'success') {
 				await invalidateAll();
 				expensesStore.set($page.data.expenses);
+				incomesStore.set($page.data.incomes);
 			}
 			await applyAction(result);
 		};
@@ -87,7 +89,9 @@
 </svelte:head>
 
 <div class="fullPageContainer p-6">
-	<div class="flex justify-between items-center pb-6">
+	<div
+		class="flex flex-wrap justify-center md:justify-between items-center space-y-4 md:space-y-0 pb-6"
+	>
 		<Button disabled variant="outline">
 			<Calendar class="mr-2 w-4 h-4" />
 			{`${df.format($timeRangeStore.beginningDate.toDate(localTZ))} - ${df.format(
@@ -121,10 +125,11 @@
 		</form>
 	</div>
 	<Separator />
+	<ProgressBarChart {expensesStore} {incomesStore} allocations={$page.data.allocations} />
 	<div class="grid grid-cols-6 gap-4 justify-center justify-self-center w-full p-4">
-		<div class="col-span-3 xl:col-span-2">
-			<DonutChart
-				chartIdx={1}
+		<div class="col-span-full md:col-span-3 xl:col-span-2">
+			<CarbonDonutChart
+				chartIdx={3}
 				chartName="Expenses by Category"
 				chartRawData={$page.data.expenses}
 			/>
