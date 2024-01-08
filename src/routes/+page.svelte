@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MobileBentoGrid, MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
+	import { BentoGrid, MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';
@@ -89,80 +89,49 @@
 </svelte:head>
 
 <div class="fullPageContainer p-6">
-	<div
-		class="flex flex-wrap justify-center md:justify-between items-center space-y-4 md:space-y-0 pb-6"
-	>
-		<Button disabled variant="outline">
-			<Calendar class="mr-2 w-4 h-4" />
-			{`${df.format($timeRangeStore.beginningDate.toDate(localTZ))} - ${df.format(
-				$timeRangeStore.endDate.toDate(localTZ)
-			)}`}
-		</Button>
-		<form
-			method="post"
-			action="?/updateWindow"
-			class="flex items-center justify-end space-x-4"
-			use:enhance={submitUpdateTimeRange}
+	<div class="flex flex-col items-center w-full">
+		<!-- time range nav -->
+		<div
+			class="w-full xl:max-w-7xl flex flex-wrap justify-center md:justify-between items-center space-y-4 md:space-y-0 pb-6"
 		>
-			{#each timeRangeItems as item}
-				<button
-					type="submit"
-					class={buttonVariants({ variant: 'ghost' })}
-					class:bg-secondary={selected === item.label}
-					on:click={() => {
-						selected = item.label;
-						let [newBeginningDate, newEndDate] = dateWindow(item.label.toLowerCase());
-						$timeRangeStore = {
-							beginningDate: toCalendarDate(newBeginningDate),
-							endDate: toCalendarDate(newEndDate)
-						};
-					}}
-				>
-					{item.label}
-				</button>
-			{/each}
-			<input type="hidden" name="start" bind:value={$timeRangeStore.beginningDate} />
-			<input type="hidden" name="end" bind:value={$timeRangeStore.endDate} />
-			<input type="hidden" name="preset" bind:value={selected} />
-		</form>
+			<Button disabled variant="outline">
+				<Calendar class="mr-2 w-4 h-4" />
+				{`${df.format($timeRangeStore.beginningDate.toDate(localTZ))} - ${df.format(
+					$timeRangeStore.endDate.toDate(localTZ)
+				)}`}
+			</Button>
+			<form
+				method="post"
+				action="?/updateWindow"
+				class="flex items-center justify-end space-x-4"
+				use:enhance={submitUpdateTimeRange}
+			>
+				{#each timeRangeItems as item}
+					<button
+						type="submit"
+						class={buttonVariants({ variant: 'ghost' })}
+						class:bg-secondary={selected === item.label}
+						on:click={() => {
+							selected = item.label;
+							let [newBeginningDate, newEndDate] = dateWindow(item.label.toLowerCase());
+							$timeRangeStore = {
+								beginningDate: toCalendarDate(newBeginningDate),
+								endDate: toCalendarDate(newEndDate)
+							};
+						}}
+					>
+						{item.label}
+					</button>
+				{/each}
+				<input type="hidden" name="start" bind:value={$timeRangeStore.beginningDate} />
+				<input type="hidden" name="end" bind:value={$timeRangeStore.endDate} />
+				<input type="hidden" name="preset" bind:value={selected} />
+			</form>
+		</div>
+		<Separator />
+		<ProgressBarChart {expensesStore} {incomesStore} allocations={$page.data.allocations} />
+		<BentoGrid {expensesStore} />
 	</div>
-	<Separator />
-	<ProgressBarChart {expensesStore} {incomesStore} allocations={$page.data.allocations} />
-	<MobileBentoGrid {expensesStore} />
-	<!-- medium grid -->
-	<!-- <div
-		class="hidden md:grid grid-cols-6 grid-rows-6 gap-4 justify-center justify-self-center w-full p-4"
-	>
-		<div
-			class="col-span-full md:col-span-3 xl:col-span-2 row-span-full md:row-span-2 xl:row-span-2"
-		>
-			<CarbonDonutChart
-				chartIdx={2}
-				chartName="Expenses by Category"
-				chartRawData={$page.data.expenses}
-			/>
-		</div>
-		<div
-			class="col-span-full md:col-span-3 xl:col-span-2 row-span-full md:row-span-1 xl:row-span-1"
-		>
-			<Card.Root class="w-full h-full">
-				<Card.Header>
-					<Card.Title class="text-center">Card here</Card.Title>
-				</Card.Header>
-				<Card.Content class="flex items-center justify-center">Card content here</Card.Content>
-			</Card.Root>
-		</div>
-		<div
-			class="col-span-full md:col-span-3 xl:col-span-2 row-span-full md:row-span-1 xl:row-span-1"
-		>
-			<Card.Root class="w-full h-full">
-				<Card.Header>
-					<Card.Title class="text-center">Card here</Card.Title>
-				</Card.Header>
-				<Card.Content class="flex items-center justify-center">Card content here</Card.Content>
-			</Card.Root>
-		</div>
-	</div> -->
 </div>
 
 <!-- <div class="fullPageContainer p-6">

@@ -62,8 +62,8 @@
 	>
 		{message}
 	</div>
-	<Progress value={expenseTotal} max={incomeTotal} class="w-full md:w-1/2" />
-	<div class="flex items-center justify-between space-x-2 w-full md:w-7/12 font-bold">
+	<Progress value={expenseTotal} max={incomeTotal} class="w-full md:w-1/2 md:max-w-2xl" />
+	<div class="flex items-center justify-between space-x-2 w-full md:w-1/2 md:max-w-2xl font-bold">
 		<p>{formatCurrency(expenseTotal)}</p>
 		<p>{formatCurrency(incomeTotal)}</p>
 	</div>
