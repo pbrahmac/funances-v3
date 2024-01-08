@@ -3,6 +3,7 @@
 	import { checkColorContrast, cn, getTextColorFromBackground } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
 	import { clickToCopyAction } from 'svelte-legos';
+	import { toast } from 'svelte-sonner';
 
 	// props
 	export let categories: RecordModel[];
@@ -31,9 +32,15 @@
 						<Table.Cell class="text-right">
 							<button
 								use:clickToCopyAction={category.tagColor}
-								class="px-2 py-1 rounded font-mono cursor-copy"
-								style={`background-color: ${category.tagColor}`}>{category.tagColor}</button
+								on:copy-done={() => toast.success('Copied!')}
+								class={cn(
+									'px-2 py-1 rounded font-mono cursor-copy',
+									getTextColorFromBackground(category.tagColor)
+								)}
+								style={`background-color: ${category.tagColor}`}
 							>
+								{category.tagColor}
+							</button>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
