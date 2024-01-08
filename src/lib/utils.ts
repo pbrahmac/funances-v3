@@ -200,14 +200,14 @@ export const formatDatepickerString = (
 	}
 };
 
-export const formatCurrency = (amount: number): string => {
+export const formatCurrency = (amount: number, rounded: boolean = false): string => {
 	if (amount == -1) {
 		return '--';
 	}
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
-		minimumFractionDigits: 2
+		minimumFractionDigits: rounded ? 0 : 2
 	}).format(amount);
 };
 

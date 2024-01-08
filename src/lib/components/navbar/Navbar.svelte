@@ -66,8 +66,8 @@
 		<div class="flex items-center justify-center space-x-2 px-2">
 			{#if user}
 				<Button variant="secondary" disabled>
-					<Search class="w-4 h-4 mr-2" />
-					<kbd class="font-mono"> with ⌘K </kbd>
+					<Search class="w-4 h-4 mr-1" />
+					<kbd class="font-sans"> with ⌘K </kbd>
 				</Button>
 			{/if}
 			<LightSwitch {darkModeStore} />

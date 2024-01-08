@@ -45,7 +45,10 @@
 					: ratio > 0.5
 					? 'decoration-yellow-400'
 					: 'decoration-emerald-400';
-			message = `${formatPercentage(expenseTotal / incomeTotal, 1, false)} spent!`;
+			message = `${formatPercentage(1 - ratio, 0, false)} (${formatCurrency(
+				incomeTotal - expenseTotal,
+				true
+			)}) left to spend!`;
 		}
 	});
 </script>
@@ -60,4 +63,8 @@
 		{message}
 	</div>
 	<Progress value={expenseTotal} max={incomeTotal} class="w-full md:w-1/2" />
+	<div class="flex items-center justify-between space-x-2 w-full md:w-7/12 font-bold">
+		<p>{formatCurrency(expenseTotal)}</p>
+		<p>{formatCurrency(incomeTotal)}</p>
+	</div>
 </div>
