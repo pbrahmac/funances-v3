@@ -1,5 +1,11 @@
-import { datePresetSchema } from '$lib/schemas/dateRangeSchema';
-import { dateWindow, formatDate, monthlyTotalExpenses, monthlyTotalIncomes } from '$lib/utils';
+import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
+import {
+	dateWindow,
+	formatDate,
+	monthlyTotalExpenses,
+	monthlyTotalIncomes,
+	stringToZonedDateTime
+} from '$lib/utils';
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 
@@ -45,48 +51,18 @@ export async function load(event) {
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-	month: async (event) => {
-		const form = await superValidate(event, datePresetSchema);
+	updateWindow: async (event) => {
+		const form = await superValidate(event, dateRangeSchema);
 
 		// validate errors
 		if (!form.valid) {
 			return fail(400, { form });
 		}
 
-		[beginningDate, endDate] = dateWindow(form.data.preset.toLowerCase());
-		chosenPreset = form.data.preset;
-	},
-	quarter: async (event) => {
-		const form = await superValidate(event, datePresetSchema);
-
-		// validate errors
-		if (!form.valid) {
-			return fail(400, { form });
-		}
-
-		[beginningDate, endDate] = dateWindow(form.data.preset.toLowerCase());
-		chosenPreset = form.data.preset;
-	},
-	ytd: async (event) => {
-		const form = await superValidate(event, datePresetSchema);
-
-		// validate errors
-		if (!form.valid) {
-			return fail(400, { form });
-		}
-
-		[beginningDate, endDate] = dateWindow(form.data.preset.toLowerCase());
-		chosenPreset = form.data.preset;
-	},
-	year: async (event) => {
-		const form = await superValidate(event, datePresetSchema);
-
-		// validate errors
-		if (!form.valid) {
-			return fail(400, { form });
-		}
-
-		[beginningDate, endDate] = dateWindow(form.data.preset.toLowerCase());
-		chosenPreset = form.data.preset;
+		[beginningDate, endDate] = [
+			stringToZonedDateTime(form.data.start, 'start'),
+			stringToZonedDateTime(form.data.end, 'end')
+		];
+		chosenPreset = form.data.preset ?? '';
 	}
 };

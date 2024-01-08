@@ -70,6 +70,8 @@
 	// chart data update
 	let expensesStore = writable($page.data.expenses);
 	let incomesStore = writable($page.data.incomes);
+
+	// progressive enhancement functions
 	const submitUpdateTimeRange: SubmitFunction = () => {
 		return async ({ result }) => {
 			if (result.type == 'success') {
@@ -80,8 +82,6 @@
 			await applyAction(result);
 		};
 	};
-
-	// donut chart
 </script>
 
 <svelte:head>
@@ -100,6 +100,7 @@
 		</Button>
 		<form
 			method="post"
+			action="?/updateWindow"
 			class="flex items-center justify-end space-x-4"
 			use:enhance={submitUpdateTimeRange}
 		>
@@ -116,11 +117,12 @@
 							endDate: toCalendarDate(newEndDate)
 						};
 					}}
-					formaction={`?/${item.label.toLowerCase()}`}
 				>
 					{item.label}
 				</button>
 			{/each}
+			<input type="hidden" name="start" bind:value={$timeRangeStore.beginningDate} />
+			<input type="hidden" name="end" bind:value={$timeRangeStore.endDate} />
 			<input type="hidden" name="preset" bind:value={selected} />
 		</form>
 	</div>

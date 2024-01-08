@@ -29,7 +29,7 @@
 			message = 'No income for this time period.';
 			underlineColor = 'decoration-red-400';
 		} else if (expenseTotal === 0) {
-			message = "Haven't even spent a penny yet? Wowww.";
+			message = "Haven't spent anything? Wowww.";
 			underlineColor = 'decoration-emerald-400';
 		} else if (expenseTotal > incomeTotal) {
 			message = `You're ${formatCurrency(expenseTotal - incomeTotal)} in the hole.`;

@@ -1,6 +1,6 @@
 import { addIncomeSchema } from '$lib/schemas/addIncome';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
-import { dateWindow, formatDate } from '$lib/utils';
+import { dateWindow, formatDate, stringToZonedDateTime } from '$lib/utils';
 import { fromDate, getLocalTimeZone, today } from '@internationalized/date';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
@@ -83,20 +83,7 @@ export const actions = {
 			const user_id = event.locals.user?.id;
 
 			// use @internationalized/date to fix timezone issues
-			const nativeTodayDate = new Date();
-			const localDate = fromDate(nativeTodayDate, getLocalTimeZone()).set({
-				year: nativeTodayDate.getFullYear(),
-				month: nativeTodayDate.getMonth() + 1,
-				day: nativeTodayDate.getDate()
-			});
-			// const localDate = fromDate(new Date(form.data.date), getLocalTimeZone())
-			// 	.set({
-			// 		hour: nativeTodayDate.getHours(),
-			// 		minute: nativeTodayDate.getMinutes(),
-			// 		second: nativeTodayDate.getSeconds(),
-			// 		millisecond: nativeTodayDate.getMilliseconds()
-			// 	})
-			// 	.add({ days: 1 });
+			const localDate = stringToZonedDateTime(form.data.date);
 
 			// make request to create new expense record
 			await event.locals.pb.collection('income').create({

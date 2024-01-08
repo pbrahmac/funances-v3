@@ -1,6 +1,6 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
-import { dateWindow, formatDate, serializeNonPOJOs } from '$lib/utils';
+import { dateWindow, formatDate, serializeNonPOJOs, stringToZonedDateTime } from '$lib/utils';
 import {
 	fromDate,
 	getLocalTimeZone,
@@ -105,15 +105,7 @@ export const actions = {
 			const user_id = event.locals.user?.id;
 
 			// use @internationalized/date to fix timezone issues
-			const nativeTodayDate = new Date();
-			const localDate = fromDate(new Date(form.data.date), getLocalTimeZone())
-				.set({
-					hour: nativeTodayDate.getHours(),
-					minute: nativeTodayDate.getMinutes(),
-					second: nativeTodayDate.getSeconds(),
-					millisecond: nativeTodayDate.getMilliseconds()
-				})
-				.add({ days: 1 });
+			const localDate = stringToZonedDateTime(form.data.date);
 
 			// make request to create new expense record
 			await event.locals.pb.collection('expenses').create({

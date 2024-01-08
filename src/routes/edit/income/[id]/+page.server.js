@@ -1,5 +1,5 @@
 import { editIncomeSchema } from '$lib/schemas/editIncome';
-import { formatDatepickerString } from '$lib/utils';
+import { formatDatepickerString, stringToZonedDateTime } from '$lib/utils';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 
@@ -61,12 +61,8 @@ export const actions = {
 
 			const id = event.params.id;
 
-			// add current time to inputted date
-			const inputtedDate = new Date(form.data.date);
-			let finalDate = new Date();
-			finalDate.setDate(inputtedDate.getUTCDate());
-			finalDate.setMonth(inputtedDate.getUTCMonth());
-			finalDate.setFullYear(inputtedDate.getUTCFullYear());
+			// use @internationalized/date to fix timezone issues
+			const localDate = stringToZonedDateTime(form.data.date);
 
 			// update record in pb
 			await event.locals.pb.collection('income').update(id, {
@@ -78,7 +74,7 @@ export const actions = {
 				benefits: form.data.benefits,
 				retirement_401k: form.data.retirement_401k,
 				is_paycheck: form.data.is_paycheck,
-				date: finalDate.toISOString()
+				date: localDate.toAbsoluteString()
 			});
 		} catch (err) {
 			console.log('Error: ', err);

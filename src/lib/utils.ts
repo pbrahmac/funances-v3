@@ -321,52 +321,77 @@ export const monthlyTotalIncomes = (rawIncomeTotals: RecordModel[]) => {
 	return Array.from(monthIncomeMap.values());
 };
 
-/**
- * Returns two dates in the LOCAL time zone: today and `timeRange` duration before today
- * @param the time range you want to go back to from today
- */
-export const dateWindow = (timeRange: string) => {
-	const localTZ = getLocalTimeZone();
-	let beginningDate = fromDate(new Date(), localTZ);
-	let endDate = fromDate(new Date(), localTZ).set({
+export const stringToZonedDateTime = (
+	dateStr: string,
+	timeOfDay: 'start' | 'end' | 'keep' = 'keep',
+	timeToKeep: Date = new Date()
+) => {
+	const nativeDate = new Date(dateStr);
+	let zonedDateTime = fromDate(nativeDate, getLocalTimeZone()).add({ days: 1 });
+	switch (timeOfDay) {
+		case 'start':
+			zonedDateTime = setToStartOfDay(zonedDateTime);
+			break;
+		case 'end':
+			zonedDateTime = setToEndOfDay(zonedDateTime);
+			break;
+		case 'keep':
+			const [hour, min, sec, ms] = [
+				timeToKeep.getHours(),
+				timeToKeep.getMinutes(),
+				timeToKeep.getSeconds(),
+				timeToKeep.getMilliseconds()
+			];
+			zonedDateTime = zonedDateTime.set({ hour: hour, minute: min, second: sec, millisecond: ms });
+			break;
+		default:
+			break;
+	}
+	return zonedDateTime;
+};
+
+export const setToStartOfDay = (date: ZonedDateTime) => {
+	return date.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+};
+
+export const setToEndOfDay = (date: ZonedDateTime) => {
+	return date.set({
 		hour: 23,
 		minute: 59,
 		second: 59,
 		millisecond: 999
 	});
+};
+
+/**
+ * Returns two dates in the LOCAL time zone: today and `timeRange` duration before today
+ * @param timeRange the time range you want to go back to from today
+ */
+export const dateWindow = (timeRange: string) => {
+	const localTZ = getLocalTimeZone();
+	let beginningDate = fromDate(new Date(), localTZ);
+	let endDate = setToEndOfDay(fromDate(new Date(), localTZ));
 
 	switch (timeRange) {
 		case 'month':
-			beginningDate = beginningDate
-				.subtract({ months: 1 })
-				.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+			beginningDate = setToStartOfDay(beginningDate).subtract({ months: 1 });
 			break;
 		case 'quarter':
 			const quarter = Math.floor((today(localTZ).month + 2) / 3);
 			const startMonth = (quarter - 1) * 3 + 1;
-			beginningDate = beginningDate.set({
+			beginningDate = setToStartOfDay(beginningDate).set({
 				month: startMonth,
-				day: 1,
-				hour: 0,
-				minute: 0,
-				second: 0,
-				millisecond: 0
+				day: 1
 			});
 			break;
 		case 'ytd':
-			beginningDate = beginningDate.set({
+			beginningDate = setToStartOfDay(beginningDate).set({
 				month: 1,
-				day: 1,
-				hour: 0,
-				minute: 0,
-				second: 0,
-				millisecond: 0
+				day: 1
 			});
 			break;
 		case 'year':
-			beginningDate = beginningDate
-				.subtract({ years: 1 })
-				.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+			beginningDate = setToStartOfDay(beginningDate).subtract({ years: 1 });
 			break;
 
 		default:
