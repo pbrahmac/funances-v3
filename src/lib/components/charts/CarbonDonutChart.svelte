@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import { formatCurrency, prepExpensesForChart } from '$lib/utils';
+	import { formatCurrency, expensesToCategoryArrays } from '$lib/utils';
 	import { Alignments, DonutChart, type DonutChartOptions } from '@carbon/charts';
 	import '@carbon/charts/styles.css';
 	import type { RecordModel } from 'pocketbase';
@@ -12,7 +12,7 @@
 	export let chartRawData: RecordModel[];
 	export let chartEmptyText: string = 'Nothing to show.';
 
-	$: chartData = prepExpensesForChart(chartRawData);
+	$: chartData = expensesToCategoryArrays(chartRawData);
 	let chart: DonutChart;
 	onMount(async () => {
 		let carbonData = chartData.values.map((val, idx) => ({
@@ -62,11 +62,11 @@
 </script>
 
 <div>
-	<Card.Root class="min-w-fit aspect-video">
+	<Card.Root class="w-full h-full aspect-video">
 		<Card.Header>
 			<Card.Title class="text-center">{chartName}</Card.Title>
 		</Card.Header>
-		<Card.Content class="flex flex-col items-center justify-center h-full">
+		<Card.Content class="flex flex-col items-center justify-center p-0 h-full">
 			<div
 				id={`chart-${chartIdx}`}
 				class="px-8 h-full"
@@ -76,5 +76,6 @@
 				{chartEmptyText}
 			</div>
 		</Card.Content>
+		<Card.Footer />
 	</Card.Root>
 </div>

@@ -400,7 +400,7 @@ export const dateWindow = (timeRange: string) => {
 	return [beginningDate, endDate];
 };
 
-export const prepExpensesForChart = (expenses: RecordModel[]) => {
+export const expensesToCategoryArrays = (expenses: RecordModel[]) => {
 	let aggregateMap = new Map<string, [string, number]>();
 	expenses.forEach((expense) => {
 		const [amount, label, color] = [
@@ -418,5 +418,24 @@ export const prepExpensesForChart = (expenses: RecordModel[]) => {
 	const dataValues = [...aggregateMap.values()].map((val) => val[1]);
 	const dataLabels = [...aggregateMap.keys()];
 
-	return { values: dataValues, labels: dataLabels, colors: dataColors };
+	return { values: dataValues, labels: dataLabels, colors: dataColors, map: aggregateMap };
+};
+
+export const hexToDecimal = (hex: string) => parseInt(hex, 16);
+
+export const checkColorContrast = (color: string) => {
+	const hexColorRegex = /^#[a-fA-F0-9]{6}$/;
+	if (!hexColorRegex.test(color)) {
+		throw new Error('Invalid hex value');
+	}
+
+	const red = hexToDecimal(color.slice(1, 3));
+	const green = hexToDecimal(color.slice(3, 5));
+	const blue = hexToDecimal(color.slice(5));
+
+	return red * 0.299 + green * 0.587 + blue * 0.114 > 186;
+};
+
+export const getTextColorFromBackground = (color: string) => {
+	return checkColorContrast(color) ? 'text-black' : 'text-white';
 };

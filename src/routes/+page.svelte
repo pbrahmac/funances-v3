@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
+	import { MobileBentoGrid, MobileOverviewSwitcher, OverviewCard } from '$lib/components/dashboard';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Card from '$lib/components/ui/card';
@@ -128,15 +128,41 @@
 	</div>
 	<Separator />
 	<ProgressBarChart {expensesStore} {incomesStore} allocations={$page.data.allocations} />
-	<div class="grid grid-cols-6 gap-4 justify-center justify-self-center w-full p-4">
-		<div class="col-span-full md:col-span-3 xl:col-span-2">
+	<MobileBentoGrid {expensesStore} />
+	<!-- medium grid -->
+	<!-- <div
+		class="hidden md:grid grid-cols-6 grid-rows-6 gap-4 justify-center justify-self-center w-full p-4"
+	>
+		<div
+			class="col-span-full md:col-span-3 xl:col-span-2 row-span-full md:row-span-2 xl:row-span-2"
+		>
 			<CarbonDonutChart
-				chartIdx={3}
+				chartIdx={2}
 				chartName="Expenses by Category"
 				chartRawData={$page.data.expenses}
 			/>
 		</div>
-	</div>
+		<div
+			class="col-span-full md:col-span-3 xl:col-span-2 row-span-full md:row-span-1 xl:row-span-1"
+		>
+			<Card.Root class="w-full h-full">
+				<Card.Header>
+					<Card.Title class="text-center">Card here</Card.Title>
+				</Card.Header>
+				<Card.Content class="flex items-center justify-center">Card content here</Card.Content>
+			</Card.Root>
+		</div>
+		<div
+			class="col-span-full md:col-span-3 xl:col-span-2 row-span-full md:row-span-1 xl:row-span-1"
+		>
+			<Card.Root class="w-full h-full">
+				<Card.Header>
+					<Card.Title class="text-center">Card here</Card.Title>
+				</Card.Header>
+				<Card.Content class="flex items-center justify-center">Card content here</Card.Content>
+			</Card.Root>
+		</div>
+	</div> -->
 </div>
 
 <!-- <div class="fullPageContainer p-6">

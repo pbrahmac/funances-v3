@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import { formatCurrency, prepExpensesForChart } from '$lib/utils';
+	import { formatCurrency, expensesToCategoryArrays } from '$lib/utils';
 	import type { ApexOptions } from 'apexcharts';
 	import type { RecordModel } from 'pocketbase';
 	import { afterUpdate, onMount } from 'svelte';
@@ -11,7 +11,7 @@
 	export let chartRawData: RecordModel[];
 	export let chartEmptyText: string = 'Nothing to show.';
 
-	$: chartData = prepExpensesForChart(chartRawData);
+	$: chartData = expensesToCategoryArrays(chartRawData);
 	let chart: ApexCharts;
 	onMount(async () => {
 		const ApexCharts = await import('apexcharts');
