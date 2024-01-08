@@ -255,3 +255,22 @@ export const calcLastMonthRatio = (
 		? 'First month of the year!'
 		: `${formatPercentage(ratio, 1, true)} from last month`;
 };
+
+export const hexToDecimal = (hex: string) => parseInt(hex, 16);
+
+export const checkColorContrast = (color: string) => {
+	const hexColorRegex = /^#[a-fA-F0-9]{6}$/;
+	if (!hexColorRegex.test(color)) {
+		throw new Error('Invalid hex value');
+	}
+
+	const red = hexToDecimal(color.slice(1, 3));
+	const green = hexToDecimal(color.slice(3, 5));
+	const blue = hexToDecimal(color.slice(5));
+
+	return red * 0.299 + green * 0.587 + blue * 0.114 > 186;
+};
+
+export const getTextColorFromBackground = (color: string) => {
+	return checkColorContrast(color) ? 'text-black' : 'text-white';
+};

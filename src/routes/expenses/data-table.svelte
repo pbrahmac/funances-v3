@@ -2,9 +2,8 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { CategoryBadge } from '$lib';
-	import AddExpenseForm from '$lib/components/forms/AddExpenseForm.svelte';
-	import DateRangeForm from '$lib/components/forms/DateRangeForm.svelte';
+	import { AddExpenseForm, DateRangeForm } from '$lib/components/forms';
+	import { CategoryBadge } from '$lib/components/misc';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';

@@ -8,10 +8,14 @@
 </script>
 
 <script lang="ts">
+	import { applyAction, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import * as Select from '$lib/components/ui/select';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { Selected } from 'bits-ui';
 	import type { RecordModel } from 'pocketbase';
+	import { toast } from 'svelte-sonner';
 	import type { SuperValidated } from 'sveltekit-superforms';
 
 	// props
@@ -22,6 +26,19 @@
 
 	// edit allocation selected variables
 	let selected: Selected<string> | undefined = undefined;
+
+	// progressive enhancement functions
+	const submitDeleteAllocation: SubmitFunction = () => {
+		return async ({ result }) => {
+			if (result.type == 'success') {
+				await invalidateAll();
+				toast.success('Deleted allocation.');
+			} else {
+				toast.error('Something went wrong.');
+			}
+			await applyAction(result);
+		};
+	};
 </script>
 
 <div class="mb-4">
@@ -42,16 +59,18 @@
 
 <Form.Root
 	method="POST"
-	action="?/deleteAllocation"
 	{form}
 	schema={deleteAllocationSchema}
 	let:config
 	class="space-y-4 w-full lg:w-2/3"
+	asChild
 >
-	<Form.Item>
-		<Form.Field {config} name="id">
-			<Form.Input type="hidden" value={selected?.value} />
-		</Form.Field>
-	</Form.Item>
-	<Form.Button variant="destructive" disabled={!selected}>Delete</Form.Button>
+	<form action="?/deleteAllocation" method="post" use:enhance={submitDeleteAllocation}>
+		<Form.Item>
+			<Form.Field {config} name="id">
+				<Form.Input type="hidden" value={selected?.value} />
+			</Form.Field>
+		</Form.Item>
+		<Form.Button variant="destructive" disabled={!selected}>Delete</Form.Button>
+	</form>
 </Form.Root>

@@ -79,7 +79,7 @@ export const actions = {
 			const updateData = {
 				type: form.data.category,
 				user_id: event.locals.user?.id,
-				tagColor: form.data.tagColor
+				tagColor: form.data.tagColor?.toLowerCase()
 			};
 
 			// remove undefined keys

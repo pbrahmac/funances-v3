@@ -1,10 +1,13 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
+	import { checkColorContrast, cn, getTextColorFromBackground } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
 	import { clickToCopyAction } from 'svelte-legos';
 
 	// props
 	export let categories: RecordModel[];
+
+	checkColorContrast('#123456');
 </script>
 
 <div class="w-full p-3 flex items-center justify-center">
