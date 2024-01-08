@@ -66,11 +66,15 @@
 		<Card.Header>
 			<Card.Title class="text-center">{chartName}</Card.Title>
 		</Card.Header>
-		{#if chartData.values}
-			<div id={`chart-${chartIdx}`} class="px-8 h-full" />
-		{:else}
-			<div class="text-muted-foreground text-sm">{chartEmptyText}</div>
-		{/if}
-		<Card.Footer />
+		<Card.Content class="flex flex-col items-center justify-center h-full">
+			<div
+				id={`chart-${chartIdx}`}
+				class="px-8 h-full"
+				class:hidden={chartData.values.length < 1}
+			/>
+			<div class="text-muted-foreground text-sm" class:hidden={chartData.values.length > 0}>
+				{chartEmptyText}
+			</div>
+		</Card.Content>
 	</Card.Root>
 </div>
