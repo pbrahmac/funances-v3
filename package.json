@@ -41,6 +41,7 @@
 		"lucide-svelte": "^0.284.0",
 		"pocketbase": "^0.18.0",
 		"radix-icons-svelte": "^1.2.1",
+		"svelte-legos": "^0.2.2",
 		"tailwind-merge": "^1.14.0",
 		"tailwind-variants": "^0.1.14"
 	}

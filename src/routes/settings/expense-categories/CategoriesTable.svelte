@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
 	import type { RecordModel } from 'pocketbase';
+	import { clickToCopyAction } from 'svelte-legos';
 
 	// props
 	export let categories: RecordModel[];
@@ -25,12 +26,11 @@
 							{category.type}
 						</Table.Cell>
 						<Table.Cell class="text-right">
-							<span
-								class="px-2 py-1 rounded font-mono select-none"
-								style={`background-color: ${category.tagColor}`}
+							<button
+								use:clickToCopyAction={category.tagColor}
+								class="px-2 py-1 rounded font-mono cursor-copy"
+								style={`background-color: ${category.tagColor}`}>{category.tagColor}</button
 							>
-								{category.tagColor}
-							</span>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
