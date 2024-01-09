@@ -4,7 +4,7 @@
 	import type { RecordModel } from 'pocketbase';
 	import type { Writable } from 'svelte/store';
 	import { AverageExpenseCard, CategoryListCard } from '.';
-	import { CarbonDonutChart } from '../charts';
+	import { CarbonDonutChart, CarbonSparklineChart } from '../charts';
 
 	// props
 	export let expensesStore: Writable<RecordModel[]>;
@@ -31,6 +31,13 @@
 		<CarbonDonutChart
 			chartIdx={1}
 			chartName="Expenses by Category"
+			chartRawData={$page.data.expenses}
+		/>
+	</div>
+	<div class="col-span-full md:col-span-2 md:row-span-2 xl:col-span-4 xl:row-span-3">
+		<CarbonSparklineChart
+			chartIdx={2}
+			chartName="Monthly Expenses"
 			chartRawData={$page.data.expenses}
 		/>
 	</div>

@@ -10,7 +10,7 @@
 	export let chartIdx: number;
 	export let chartName: string;
 	export let chartRawData: RecordModel[];
-	export let chartEmptyText: string = 'Nothing to show.';
+	export let chartEmptyText = 'Nothing to show.';
 
 	$: chartData = expensesToCategoryArrays(chartRawData);
 	let chart: DonutChart;

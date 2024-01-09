@@ -1,4 +1,10 @@
-import { fromDate, getLocalTimeZone, today, type ZonedDateTime } from '@internationalized/date';
+import {
+	fromDate,
+	getLocalTimeZone,
+	parseAbsoluteToLocal,
+	today,
+	type ZonedDateTime
+} from '@internationalized/date';
 import { clsx, type ClassValue } from 'clsx';
 import type { RecordModel } from 'pocketbase';
 import { cubicOut } from 'svelte/easing';
@@ -231,9 +237,9 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 	]);
 
 	if (format === 'short') {
-		return monthMap.get(idx)?.slice(0, 3);
+		return monthMap.get(idx)?.slice(0, 3) ?? '';
 	} else if (format === 'long') {
-		return monthMap.get(idx);
+		return monthMap.get(idx) ?? '';
 	} else {
 		return 'Invalid';
 	}
@@ -419,6 +425,33 @@ export const expensesToCategoryArrays = (expenses: RecordModel[]) => {
 	const dataLabels = [...aggregateMap.keys()];
 
 	return { values: dataValues, labels: dataLabels, colors: dataColors, map: aggregateMap };
+};
+
+export const expensesToMonthArrays = (expenses: RecordModel[]) => {
+	let aggregateMap = new Map<string, { amount: number; sortKey: ZonedDateTime }>();
+	expenses.forEach((expense) => {
+		const date = parseAbsoluteToLocal(expense.date.replace(' ', 'T'));
+		const key = `${monthIdxToName(date.month - 1, 'short')}-${date.year}`;
+		const amount = expense.amount;
+		if (!aggregateMap.get(key)) {
+			aggregateMap.set(key, { amount: amount, sortKey: date });
+		} else {
+			aggregateMap.set(key, {
+				amount: aggregateMap.get(key)?.amount + amount,
+				sortKey: date
+			});
+		}
+	});
+	const sortedMap = [...aggregateMap.entries()].sort((a, b) => a[1].sortKey.compare(b[1].sortKey));
+
+	const dataMonths = sortedMap.map((pair) => pair[0]);
+	const dataValues = sortedMap.map((pair) => pair[1].amount);
+	const combinedData = sortedMap.map((pair) => ({
+		month: pair[0],
+		value: pair[1].amount
+	}));
+
+	return { months: dataMonths, values: dataValues, combined: combinedData };
 };
 
 export const hexToDecimal = (hex: string) => parseInt(hex, 16);
