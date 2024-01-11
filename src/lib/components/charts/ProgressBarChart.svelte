@@ -4,15 +4,18 @@
 	import type { RecordModel } from 'pocketbase';
 	import { afterUpdate } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 
 	export let expensesStore: Writable<RecordModel[]>;
 	export let incomesStore: Writable<RecordModel[]>;
 	export let allocations: RecordModel[];
 
-	let message: string;
+	let message: string | undefined = undefined;
 	let underlineColor: string;
 	let expenseTotal: number;
 	let incomeTotal: number;
+
+	let loading = true;
 
 	let leftOverPercentage = 1 - allocations.reduce((sum, alloc) => sum + alloc.percentage, 0);
 
@@ -50,21 +53,33 @@
 				true
 			)}) left to spend!`;
 		}
+		loading = false;
 	});
 </script>
 
-<div class="w-full py-4 flex flex-col space-y-4 items-center">
-	<div
-		class={cn(
-			'text-xl md:text-2xl font-bold text-center w-full underline underline-offset-2',
-			underlineColor
-		)}
-	>
-		{message}
+{#if loading}
+	<div class="w-full flex flex-col items-center justify-center space-y-4 py-4">
+		<Skeleton class="w-11/12 md:w-1/3 md:max-w-xl h-4 rounded-full" />
+		<Skeleton class="w-full md:w-1/2 md:max-w-2xl h-2 rounded-full" />
+		<div class="flex items-center justify-between w-full md:w-1/2 md:max-w-2xl">
+			<Skeleton class="w-20 h-4 rounded-full" />
+			<Skeleton class="w-20 h-4 rounded-full" />
+		</div>
 	</div>
-	<Progress value={expenseTotal} max={incomeTotal} class="w-full md:w-1/2 md:max-w-2xl" />
-	<div class="flex items-center justify-between space-x-2 w-full md:w-1/2 md:max-w-2xl font-bold">
-		<p>{formatCurrency(expenseTotal)}</p>
-		<p>{formatCurrency(incomeTotal)}</p>
+{:else}
+	<div class="w-full py-4 flex flex-col space-y-4 items-center">
+		<div
+			class={cn(
+				'text-xl md:text-2xl font-bold text-center w-full underline underline-offset-2',
+				underlineColor
+			)}
+		>
+			{message}
+		</div>
+		<Progress value={expenseTotal} max={incomeTotal} class="w-full md:w-1/2 md:max-w-2xl" />
+		<div class="flex items-center justify-between space-x-2 w-full md:w-1/2 md:max-w-2xl font-bold">
+			<p>{formatCurrency(expenseTotal)}</p>
+			<p>{formatCurrency(incomeTotal)}</p>
+		</div>
 	</div>
-</div>
+{/if}
