@@ -11,12 +11,8 @@
 		chart: {
 			type: 'area',
 			height: 50,
-			sparkline: {
-				enabled: true
-			},
-			toolbar: {
-				show: false
-			}
+			sparkline: { enabled: true },
+			toolbar: { show: false }
 		},
 		tooltip: {
 			enabled: true,
