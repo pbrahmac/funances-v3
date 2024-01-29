@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { cn } from '$lib/utils';
+	import { Loader2 } from 'lucide-svelte';
 	import type { RecordModel } from 'pocketbase';
+	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { AverageExpenseCard, CategoryListCard } from '.';
 	import { DonutChart, LineChart } from '../charts';
-	import { onMount } from 'svelte';
-	import { Loader2 } from 'lucide-svelte';
 
 	// props
 	export let expensesStore: Writable<RecordModel[]>;

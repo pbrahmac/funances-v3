@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Progress } from '$lib/components/ui/progress';
+	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { cn, formatCurrency, formatPercentage } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
 	import { afterUpdate } from 'svelte';
 	import type { Writable } from 'svelte/store';
-	import { Skeleton } from '$lib/components/ui/skeleton';
 
 	export let expensesStore: Writable<RecordModel[]>;
 	export let incomesStore: Writable<RecordModel[]>;

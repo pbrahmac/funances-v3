@@ -1,8 +1,9 @@
 <script lang="ts">
+	import * as Card from '$lib/components/ui/card';
 	import { expensesToCategoryArrays, formatCurrency, formatPercentage } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
 	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
-	import * as Card from '$lib/components/ui/card';
+	import { watch, windowSizeStore } from 'svelte-legos';
 	import type { Writable } from 'svelte/store';
 
 	// props
@@ -54,6 +55,7 @@
 		};
 		chart.setOption(chartOptions);
 	});
+
 	afterUpdate(async () => {
 		chart.setOption({
 			darkMode: $isDarkMode,
@@ -66,6 +68,11 @@
 				itemStyle: { borderColor: $isDarkMode ? '#000' : '#fff' }
 			}
 		});
+	});
+
+	// resize chart reactively
+	watch(windowSizeStore(), () => {
+		chart.resize();
 	});
 
 	onDestroy(async () => {

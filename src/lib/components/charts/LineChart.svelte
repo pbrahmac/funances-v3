@@ -1,8 +1,9 @@
 <script lang="ts">
+	import * as Card from '$lib/components/ui/card';
 	import { expensesToMonthArrays, formatCurrency } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
 	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
-	import * as Card from '$lib/components/ui/card';
+	import { watch, windowSizeStore } from 'svelte-legos';
 	import type { Writable } from 'svelte/store';
 
 	// props
@@ -74,6 +75,11 @@
 				}
 			}
 		});
+	});
+
+	// resize chart reactively
+	watch(windowSizeStore(), () => {
+		chart.resize();
 	});
 
 	onDestroy(async () => {
