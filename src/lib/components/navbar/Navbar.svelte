@@ -7,9 +7,9 @@
 	import type { Writable } from 'svelte/store';
 	import { Button } from '$lib/components/ui/button';
 	import { Search } from 'lucide-svelte';
+	import { getContext } from 'svelte';
 
 	// props
-	export let darkModeStore: Writable<boolean>;
 	export let user: BaseModel | undefined;
 
 	// menu items
@@ -26,7 +26,7 @@
 </script>
 
 <!-- mobile -->
-<MobileNavbar {user} {loggedInItems} {loggedOutItems} {darkModeStore} />
+<MobileNavbar {user} {loggedInItems} {loggedOutItems} />
 
 <!-- desktop -->
 <nav class="hidden lg:flex items-center justify-between h-20 border-b-2 shadow-sm">
@@ -70,7 +70,7 @@
 					<kbd class="font-sans"> with ⌘K </kbd>
 				</Button>
 			{/if}
-			<LightSwitch {darkModeStore} />
+			<LightSwitch />
 			{#if user}
 				<AvatarComponent {user} />
 			{/if}

@@ -19,7 +19,6 @@
 
 		let carbonOptions: AreaChartOptions = {
 			resizable: true,
-			theme: ChartTheme.G100,
 			color: { gradient: { enabled: true } },
 			legend: { enabled: false },
 			toolbar: { enabled: false },
@@ -64,7 +63,7 @@
 		<Card.Content class="flex flex-col items-center justify-center p-0 h-full">
 			<div
 				id={`chart-${chartIdx}`}
-				class="px-8 h-full"
+				class="px-8 h-full chart"
 				class:hidden={chartData.values.length < 2}
 			/>
 			<div class="text-muted-foreground text-sm" class:hidden={chartData.values.length > 0}>
@@ -74,6 +73,3 @@
 		<Card.Footer />
 	</Card.Root>
 </div>
-
-<style lang="postcss">
-</style>

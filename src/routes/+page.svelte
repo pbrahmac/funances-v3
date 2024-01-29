@@ -6,7 +6,7 @@
 	import { calcLastMonthRatio, dateWindow, formatCurrency, monthIdxToName } from '$lib/utils';
 	import { BadgeCent, BadgeDollarSign, Landmark, PiggyBank } from 'lucide-svelte';
 	import { Separator } from '$lib/components/ui/separator';
-	import { CarbonDonutChart, ProgressBarChart } from '$lib/components/charts';
+	import { ProgressBarChart } from '$lib/components/charts';
 	import type { RecordModel } from 'pocketbase';
 	import { page } from '$app/stores';
 	import { applyAction, enhance } from '$app/forms';
