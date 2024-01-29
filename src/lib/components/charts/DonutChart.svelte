@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { expensesToCategoryArrays, formatCurrency, formatPercentage } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
-	import { afterUpdate, getContext, onMount } from 'svelte';
+	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
 	import * as Card from '$lib/components/ui/card';
 	import type { Writable } from 'svelte/store';
 
@@ -12,7 +12,6 @@
 	export let chartEmptyText = 'Nothing to show.';
 
 	let isDarkMode: Writable<boolean> = getContext('darkModeStore');
-	$: console.log($isDarkMode);
 
 	$: chartData = expensesToCategoryArrays(chartRawData);
 	let chart: echarts.EChartsType;
@@ -67,6 +66,10 @@
 				itemStyle: { borderColor: $isDarkMode ? '#000' : '#fff' }
 			}
 		});
+	});
+
+	onDestroy(async () => {
+		chart.dispose();
 	});
 </script>
 

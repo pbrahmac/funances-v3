@@ -4,7 +4,7 @@
 	import type { RecordModel } from 'pocketbase';
 	import type { Writable } from 'svelte/store';
 	import { AverageExpenseCard, CategoryListCard } from '.';
-	import { CarbonSparklineChart, EChartsDonutChart } from '../charts';
+	import { DonutChart, LineChart } from '../charts';
 	import { onMount } from 'svelte';
 	import { Loader2 } from 'lucide-svelte';
 
@@ -38,18 +38,14 @@
 			<CategoryListCard {expensesStore} title="Smallest Spenders" areBiggest={false} />
 		</div>
 		<div class="col-span-full md:col-span-3 md:row-span-2 xl:col-span-4 xl:row-span-3">
-			<EChartsDonutChart
+			<DonutChart
 				chartIdx={1}
 				chartName="Expenses by Category"
 				chartRawData={$page.data.expenses}
 			/>
 		</div>
 		<div class="col-span-full md:col-span-3 md:row-span-2 xl:col-span-4 xl:row-span-3">
-			<CarbonSparklineChart
-				chartIdx={2}
-				chartName="Expenses by Month"
-				chartRawData={$page.data.expenses}
-			/>
+			<LineChart chartIdx={2} chartName="Expenses by Month" chartRawData={$page.data.expenses} />
 		</div>
 	</div>
 {/if}
