@@ -3,6 +3,7 @@
 	import { CommandPalette, Navbar } from '$lib/components/navbar';
 	import { getContext, onMount, setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
+	import { Toaster } from '$lib/components/ui/sonner';
 	import '../app.postcss';
 	import type { LayoutData } from './$types';
 
@@ -25,10 +26,13 @@
 	});
 </script>
 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
 <div class="main">
 	<ViewTransition />
 	<Navbar user={data.user} />
 	<CommandPalette user={data.user} />
+	<Toaster position="bottom-center" />
 	<slot />
 </div>
 

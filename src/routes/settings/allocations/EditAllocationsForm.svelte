@@ -14,10 +14,14 @@
 </script>
 
 <script lang="ts">
+	import { applyAction, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import * as Form from '$lib/components/ui/form';
 	import * as Select from '$lib/components/ui/select';
+	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { Selected } from 'bits-ui';
 	import type { RecordModel } from 'pocketbase';
+	import { toast } from 'svelte-sonner';
 	import type { SuperValidated } from 'sveltekit-superforms';
 
 	// props
@@ -29,6 +33,19 @@
 	// edit allocation selected variables
 	let selected: Selected<string> | undefined = undefined;
 	$: selectedObj = allocations.find((alloc) => alloc.id === selected?.value);
+
+	// progressive enhancement functions
+	const submitEditAllocation: SubmitFunction = () => {
+		return async ({ result }) => {
+			if (result.type == 'success') {
+				await invalidateAll();
+				toast.success('Updated allocation.');
+			} else {
+				toast.error('Something went wrong.');
+			}
+			await applyAction(result);
+		};
+	};
 </script>
 
 <div class="mb-4">
@@ -48,31 +65,33 @@
 
 <Form.Root
 	method="POST"
-	action="?/editAllocation"
 	{form}
 	schema={editAllocationSchema}
 	let:config
 	class="space-y-4 w-full lg:w-2/3"
+	asChild
 >
-	<Form.Item>
-		<Form.Field {config} name="id">
-			<Form.Input type="hidden" value={selectedObj?.id} />
-		</Form.Field>
-	</Form.Item>
-	<Form.Item>
-		<Form.Field {config} name="allocation">
-			<Form.Label>Allocation</Form.Label>
-			<Form.Input placeholder={selectedObj?.category} disabled={!selected} />
-			<Form.Validation />
-		</Form.Field>
-	</Form.Item>
-	<Form.Item>
-		<Form.Field {config} name="percentage">
-			<Form.Label>Percentage</Form.Label>
-			<Form.Input placeholder={selectedObj?.percentage} disabled={!selected} />
-			<Form.Validation />
-			<span class="text-muted-foreground text-sm">Put the decimal value.</span>
-		</Form.Field>
-	</Form.Item>
-	<Form.Button disabled={!selected}>Update</Form.Button>
+	<form action="?/editAllocation" method="post" use:enhance={submitEditAllocation}>
+		<Form.Item>
+			<Form.Field {config} name="id">
+				<Form.Input type="hidden" value={selectedObj?.id} />
+			</Form.Field>
+		</Form.Item>
+		<Form.Item>
+			<Form.Field {config} name="allocation">
+				<Form.Label>Allocation</Form.Label>
+				<Form.Input placeholder={selectedObj?.category} disabled={!selected} />
+				<Form.Validation />
+			</Form.Field>
+		</Form.Item>
+		<Form.Item>
+			<Form.Field {config} name="percentage">
+				<Form.Label>Percentage</Form.Label>
+				<Form.Input placeholder={selectedObj?.percentage} disabled={!selected} />
+				<Form.Validation />
+				<span class="text-muted-foreground text-sm">Put the decimal value.</span>
+			</Form.Field>
+		</Form.Item>
+		<Form.Button disabled={!selected}>Update</Form.Button>
+	</form>
 </Form.Root>

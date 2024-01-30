@@ -453,7 +453,6 @@ export const expensesToMonthArrays = (expenses: RecordModel[]) => {
 
 	return { months: dataMonths, values: dataValues, combined: combinedData };
 };
-
 export const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
 export const checkColorContrast = (color: string) => {

@@ -1,8 +1,11 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import * as Table from '$lib/components/ui/table';
-	import { monthIdxToName } from '$lib/utils';
+	import { cn, monthIdxToName } from '$lib/utils';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import { toast } from 'svelte-sonner';
 
 	// props
 	export let allocationNames: {
@@ -19,6 +22,19 @@
 			return form;
 		})
 	);
+
+	// progressive enhancement functions
+	const submitUpdateChecked: SubmitFunction = () => {
+		return async ({ result }) => {
+			if (result.type == 'success') {
+				await invalidateAll();
+				toast.success('Status saved.');
+			} else {
+				toast.error('Something went wrong.');
+			}
+			await applyAction(result);
+		};
+	};
 </script>
 
 <Table.Root>
@@ -38,9 +54,13 @@
 				</Table.Cell>
 				{#each allocationNames as name, idy}
 					<Table.Cell>
-						<!-- {@const form = undefined} -->
 						<div class="flex justify-center">
-							<form action="?/updateChecked" method="post" bind:this={forms[idx][idy]} use:enhance>
+							<form
+								action="?/updateChecked"
+								method="post"
+								bind:this={forms[idx][idy]}
+								use:enhance={submitUpdateChecked}
+							>
 								<input
 									type="hidden"
 									name="id"
@@ -51,7 +71,10 @@
 								<Checkbox
 									on:click={() => forms[idx][idy].requestSubmit()}
 									checked={eachMonthAllocationStatus.get(idx)?.get(name.allocation)?.status}
-									class="border-negative data-[state=checked]:bg-affirmative data-[state=checked]:text-white data-[state=checked]:border-affirmative"
+									class={cn(
+										'data-[state=checked]:bg-affirmative data-[state=checked]:text-white data-[state=checked]:border-affirmative',
+										idx < new Date().getMonth() ? 'border-negative' : ''
+									)}
 								/>
 							</form>
 						</div>

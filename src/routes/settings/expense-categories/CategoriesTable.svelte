@@ -1,9 +1,14 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
+	import { checkColorContrast, cn, getTextColorFromBackground } from '$lib/utils';
 	import type { RecordModel } from 'pocketbase';
+	import { clickToCopyAction } from 'svelte-legos';
+	import { toast } from 'svelte-sonner';
 
 	// props
 	export let categories: RecordModel[];
+
+	checkColorContrast('#123456');
 </script>
 
 <div class="w-full p-3 flex items-center justify-center">
@@ -25,12 +30,17 @@
 							{category.type}
 						</Table.Cell>
 						<Table.Cell class="text-right">
-							<span
-								class="px-2 py-1 rounded font-mono select-none"
+							<button
+								use:clickToCopyAction={category.tagColor}
+								on:copy-done={() => toast.success('Copied!')}
+								class={cn(
+									'px-2 py-1 rounded font-mono cursor-copy',
+									getTextColorFromBackground(category.tagColor)
+								)}
 								style={`background-color: ${category.tagColor}`}
 							>
 								{category.tagColor}
-							</span>
+							</button>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
