@@ -78,8 +78,12 @@
 		</div>
 		<Progress value={expenseTotal} max={incomeTotal} class="w-full md:w-1/2 md:max-w-2xl" />
 		<div class="flex items-center justify-between space-x-2 w-full md:w-1/2 md:max-w-2xl font-bold">
-			<p>{formatCurrency(expenseTotal)}</p>
-			<p>{formatCurrency(incomeTotal)}</p>
+			<p class="text-rose-500">
+				{`-${formatCurrency(expenseTotal)}`}
+			</p>
+			<p class="text-emerald-500">
+				{`+${formatCurrency(incomeTotal)}`}
+			</p>
 		</div>
 	</div>
 {/if}
