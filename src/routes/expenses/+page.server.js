@@ -1,24 +1,19 @@
 import { addExpenseSchema } from '$lib/schemas/addExpense';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
-import { formatDate, serializeNonPOJOs } from '$lib/utils';
+import { dateWindow, formatDate, serializeNonPOJOs, stringToZonedDateTime } from '$lib/utils';
+import {
+	fromDate,
+	getLocalTimeZone,
+	parseAbsoluteToLocal,
+	parseDateTime,
+	toZoned
+} from '@internationalized/date';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 import { z } from 'zod';
 
-// helper functions
-const dateWindow = (monthOffset = 1) => {
-	let [fromDate, toDate] = [new Date(), new Date()];
-	// reset both to 00:00:00
-	fromDate.setUTCMonth(fromDate.getMonth() - monthOffset);
-	fromDate.setHours(0, 0, 0, 0);
-	toDate.setUTCHours(0, 0, 0, 0);
-	// set initial end date to be until 11:59:59 of that day
-	toDate = new Date(toDate.getTime() + 86400 * 1000 - 1);
-	return { from: fromDate, to: toDate };
-};
-
 // Constants and initial variables
-let [fromDate, toDate] = [dateWindow().from, dateWindow().to];
+let [beginningDate, endDate] = [...dateWindow('month')];
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -26,7 +21,7 @@ export async function load(event) {
 	const addExpenseForm = await superValidate(addExpenseSchema);
 	const dateRangeForm = await superValidate(dateRangeSchema);
 
-	// get limit and pageNum params for pagination
+	// get limit param for safety
 	const limit = Number(event.url.searchParams.get('limit')) || 10;
 
 	/**
@@ -42,7 +37,11 @@ export async function load(event) {
 		// fetch from Pocketbase
 		try {
 			const rawExpenses = await event.locals.pb.collection('expenses').getFullList({
-				filter: `date >= "${formatDate(fromDate, false)}" && date <= "${formatDate(toDate)}"`,
+				filter: `date >= "${formatDate(
+					beginningDate.toDate(),
+					true,
+					true
+				)}" && date <= "${formatDate(endDate.toDate(), true, true)}"`,
 				sort: '-date',
 				expand: 'expense_type'
 			});
@@ -84,7 +83,8 @@ export async function load(event) {
 	return {
 		addExpenseForm: addExpenseForm,
 		dateRangeForm: dateRangeForm,
-		dateWindow: { from: fromDate, to: toDate },
+		beginningDate: formatDate(beginningDate.toDate(), false, false),
+		endDate: formatDate(endDate.toDate(), false, false),
 		expenses: await getExpenses(limit),
 		expenseTypes: await getExpenseTypes()
 	};
@@ -104,18 +104,14 @@ export const actions = {
 			// auth user and get id
 			const user_id = event.locals.user?.id;
 
-			// add current time to inputted date
-			const inputtedDate = new Date(form.data.date);
-			let finalDate = new Date();
-			finalDate.setDate(inputtedDate.getUTCDate());
-			finalDate.setMonth(inputtedDate.getUTCMonth());
-			finalDate.setFullYear(inputtedDate.getUTCFullYear());
+			// use @internationalized/date to fix timezone issues
+			const localDate = stringToZonedDateTime(form.data.date);
 
 			// make request to create new expense record
 			await event.locals.pb.collection('expenses').create({
 				user_id: user_id,
 				expense_type: form.data.type,
-				date: finalDate.toISOString(),
+				date: localDate.toAbsoluteString(),
 				title: form.data.expense,
 				details: form.data.notes ?? '',
 				amount: form.data.amount
@@ -127,7 +123,7 @@ export const actions = {
 					await event.locals.pb
 						.collection('expense_aggregates')
 						.getFirstListItem(
-							`month = ${finalDate.getMonth() + 1} && type_id = "${form.data.type}"`
+							`month = ${localDate.month} && year = ${localDate.year} && type_id = "${form.data.type}"`
 						)
 				);
 
@@ -135,8 +131,8 @@ export const actions = {
 					user_id: user_id,
 					type_id: form.data.type,
 					amount: aggregateRecord.amount + parseFloat(form.data.amount),
-					month: finalDate.getMonth() + 1,
-					year: finalDate.getFullYear()
+					month: localDate.month,
+					year: localDate.year
 				});
 			} catch (/** @type {any} */ err) {
 				if (err.status == 404) {
@@ -145,8 +141,8 @@ export const actions = {
 							user_id: user_id,
 							type_id: form.data.type,
 							amount: form.data.amount,
-							month: finalDate.getMonth() + 1,
-							year: finalDate.getFullYear()
+							month: localDate.month,
+							year: localDate.year
 						});
 					} catch (/** @type {any} */ err) {
 						console.log('Error: ', err);
@@ -183,7 +179,8 @@ export const actions = {
 
 			// get details of to be deleted expense
 			const deletedExpense = await event.locals.pb.collection('expenses').getOne(form.data.id);
-			const deletedExpenseDate = new Date(deletedExpense.date);
+			const isoDate = deletedExpense.date.replace(' ', 'T');
+			const deletedExpenseDate = parseAbsoluteToLocal(isoDate);
 
 			// delete record
 			await event.locals.pb.collection('expenses').delete(form.data.id);
@@ -194,17 +191,15 @@ export const actions = {
 					await event.locals.pb
 						.collection('expense_aggregates')
 						.getFirstListItem(
-							`month = ${deletedExpenseDate.getMonth() + 1} && type_id = "${
-								deletedExpense.expense_type
-							}"`
+							`month = ${deletedExpenseDate.month} && year = ${deletedExpenseDate.year} && type_id = "${deletedExpense.expense_type}"`
 						)
 				);
 				await event.locals.pb.collection('expense_aggregates').update(aggregateRecord.id, {
 					user_id: user_id,
 					type_id: deletedExpense.expense_type,
 					amount: aggregateRecord.amount - deletedExpense.amount,
-					month: deletedExpenseDate.getMonth() + 1,
-					year: deletedExpenseDate.getFullYear()
+					month: deletedExpenseDate.month,
+					year: deletedExpenseDate.year
 				});
 
 				if (aggregateRecord.amount - deletedExpense.amount == 0) {
@@ -238,7 +233,8 @@ export const actions = {
 				const deletedExpense = await event.locals.pb
 					.collection('expenses')
 					.getOne(itemId, { requestKey: null });
-				const deletedExpenseDate = new Date(deletedExpense.date);
+				const isoDate = deletedExpense.date.replace(' ', 'T');
+				const deletedExpenseDate = parseAbsoluteToLocal(isoDate);
 
 				// delete record
 				await event.locals.pb.collection('expenses').delete(itemId, { requestKey: null });
@@ -248,9 +244,7 @@ export const actions = {
 					const aggregateRecord = await event.locals.pb
 						.collection('expense_aggregates')
 						.getFirstListItem(
-							`month = ${deletedExpenseDate.getMonth() + 1} && type_id = "${
-								deletedExpense.expense_type
-							}"`,
+							`month = ${deletedExpenseDate.month} && year = ${deletedExpenseDate.year} && type_id = "${deletedExpense.expense_type}"`,
 							{ requestKey: null }
 						);
 					await event.locals.pb.collection('expense_aggregates').update(
@@ -259,8 +253,8 @@ export const actions = {
 							user_id: user_id,
 							type_id: deletedExpense.expense_type,
 							amount: aggregateRecord.amount - deletedExpense.amount,
-							month: deletedExpenseDate.getMonth() + 1,
-							year: deletedExpenseDate.getFullYear()
+							month: deletedExpenseDate.month,
+							year: deletedExpenseDate.year
 						},
 						{ requestKey: null }
 					);
@@ -293,21 +287,27 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// fix timezone issues with dates
-		// set from date to start at 12:00:00 AM
-		let newFromDate = new Date(form.data.start);
-		const fromEpoch = newFromDate.getTime();
-		newFromDate = new Date(fromEpoch + newFromDate.getTimezoneOffset() * 60 * 1000);
+		// use @internationalized/date
+		let newBeginningDate = fromDate(new Date(form.data.start), getLocalTimeZone()).set({
+			hour: 0,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		});
+		let newEndDate = fromDate(new Date(form.data.end), getLocalTimeZone())
+			.set({
+				hour: 23,
+				minute: 59,
+				second: 59,
+				millisecond: 999
+			})
+			.add({ days: 1 });
 
-		// set to date to end at 11:59:59 PM
-		let newToDate = new Date(form.data.end);
-		const toEpoch = newToDate.getTime();
-		newToDate = new Date(toEpoch + newToDate.getTimezoneOffset() * 60 * 1000 + 86400 * 1000 - 1);
-
-		// update fromDate and toDate
-		// load function will re-run on page submit, causing data with new dates to be pulled
-		fromDate = newFromDate;
-		toDate = newToDate;
+		/**
+		 * update beginning and end dates
+		 * load function will re-run on page submit, causing data with new dates to be pulled
+		 */
+		[beginningDate, endDate] = [newBeginningDate, newEndDate];
 
 		return { form };
 	}

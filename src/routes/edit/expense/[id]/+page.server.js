@@ -1,5 +1,6 @@
 import { editExpenseSchema } from '$lib/schemas/editExpense';
-import { formatDatepickerString, serializeNonPOJOs } from '$lib/utils';
+import { formatDatepickerString, serializeNonPOJOs, stringToZonedDateTime } from '$lib/utils';
+import { fromDate, getLocalTimeZone } from '@internationalized/date';
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 
@@ -62,6 +63,8 @@ export const actions = {
 			return fail(400, { form });
 		}
 
+		console.log(form.data);
+
 		try {
 			// auth user and get id
 			const user_id = event.locals.user?.id;
@@ -71,18 +74,14 @@ export const actions = {
 			// get old record for updating aggregate table
 			const oldExpense = await event.locals.pb.collection('expenses').getOne(id);
 
-			// add current time to inputted date
-			const inputtedDate = new Date(form.data.date);
-			let finalDate = new Date();
-			finalDate.setDate(inputtedDate.getUTCDate());
-			finalDate.setMonth(inputtedDate.getUTCMonth());
-			finalDate.setFullYear(inputtedDate.getUTCFullYear());
+			// use @internationalized/date to fix timezone issues
+			const localDate = stringToZonedDateTime(form.data.date);
 
 			// update record in pb
 			await event.locals.pb.collection('expenses').update(id, {
 				user_id: user_id,
 				expense_type: form.data.type,
-				date: finalDate.toISOString(),
+				date: localDate.toAbsoluteString(),
 				title: form.data.expense,
 				details: form.data.notes ?? '',
 				amount: parseFloat(form.data.amount)
@@ -94,7 +93,7 @@ export const actions = {
 					await event.locals.pb
 						.collection('expense_aggregates')
 						.getFirstListItem(
-							`month = ${finalDate.getMonth() + 1} && type_id = "${form.data.type}"`
+							`month = ${localDate.month} && year = ${localDate.year} && type_id = "${form.data.type}"`
 						)
 				);
 
@@ -102,8 +101,8 @@ export const actions = {
 					user_id: user_id,
 					type_id: form.data.type,
 					amount: aggregateRecord.amount - oldExpense.amount + parseFloat(form.data.amount),
-					month: finalDate.getMonth() + 1,
-					year: finalDate.getFullYear()
+					month: localDate.month,
+					year: localDate.year
 				});
 			} catch (/** @type {any} */ err) {
 				if (err.status == 404) {
@@ -112,8 +111,8 @@ export const actions = {
 							user_id: user_id,
 							type_id: form.data.type,
 							amount: form.data.amount,
-							month: finalDate.getMonth() + 1,
-							year: finalDate.getFullYear()
+							month: localDate.month,
+							year: localDate.year
 						});
 					} catch (/** @type {any} */ err) {
 						console.log('Error: ', err);

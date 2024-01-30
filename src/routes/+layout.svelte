@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { ViewTransition } from '$lib';
 	import { CommandPalette, Navbar } from '$lib/components/navbar';
+	import { getContext, onMount, setContext } from 'svelte';
+	import { writable, type Writable } from 'svelte/store';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { createDarkModeStore } from '$lib/stores/darkMode';
-	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
 	import '../app.postcss';
 	import type { LayoutData } from './$types';
 
@@ -12,19 +11,18 @@
 	export let data: LayoutData;
 
 	// dark mode toggle stuff
-	let darkModeStore: Writable<boolean>;
+	let darkModeStore: Writable<boolean> = writable(true);
+	setContext('darkModeStore', darkModeStore);
 	onMount(() => {
 		const currentPreference =
 			localStorage.theme === 'dark' ||
 			(!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-		darkModeStore = createDarkModeStore(currentPreference);
 		if (currentPreference) {
 			document.documentElement.classList.add('dark');
-			darkModeStore.set(true);
 		} else {
 			document.documentElement.classList.remove('dark');
-			darkModeStore.set(false);
 		}
+		$darkModeStore = currentPreference;
 	});
 </script>
 
@@ -32,7 +30,7 @@
 
 <div class="main">
 	<ViewTransition />
-	<Navbar user={data.user} {darkModeStore} />
+	<Navbar user={data.user} />
 	<CommandPalette user={data.user} />
 	<Toaster position="bottom-center" />
 	<slot />

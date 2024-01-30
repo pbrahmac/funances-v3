@@ -5,14 +5,16 @@
 	import type { MenuItem } from '$lib/utils';
 	import type { BaseModel } from 'pocketbase';
 	import { Cross1, HamburgerMenu } from 'radix-icons-svelte';
+	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { slide } from 'svelte/transition';
 
 	// props
 	export let user: BaseModel | undefined;
-	export let darkModeStore: Writable<boolean>;
 	export let loggedInItems: MenuItem[];
 	export let loggedOutItems: MenuItem[];
+
+	let darkModeStore: Writable<boolean> = getContext('darkModeStore');
 
 	$: isMenuOpen = false;
 </script>
@@ -28,7 +30,7 @@
 		>funances</a
 	>
 	<div class="flex items-center space-x-2 last:mr-6">
-		<LightSwitch {darkModeStore} />
+		<LightSwitch />
 		<Button variant="ghost" size="sm" on:click={() => (isMenuOpen = !isMenuOpen)}>
 			{#if isMenuOpen}
 				<Cross1 class="h-5 w-5" />

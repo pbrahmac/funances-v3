@@ -1,73 +1,68 @@
+import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
+import {
+	dateWindow,
+	formatDate,
+	monthlyTotalExpenses,
+	monthlyTotalIncomes,
+	stringToZonedDateTime
+} from '$lib/utils';
 import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms/client';
+
+// initialize time range dates
+let [beginningDate, endDate] = dateWindow('month');
+let chosenPreset = 'Month';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
 	try {
-		// get raw data from pocketbase
-		// const expenseTypes = await event.locals.pb.collection('expense_types').getFullList();
-		const rawExpenseTotals = await event.locals.pb.collection('expense_aggregates').getFullList();
-		const rawIncomeTotals = await event.locals.pb.collection('income').getFullList();
-
-		// helper functions to process data as needed
-		/**
-		 * Returns expense totals by month
-		 * @param {import('pocketbase').RecordModel[]} rawExpenseTotals raw expense total data from PocketBase
-		 */
-		function monthlyTotalExpenses(rawExpenseTotals) {
-			if (!rawExpenseTotals) {
-				return;
-			}
-			const monthExpenseMap = new Map(
-				[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
-			);
-
-			rawExpenseTotals.forEach((item) => {
-				const currMonth = item.month - 1;
-				if (!monthExpenseMap.get(currMonth)) {
-					monthExpenseMap.set(currMonth, item.amount);
-				} else {
-					const curr = monthExpenseMap.get(currMonth);
-					monthExpenseMap.set(currMonth, curr + item.amount);
-				}
-			});
-
-			return [...monthExpenseMap.values()];
-		}
-
-		/**
-		 * Aggregates income totals by month
-		 * @param {import('pocketbase').RecordModel[]} rawIncomeTotals raw income total data from PocketBase
-		 * @returns {number[]}
-		 */
-		function monthlyTotalIncomes(rawIncomeTotals) {
-			/**
-			 * @type {Map<number, number>}
-			 */
-			const monthIncomeMap = new Map(
-				[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
-			);
-
-			rawIncomeTotals.forEach((income) => {
-				const monthIdx = new Date(income.date).getMonth();
-				const postTaxIncome =
-					income.gross_amount - (income.benefits + income.retirement_401k + income.taxes);
-
-				monthIncomeMap.set(monthIdx, (monthIncomeMap.get(monthIdx) ?? 0) + postTaxIncome);
-			});
-			return Array.from(monthIncomeMap.values());
-		}
+		// get data from Pocketbase
+		const expenses = await event.locals.pb.collection('expenses').getFullList({
+			filter: `date >= "${formatDate(beginningDate.toDate(), true, true)}" && date <= "${formatDate(
+				endDate.toDate(),
+				true,
+				true
+			)}"`,
+			expand: 'expense_type'
+		});
+		const expenseTypes = await event.locals.pb.collection('expense_types').getFullList();
+		const incomes = await event.locals.pb.collection('income').getFullList({
+			filter: `date >= "${formatDate(beginningDate.toDate(), true, true)}" && date <= "${formatDate(
+				endDate.toDate(),
+				true,
+				true
+			)}"`
+		});
+		const allocations = await event.locals.pb.collection('allocations').getFullList();
 
 		return {
-			monthlyTotalExpenses: monthlyTotalExpenses(rawExpenseTotals),
-			monthlyTotalIncomes: monthlyTotalIncomes(rawIncomeTotals),
-			totalExpenses: rawExpenseTotals.reduce((sum, entry) => sum + entry.amount, 0),
-			totalIncomes: rawIncomeTotals.reduce(
-				(sum, entry) =>
-					sum + entry.gross_amount - (entry.taxes + entry.benefits + entry.retirement_401k),
-				0
-			)
+			expenses,
+			incomes,
+			expenseTypes,
+			allocations,
+			chosenPreset,
+			beginningDate: beginningDate.toDate(),
+			endDate: endDate.toDate()
 		};
 	} catch (/** @type {any} */ err) {
 		return fail(400, err);
 	}
 }
+
+/** @type {import('./$types').Actions} */
+export const actions = {
+	updateWindow: async (event) => {
+		const form = await superValidate(event, dateRangeSchema);
+
+		// validate errors
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		[beginningDate, endDate] = [
+			stringToZonedDateTime(form.data.start, 'start'),
+			stringToZonedDateTime(form.data.end, 'end')
+		];
+		chosenPreset = form.data.preset ?? '';
+	}
+};

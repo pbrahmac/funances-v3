@@ -32,12 +32,6 @@
 	// edit allocation selected variables
 	let selected: Selected<string> | undefined = undefined;
 
-	/**
-	 * TODO:
-	 * - complete disable functionality (set isEnabled field to false in db)
-	 * - update all methods elsewhere to only fetch/show enabled expense categories
-	 */
-
 	// progressive enhancement functions
 	const submitDisableExpenseCategory: SubmitFunction = () => {
 		return async ({ result }) => {

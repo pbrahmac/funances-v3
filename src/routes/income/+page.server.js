@@ -1,25 +1,13 @@
 import { addIncomeSchema } from '$lib/schemas/addIncome';
 import { dateRangeSchema } from '$lib/schemas/dateRangeSchema';
-import { formatDate } from '$lib/utils';
+import { dateWindow, formatDate, stringToZonedDateTime } from '$lib/utils';
+import { fromDate, getLocalTimeZone, today } from '@internationalized/date';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/client';
 import { z } from 'zod';
 
-// helper functions
-const dateWindow = () => {
-	let [fromDate, toDate] = [new Date(), new Date()];
-	// reset both to 00:00:00 and from month to Jan
-	fromDate.setMonth(0);
-	fromDate.setDate(1);
-	fromDate.setHours(0, 0, 0, 0);
-	toDate.setHours(0, 0, 0, 0);
-	// set initial end date to be until 11:59:59 of that day
-	toDate = new Date(toDate.getTime() + 86400 * 1000 - 1);
-	return { from: fromDate, to: toDate };
-};
-
 // Constants and initial variables
-let [fromDate, toDate] = [dateWindow().from, dateWindow().to];
+let [beginningDate, endDate] = [...dateWindow('ytd')];
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -27,16 +15,14 @@ export async function load(event) {
 	const addIncomeForm = await superValidate(addIncomeSchema);
 	const dateRangeForm = await superValidate(dateRangeSchema);
 
-	// get limit and pageNum params for pagination
+	// get limit param for safety
 	const limit = Number(event.url.searchParams.get('limit')) || 10;
-	const pageNum = Number(event.url.searchParams.get('pageNum')) || 1;
 
 	/**
 	 * Gets paginated list of expenses from Pocketbase
 	 * @param {number} limit The number of items displayed per page
-	 * @param {number} pageNum The offset (for pagination)
 	 */
-	async function getIncomes(limit = 10, pageNum = 1) {
+	async function getIncomes(limit = 10) {
 		// validate limit (to not fetch too many records at once)
 		if (limit > 100) {
 			throw error(400, 'Bad Request');
@@ -45,7 +31,11 @@ export async function load(event) {
 		// fetch from Pocketbase
 		try {
 			const rawIncomes = await event.locals.pb.collection('income').getFullList({
-				filter: `date >= "${formatDate(fromDate, false)}" && date <= "${formatDate(toDate)}"`,
+				filter: `date >= "${formatDate(
+					beginningDate.toDate(),
+					true,
+					true
+				)}" && date <= "${formatDate(endDate.toDate(), true, true)}"`,
 				sort: '-date'
 			});
 
@@ -72,8 +62,9 @@ export async function load(event) {
 	return {
 		addIncomeForm: addIncomeForm,
 		dateRangeForm: dateRangeForm,
-		dateWindow: { from: fromDate, to: toDate },
-		incomes: await getIncomes(limit, pageNum)
+		beginningDate: formatDate(beginningDate.toDate(), false, false),
+		endDate: formatDate(endDate.toDate(), false, false),
+		incomes: await getIncomes(limit)
 	};
 }
 
@@ -91,12 +82,8 @@ export const actions = {
 			// auth user and get id
 			const user_id = event.locals.user?.id;
 
-			// add current time to inputted date
-			const inputtedDate = new Date(form.data.date);
-			let finalDate = new Date();
-			finalDate.setDate(inputtedDate.getUTCDate());
-			finalDate.setMonth(inputtedDate.getUTCMonth());
-			finalDate.setFullYear(inputtedDate.getUTCFullYear());
+			// use @internationalized/date to fix timezone issues
+			const localDate = stringToZonedDateTime(form.data.date);
 
 			// make request to create new expense record
 			await event.locals.pb.collection('income').create({
@@ -108,7 +95,7 @@ export const actions = {
 				benefits: form.data.benefits,
 				retirement_401k: form.data.retirement_401k,
 				is_paycheck: form.data.is_paycheck,
-				date: finalDate.toISOString()
+				date: localDate.toAbsoluteString()
 			});
 		} catch (/** @type {any} */ err) {
 			console.log('Error: ', err);
@@ -166,21 +153,27 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// fix timezone issues with dates
-		// set from date to start at 12:00:00 AM
-		let newFromDate = new Date(form.data.start);
-		const fromEpoch = newFromDate.getTime();
-		newFromDate = new Date(fromEpoch + newFromDate.getTimezoneOffset() * 60 * 1000);
+		// use @internationalized/date
+		let newBeginningDate = fromDate(new Date(form.data.start), getLocalTimeZone()).set({
+			hour: 0,
+			minute: 0,
+			second: 0,
+			millisecond: 0
+		});
+		let newEndDate = fromDate(new Date(form.data.end), getLocalTimeZone())
+			.set({
+				hour: 23,
+				minute: 59,
+				second: 59,
+				millisecond: 999
+			})
+			.add({ days: 1 });
 
-		// set to date to end at 11:59:59 PM
-		let newToDate = new Date(form.data.end);
-		const toEpoch = newToDate.getTime();
-		newToDate = new Date(toEpoch + newToDate.getTimezoneOffset() * 60 * 1000 + 86400 * 1000 - 1);
-
-		// update fromDate and toDate
-		// load function will re-run on page submit, causing data with new dates to be pulled
-		fromDate = newFromDate;
-		toDate = newToDate;
+		/**
+		 * update beginning and end dates
+		 * load function will re-run on page submit, causing data with new dates to be pulled
+		 */
+		[beginningDate, endDate] = [newBeginningDate, newEndDate];
 
 		return { form };
 	}

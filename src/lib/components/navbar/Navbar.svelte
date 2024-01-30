@@ -5,9 +5,11 @@
 	import type { MenuItem } from '$lib/utils';
 	import type { BaseModel } from 'pocketbase';
 	import type { Writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button';
+	import { Search } from 'lucide-svelte';
+	import { getContext } from 'svelte';
 
 	// props
-	export let darkModeStore: Writable<boolean>;
 	export let user: BaseModel | undefined;
 
 	// menu items
@@ -24,7 +26,7 @@
 </script>
 
 <!-- mobile -->
-<MobileNavbar {user} {loggedInItems} {loggedOutItems} {darkModeStore} />
+<MobileNavbar {user} {loggedInItems} {loggedOutItems} />
 
 <!-- desktop -->
 <nav class="hidden lg:flex items-center justify-between h-20 border-b-2 shadow-sm">
@@ -61,11 +63,17 @@
 			{/if}
 		</ul>
 		<Separator orientation="vertical" />
-		<LightSwitch {darkModeStore} />
-		{#if user}
-			<div class="px-3 h-full">
+		<div class="flex items-center justify-center space-x-2 px-2">
+			{#if user}
+				<Button variant="secondary" disabled>
+					<Search class="w-4 h-4 mr-1" />
+					<kbd class="font-sans"> with ⌘K </kbd>
+				</Button>
+			{/if}
+			<LightSwitch />
+			{#if user}
 				<AvatarComponent {user} />
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </nav>

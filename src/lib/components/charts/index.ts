@@ -1,4 +1,5 @@
-import BarChart from './BarChart.svelte';
-import SparklineChart from './SparklineChart.svelte';
+import DonutChart from './DonutChart.svelte';
+import LineChart from './LineChart.svelte';
+import ProgressBarChart from './ProgressBarChart.svelte';
 
-export { BarChart, SparklineChart };
+export { DonutChart, LineChart, ProgressBarChart };

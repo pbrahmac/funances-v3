@@ -1,4 +1,12 @@
+import {
+	fromDate,
+	getLocalTimeZone,
+	parseAbsoluteToLocal,
+	today,
+	type ZonedDateTime
+} from '@internationalized/date';
 import { clsx, type ClassValue } from 'clsx';
+import type { RecordModel } from 'pocketbase';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
@@ -140,18 +148,34 @@ export const padTo2Digits = (num: number) => {
 	return num.toString().padStart(2, '0');
 };
 
-export const formatDate = (dateToFormat: Date, includeTime: boolean = true) => {
-	const date = [
-		dateToFormat.getFullYear(),
-		padTo2Digits(dateToFormat.getMonth() + 1),
-		padTo2Digits(dateToFormat.getDate())
-	].join('-');
-	const time = [
-		padTo2Digits(dateToFormat.getMinutes()),
-		padTo2Digits(dateToFormat.getHours()),
-		padTo2Digits(dateToFormat.getSeconds())
-	].join(':');
-	return includeTime ? `${date} ${time}` : `${date} 00:00:00`;
+export const formatDate = (
+	dateToFormat: Date,
+	includeTime: boolean = true,
+	UTC: boolean = false
+) => {
+	const date = UTC
+		? [
+				dateToFormat.getUTCFullYear(),
+				padTo2Digits(dateToFormat.getUTCMonth() + 1),
+				padTo2Digits(dateToFormat.getUTCDate())
+		  ].join('-')
+		: [
+				dateToFormat.getFullYear(),
+				padTo2Digits(dateToFormat.getMonth() + 1),
+				padTo2Digits(dateToFormat.getDate())
+		  ].join('-');
+	const time = UTC
+		? [
+				padTo2Digits(dateToFormat.getUTCMinutes()),
+				padTo2Digits(dateToFormat.getUTCHours()),
+				padTo2Digits(dateToFormat.getUTCSeconds())
+		  ].join(':')
+		: [
+				padTo2Digits(dateToFormat.getMinutes()),
+				padTo2Digits(dateToFormat.getHours()),
+				padTo2Digits(dateToFormat.getSeconds())
+		  ].join(':');
+	return includeTime ? `${date} ${time}` : `${date}`;
 };
 
 export const formatDateNeat = (date: Date, condensed: boolean = false) => {
@@ -182,14 +206,14 @@ export const formatDatepickerString = (
 	}
 };
 
-export const formatCurrency = (amount: number): string => {
+export const formatCurrency = (amount: number, rounded: boolean = false): string => {
 	if (amount == -1) {
 		return '--';
 	}
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
-		minimumFractionDigits: 2
+		minimumFractionDigits: rounded ? 0 : 2
 	}).format(amount);
 };
 
@@ -213,9 +237,9 @@ export const monthIdxToName = (idx: number, format: 'short' | 'long') => {
 	]);
 
 	if (format === 'short') {
-		return monthMap.get(idx)?.slice(0, 3);
+		return monthMap.get(idx)?.slice(0, 3) ?? '';
 	} else if (format === 'long') {
-		return monthMap.get(idx);
+		return monthMap.get(idx) ?? '';
 	} else {
 		return 'Invalid';
 	}
@@ -256,6 +280,179 @@ export const calcLastMonthRatio = (
 		: `${formatPercentage(ratio, 1, true)} from last month`;
 };
 
+/**
+ * Aggregates expense totals by month
+ * @param rawExpenseTotals raw expense total data from PocketBase
+ */
+export const monthlyTotalExpenses = (rawExpenseTotals: RecordModel[]) => {
+	if (!rawExpenseTotals) {
+		return;
+	}
+	const monthExpenseMap = new Map(
+		[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
+	);
+
+	rawExpenseTotals.forEach((item) => {
+		const currMonth = item.month - 1;
+		if (!monthExpenseMap.get(currMonth)) {
+			monthExpenseMap.set(currMonth, item.amount);
+		} else {
+			const curr = monthExpenseMap.get(currMonth);
+			monthExpenseMap.set(currMonth, curr + item.amount);
+		}
+	});
+
+	return [...monthExpenseMap.values()];
+};
+
+/**
+ * Aggregates income totals by month
+ * @param rawIncomeTotals raw income total data from PocketBase
+ */
+export const monthlyTotalIncomes = (rawIncomeTotals: RecordModel[]) => {
+	/**
+	 * @type {Map<number, number>}
+	 */
+	const monthIncomeMap = new Map(
+		[...Array(new Date().getMonth() + 1).keys()].map((num) => [num, 0])
+	);
+
+	rawIncomeTotals.forEach((income) => {
+		const monthIdx = new Date(income.date).getMonth();
+		const postTaxIncome =
+			income.gross_amount - (income.benefits + income.retirement_401k + income.taxes);
+
+		monthIncomeMap.set(monthIdx, (monthIncomeMap.get(monthIdx) ?? 0) + postTaxIncome);
+	});
+	return Array.from(monthIncomeMap.values());
+};
+
+export const stringToZonedDateTime = (
+	dateStr: string,
+	timeOfDay: 'start' | 'end' | 'keep' = 'keep',
+	timeToKeep: Date = new Date()
+) => {
+	const nativeDate = new Date(dateStr);
+	let zonedDateTime = fromDate(nativeDate, getLocalTimeZone()).add({ days: 1 });
+	switch (timeOfDay) {
+		case 'start':
+			zonedDateTime = setToStartOfDay(zonedDateTime);
+			break;
+		case 'end':
+			zonedDateTime = setToEndOfDay(zonedDateTime);
+			break;
+		case 'keep':
+			const [hour, min, sec, ms] = [
+				timeToKeep.getHours(),
+				timeToKeep.getMinutes(),
+				timeToKeep.getSeconds(),
+				timeToKeep.getMilliseconds()
+			];
+			zonedDateTime = zonedDateTime.set({ hour: hour, minute: min, second: sec, millisecond: ms });
+			break;
+		default:
+			break;
+	}
+	return zonedDateTime;
+};
+
+export const setToStartOfDay = (date: ZonedDateTime) => {
+	return date.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+};
+
+export const setToEndOfDay = (date: ZonedDateTime) => {
+	return date.set({
+		hour: 23,
+		minute: 59,
+		second: 59,
+		millisecond: 999
+	});
+};
+
+/**
+ * Returns two dates in the LOCAL time zone: today and `timeRange` duration before today
+ * @param timeRange the time range you want to go back to from today
+ */
+export const dateWindow = (timeRange: string) => {
+	const localTZ = getLocalTimeZone();
+	let beginningDate = fromDate(new Date(), localTZ);
+	let endDate = setToEndOfDay(fromDate(new Date(), localTZ));
+
+	switch (timeRange) {
+		case 'month':
+			beginningDate = setToStartOfDay(beginningDate).subtract({ months: 1 });
+			break;
+		case 'quarter':
+			const quarter = Math.floor((today(localTZ).month + 2) / 3);
+			const startMonth = (quarter - 1) * 3 + 1;
+			beginningDate = setToStartOfDay(beginningDate).set({
+				month: startMonth,
+				day: 1
+			});
+			break;
+		case 'ytd':
+			beginningDate = setToStartOfDay(beginningDate).set({
+				month: 1,
+				day: 1
+			});
+			break;
+		case 'year':
+			beginningDate = setToStartOfDay(beginningDate).subtract({ years: 1 });
+			break;
+
+		default:
+			throw new Error('Invalid time range preset.');
+	}
+	return [beginningDate, endDate];
+};
+
+export const expensesToCategoryArrays = (expenses: RecordModel[]) => {
+	let aggregateMap = new Map<string, [string, number]>();
+	expenses.forEach((expense) => {
+		const [amount, label, color] = [
+			expense.amount,
+			expense.expand?.expense_type.type,
+			expense.expand?.expense_type.tagColor
+		];
+		if (!aggregateMap.get(label)) {
+			aggregateMap.set(label, [color, amount]);
+		} else {
+			aggregateMap.set(label, [color, aggregateMap.get(label)?.[1] + amount]);
+		}
+	});
+	const dataColors = [...aggregateMap.values()].map((val) => val[0]);
+	const dataValues = [...aggregateMap.values()].map((val) => val[1]);
+	const dataLabels = [...aggregateMap.keys()];
+
+	return { values: dataValues, labels: dataLabels, colors: dataColors, map: aggregateMap };
+};
+
+export const expensesToMonthArrays = (expenses: RecordModel[]) => {
+	let aggregateMap = new Map<string, { amount: number; sortKey: ZonedDateTime }>();
+	expenses.forEach((expense) => {
+		const date = parseAbsoluteToLocal(expense.date.replace(' ', 'T'));
+		const key = `${monthIdxToName(date.month - 1, 'short')}-${date.year}`;
+		const amount = expense.amount;
+		if (!aggregateMap.get(key)) {
+			aggregateMap.set(key, { amount: amount, sortKey: date });
+		} else {
+			aggregateMap.set(key, {
+				amount: aggregateMap.get(key)?.amount + amount,
+				sortKey: date
+			});
+		}
+	});
+	const sortedMap = [...aggregateMap.entries()].sort((a, b) => a[1].sortKey.compare(b[1].sortKey));
+
+	const dataMonths = sortedMap.map((pair) => pair[0]);
+	const dataValues = sortedMap.map((pair) => pair[1].amount);
+	const combinedData = sortedMap.map((pair) => ({
+		month: pair[0],
+		value: pair[1].amount
+	}));
+
+	return { months: dataMonths, values: dataValues, combined: combinedData };
+};
 export const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
 export const checkColorContrast = (color: string) => {

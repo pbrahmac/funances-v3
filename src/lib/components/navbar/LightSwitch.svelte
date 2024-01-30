@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
 	import { Moon, Sun } from 'radix-icons-svelte';
+	import { getContext, setContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	// types
@@ -9,22 +10,21 @@
 	};
 
 	// props
-	export let darkModeStore: Writable<boolean>;
-	
-  function onKeyDown(event: OnKeyDownEvent): void {
+	// export let darkModeStore: Writable<boolean>;
+
+	let darkModeStore: Writable<boolean> = getContext('darkModeStore');
+
+	function onKeyDown(event: OnKeyDownEvent): void {
 		if (['Enter', 'Space'].includes(event.code)) {
 			event.preventDefault();
 			event.currentTarget.click();
 		}
 	}
 
-  const switchLightMode = () => {
+	const switchLightMode = () => {
 		window.document.documentElement.classList.toggle('dark');
-		if ($darkModeStore) {
-			darkModeStore.set(false);
-		} else {
-			darkModeStore.set(true);
-		}
+		$darkModeStore = !$darkModeStore;
+		setContext('darkModeStore', darkModeStore);
 	};
 </script>
 
