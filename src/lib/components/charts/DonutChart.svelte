@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { expensesToCategoryArrays, formatCurrency, formatPercentage } from '$lib/utils';
-	import type { EChartsType } from 'echarts';
+	import type { EChartsOption } from 'echarts/types/dist/shared';
 	import type { RecordModel } from 'pocketbase';
 	import { afterUpdate, getContext, onDestroy } from 'svelte';
 	import { watch, windowSizeStore } from 'svelte-legos';
@@ -16,18 +16,32 @@
 	let isDarkMode: Writable<boolean> = getContext('darkModeStore');
 
 	$: chartData = expensesToCategoryArrays(chartRawData);
-	let chart: echarts.EChartsType;
+	let chart: any;
 	afterUpdate(async () => {
-		const echarts = await import('echarts');
+		// import echarts in a tree shakeable way
+		const echarts = await import('echarts/core');
+		const { PieChart } = await import('echarts/charts');
+		const { DatasetComponent, TransformComponent } = await import('echarts/components');
+		const { LabelLayout, UniversalTransition } = await import('echarts/features');
+		const { SVGRenderer } = await import('echarts/renderers');
+		echarts.use([
+			PieChart,
+			DatasetComponent,
+			TransformComponent,
+			LabelLayout,
+			UniversalTransition,
+			SVGRenderer
+		]);
+
 		const checkForChart = echarts.getInstanceByDom(
 			document.getElementById(`chart-${chartIdx}`) as HTMLElement
 		);
 		if (checkForChart === undefined) {
 			chart = echarts.init(document.getElementById(`chart-${chartIdx}`));
 		} else {
-			chart = checkForChart as EChartsType;
+			chart = checkForChart;
 		}
-		let chartOptions: echarts.EChartsOption = {
+		let chartOptions: EChartsOption = {
 			legend: { show: false },
 			darkMode: $isDarkMode,
 			series: [
