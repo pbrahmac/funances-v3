@@ -68,18 +68,18 @@
 							show: true,
 							backgroundColor: $isDarkMode ? '#fff' : '#000',
 							color: $isDarkMode ? '#000' : '#fff',
-							borderRadius: 4,
-							padding: 4,
-							formatter: (params) => `${params.name}\n${formatCurrency(params.value as number)}`
+							borderRadius: 6,
+							padding: [5, 7, 5, 7],
+							formatter: (params) =>
+								`${params.name.replace('-', ' ')} - ${formatCurrency(params.value as number)}`,
+							fontFamily: 'Poppins',
+							fontWeight: 600
 						}
 					}
 				}
 			],
-			xAxis: {
-				data: chartData.months,
-				show: false
-			},
-			yAxis: { splitLine: { show: false }, show: false }
+			xAxis: { data: chartData.months, show: false },
+			yAxis: { show: false }
 		};
 		chart.setOption(chartOptions);
 	});
