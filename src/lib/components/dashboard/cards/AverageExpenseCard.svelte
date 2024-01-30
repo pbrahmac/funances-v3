@@ -19,7 +19,7 @@
 
 		// median
 		const sortedExpenses = $expensesStore.sort((a, b) => a.amount - b.amount);
-		median = sortedExpenses[sortedExpenses.length / 2].amount;
+		median = sortedExpenses[Math.floor(sortedExpenses.length / 2)].amount;
 	});
 </script>
 

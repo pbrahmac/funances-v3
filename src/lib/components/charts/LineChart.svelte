@@ -1,8 +1,9 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { expensesToMonthArrays, formatCurrency } from '$lib/utils';
+	import type { EChartsType } from 'echarts';
 	import type { RecordModel } from 'pocketbase';
-	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
+	import { afterUpdate, getContext, onDestroy } from 'svelte';
 	import { watch, windowSizeStore } from 'svelte-legos';
 	import type { Writable } from 'svelte/store';
 
@@ -17,9 +18,16 @@
 	$: chartData = expensesToMonthArrays(chartRawData);
 	let chart: echarts.EChartsType;
 
-	onMount(async () => {
+	afterUpdate(async () => {
 		const echarts = await import('echarts');
-		chart = echarts.init(document.getElementById(`chart-${chartIdx}`));
+		const checkForChart = echarts.getInstanceByDom(
+			document.getElementById(`chart-${chartIdx}`) as HTMLElement
+		);
+		if (checkForChart === undefined) {
+			chart = echarts.init(document.getElementById(`chart-${chartIdx}`));
+		} else {
+			chart = checkForChart as EChartsType;
+		}
 
 		let chartOptions: echarts.EChartsOption = {
 			legend: { show: false },
@@ -57,24 +65,6 @@
 			yAxis: { splitLine: { show: false }, show: false }
 		};
 		chart.setOption(chartOptions);
-	});
-
-	afterUpdate(async () => {
-		chart.setOption({
-			darkMode: $isDarkMode,
-			xAxis: {
-				data: chartData.months
-			},
-			series: {
-				data: chartData.values,
-				emphasis: {
-					label: {
-						backgroundColor: $isDarkMode ? '#fff' : '#000',
-						color: $isDarkMode ? '#000' : '#fff'
-					}
-				}
-			}
-		});
 	});
 
 	// resize chart reactively
