@@ -21,12 +21,15 @@
 		// import echarts in a tree shakeable way
 		const echarts = await import('echarts/core');
 		const { PieChart } = await import('echarts/charts');
-		const { DatasetComponent, TransformComponent } = await import('echarts/components');
+		const { DatasetComponent, LegendComponent, TransformComponent } = await import(
+			'echarts/components'
+		);
 		const { LabelLayout, UniversalTransition } = await import('echarts/features');
 		const { SVGRenderer } = await import('echarts/renderers');
 		echarts.use([
 			PieChart,
 			DatasetComponent,
+			LegendComponent,
 			TransformComponent,
 			LabelLayout,
 			UniversalTransition,
@@ -89,11 +92,11 @@
 </script>
 
 <div>
-	<Card.Root class="w-full h-full aspect-video">
+	<Card.Root class="w-full h-full">
 		<Card.Header>
 			<Card.Title class="text-center">{chartName}</Card.Title>
 		</Card.Header>
-		<Card.Content class="flex flex-col items-center justify-center p-0 h-full">
+		<Card.Content class="flex flex-col items-center justify-center p-0 w-full h-full aspect-video">
 			<div
 				id={`chart-${chartIdx}`}
 				class="w-full h-full"

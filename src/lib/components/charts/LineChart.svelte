@@ -22,7 +22,7 @@
 		// import echarts in a tree shakeable way
 		const echarts = await import('echarts/core');
 		const { LineChart } = await import('echarts/charts');
-		const { DatasetComponent, GridComponent, TransformComponent } = await import(
+		const { DatasetComponent, GridComponent, TransformComponent, LegendComponent } = await import(
 			'echarts/components'
 		);
 		const { LabelLayout, UniversalTransition } = await import('echarts/features');
@@ -30,6 +30,7 @@
 		echarts.use([
 			LineChart,
 			DatasetComponent,
+			LegendComponent,
 			GridComponent,
 			TransformComponent,
 			LabelLayout,
@@ -99,7 +100,7 @@
 		<Card.Header>
 			<Card.Title class="text-center">{chartName}</Card.Title>
 		</Card.Header>
-		<Card.Content class="flex flex-col items-center justify-center p-0 h-full">
+		<Card.Content class="flex flex-col items-center justify-center p-0 w-full h-full aspect-video">
 			<div
 				id={`chart-${chartIdx}`}
 				class="w-full h-full"

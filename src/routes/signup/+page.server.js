@@ -25,7 +25,7 @@ const defaultAllocations = [
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
-	return { form: superValidate(signUpFormSchema) };
+	return { form: await superValidate(signUpFormSchema) };
 }
 
 /** @type {import('./$types').Actions} */
